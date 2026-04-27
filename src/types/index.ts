@@ -38,3 +38,40 @@ export interface Kasbon {
   requested_at: string
   status: KasbonStatus
 }
+
+export interface Employee {
+  id: string           // auth.users id
+  email: string
+  name: string
+  emp_id: string
+  dept: string
+  jabatan: string
+  role: 'admin' | 'employee'
+  phone: string
+  salary: number
+  kasbon_limit: number
+  shift: string
+  address: string
+  joined: string
+  status: 'aktif' | 'nonaktif'
+  absen?: number
+  kasbon_used?: number
+  last_slip?: string
+}
+
+export interface EmployeeFormData {
+  name: string
+  emp_id: string
+  email: string
+  password: string
+  phone: string
+  address: string
+  dept: string
+  jabatan: string
+  role: 'admin' | 'employee'
+  salary: string
+  shift: string
+  kasbon_limit: string
+  status: 'aktif' | 'nonaktif'
+  joined: string
+}

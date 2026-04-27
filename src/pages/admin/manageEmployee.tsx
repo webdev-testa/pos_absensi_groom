@@ -1,54 +1,23 @@
-import { useState, useEffect, useCallback, useRef, type ChangeEvent, type FormEvent } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from 'react'
+import { toast } from 'sonner'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { AdminLayout } from '@/components/layout/AdminLayout'
+import { AdminLayout, AV_COLORS, initials } from '@/components/layout/AdminLayout'
+import { fmtCurrency, fmtDate } from '@/lib/utils'
+import type { Employee, EmployeeFormData } from '@/types'
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent} from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Search, Download, Plus, AlertTriangle, UserX, CheckCircle, Info } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Search, Download, Plus, UserX, CheckCircle, Info } from 'lucide-react'
 
 /* ─── types ────────────────────────────────────────────── */
-interface Employee {
-  id: string           // auth.users id
-  email: string
-  name: string
-  emp_id: string
-  dept: string
-  role: string         // jabatan
-  phone: string
-  salary: number
-  kasbon_limit: number
-  shift: string
-  address: string
-  joined: string
-  status: 'aktif' | 'nonaktif'
-  absen?: number
-  kasbon_used?: number
-  last_slip?: string
-}
 
-interface FormData {
-  name: string
-  emp_id: string
-  email: string
-  password: string
-  phone: string
-  address: string
-  dept: string
-  role: string
-  salary: string
-  shift: string
-  kasbon_limit: string
-  status: 'aktif' | 'nonaktif'
-  joined: string
-}
-
-const EMPTY_FORM: FormData = {
+const EMPTY_FORM: EmployeeFormData = {
   name: '',
   emp_id: '',
   email: '',
@@ -56,37 +25,13 @@ const EMPTY_FORM: FormData = {
   phone: '',
   address: '',
   dept: 'staff',
-  role: '',
+  jabatan: '',
+  role: 'employee',
   salary: '',
   shift: '08:00 – 17:00',
   kasbon_limit: '',
   status: 'aktif',
   joined: new Date().toISOString().slice(0, 10),
-}
-
-const AV_COLORS = [
-  { bg: '#F5E8E4', fg: '#C84B2F' }, { bg: '#E2F0E8', fg: '#2A7A4B' },
-  { bg: '#F5EDE0', fg: '#B87333' }, { bg: '#EDE8F5', fg: '#6B4F9E' },
-  { bg: '#E0EDF5', fg: '#1A6FAA' }, { bg: '#F5E8ED', fg: '#A0374F' },
-  { bg: '#E8F5E0', fg: '#3A6B1A' }, { bg: '#F0EDE8', fg: '#6B5A3A' },
-  { bg: '#E8EDF5', fg: '#3A4A8B' }, { bg: '#F5F0E8', fg: '#8B6A3A' },
-  { bg: '#EBF5E8', fg: '#2A6B4B' }, { bg: '#F5E8F0', fg: '#8B3A6A' },
-]
-
-function initials(name: string) {
-  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-}
-
-function fmtCurrency(n: number) {
-  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(1).replace('.0', '')}jt`
-  if (n >= 1_000) return `Rp ${(n / 1_000)}k`
-  return `Rp ${n}`
-}
-
-function fmtDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })
-  } catch { return iso }
 }
 
 /* ─── component ────────────────────────────────────────── */
@@ -103,27 +48,21 @@ export default function ManageEmployee() {
   const [showFormModal, setShowFormModal] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
-  const [form, setForm] = useState<FormData>(EMPTY_FORM)
+  const [form, setForm] = useState<EmployeeFormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
 
   // confirm modal
   const [showConfirm, setShowConfirm] = useState(false)
   const [confirmData, setConfirmData] = useState<{ id: string; name: string; newStatus: 'aktif' | 'nonaktif' } | null>(null)
 
-  // toast
-  const [toast, setToast] = useState<string | null>(null)
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const showToast = useCallback((msg: string) => {
-    setToast(msg)
-    if (toastTimer.current) clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 3000)
+    toast.success(msg)
   }, [])
 
   /* ── fetch employees ── */
   const fetchEmployees = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('users')
       .select('*')
       .order('created_at', { ascending: false })
@@ -138,14 +77,15 @@ export default function ManageEmployee() {
         name: (u.name as string) || '',
         emp_id: (u.emp_id as string) || '',
         dept: (u.dept as string) || '',
-        role: (u.role as string) || (u.jabatan as string) || '',
+        jabatan: (u.jabatan as string) || '',
+        role: ((u.role as string) || 'employee') as 'admin' | 'employee',
         phone: (u.phone as string) || '',
         salary: Number(u.salary) || 0,
         kasbon_limit: Number(u.kasbon_limit) || 0,
         shift: (u.shift as string) || '08:00 – 17:00',
         address: (u.address as string) || '',
         joined: (u.created_at as string) || '',
-        status: ((u.status as string) || 'aktif') as 'aktif' | 'nonaktif',
+        status: ((u.status as string) === 'active' ? 'aktif' : (u.status as string) === 'inactive' ? 'nonaktif' : (u.status as string) || 'aktif') as 'aktif' | 'nonaktif',
         absen: Number(u.absen) || 0,
         kasbon_used: Number(u.kasbon_used) || 0,
         last_slip: (u.last_slip as string) || '—',
@@ -179,12 +119,12 @@ export default function ManageEmployee() {
   const selectedIdx = selectedEmployee ? employees.indexOf(selectedEmployee) : -1
 
   /* ── form helpers ── */
-  const setField = (field: keyof FormData) => (ev: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const setField = (field: keyof EmployeeFormData) => (ev: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm(prev => ({ ...prev, [field]: ev.target.value }))
   }
   
   // Custom setter for shadcn Select
-  const setFieldDirectly = (field: keyof FormData, value: string) => {
+  const setFieldDirectly = (field: keyof EmployeeFormData, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
@@ -206,6 +146,7 @@ export default function ManageEmployee() {
       phone: emp.phone,
       address: emp.address,
       dept: emp.dept,
+      jabatan: emp.jabatan,
       role: emp.role,
       salary: String(emp.salary),
       shift: emp.shift,
@@ -236,6 +177,7 @@ export default function ManageEmployee() {
           name: form.name,
           emp_id: form.emp_id,
           dept: form.dept,
+          role: form.role,
         },
       })
 
@@ -254,8 +196,8 @@ export default function ManageEmployee() {
             name: form.name,
             emp_id: form.emp_id,
             dept: form.dept,
-            role: form.dept, 
-            jabatan: form.role,
+            role: form.role, 
+            jabatan: form.jabatan,
             phone: form.phone,
             salary: parseInt(form.salary) || 0,
             kasbon_limit: parseInt(form.kasbon_limit) || 0,
@@ -272,7 +214,8 @@ export default function ManageEmployee() {
         name: form.name,
         emp_id: form.emp_id,
         dept: form.dept,
-        jabatan: form.role,
+        role: form.role,
+        jabatan: form.jabatan,
         phone: form.phone,
         salary: parseInt(form.salary) || 0,
         kasbon_limit: parseInt(form.kasbon_limit) || 0,
@@ -432,31 +375,31 @@ export default function ManageEmployee() {
             {loading ? (
               <div className="p-10 text-center text-[#A8A49E] text-sm">Memuat data...</div>
             ) : (
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-[#EDEAE4]">
-                  <tr>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</th>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Divisi</th>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Email</th>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Gaji pokok</th>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Tgl Bergabung</th>
-                    <th className="p-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Status</th>
-                    <th className="p-3 px-4"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((emp, fi) => {
+              <Table>
+                <TableHeader className="bg-[#EDEAE4]">
+                  <TableRow className="border-none hover:bg-transparent">
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Divisi</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Email</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Gaji pokok</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Tgl Bergabung</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Status</TableHead>
+                    <TableHead className="h-auto py-3 px-4"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((emp) => {
                     const globalIdx = employees.indexOf(emp)
                     const c = AV_COLORS[globalIdx % AV_COLORS.length]
                     const isActive = selectedId === emp.id
                     
                     return (
-                      <tr 
+                      <TableRow 
                         key={emp.id} 
                         className={`cursor-pointer border-b border-[#E0DDD7] last:border-none transition-colors ${isActive ? 'bg-[#F0F7F3]' : 'hover:bg-[#FAFAF8]'}`}
                         onClick={() => setSelectedId(emp.id)}
                       >
-                        <td className="p-3 px-4 align-middle">
+                        <TableCell className="p-3 px-4">
                           <div className="flex items-center gap-2.5">
                             <Avatar className="w-[34px] h-[34px] rounded-full shrink-0 flex items-center justify-center font-['Syne'] text-[12px] font-bold" style={{ backgroundColor: c.bg, color: c.fg }}>
                               <AvatarFallback className="bg-transparent">{initials(emp.name || '?')}</AvatarFallback>
@@ -466,21 +409,21 @@ export default function ManageEmployee() {
                               <div className="text-[11px] text-[#A8A49E] font-mono">{emp.emp_id}</div>
                             </div>
                           </div>
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                           <span className="text-[12.5px] text-[#6B6760] block">{emp.dept}</span>
-                          <span className="text-[11px] text-[#A8A49E]">{emp.role}</span>
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                          <span className="text-[11px] text-[#A8A49E]">{emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff')}</span>
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                           <span className="font-mono text-[12px] text-[#1A1814]">{emp.email}</span>
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                           <span className="font-mono text-[12.5px] text-[#1A1814]">{fmtCurrency(emp.salary)}</span>
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                           <span className="text-[12.5px] text-[#6B6760]">{fmtDate(emp.joined)}</span>
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                           {emp.status === 'aktif' ? (
                             <Badge className="bg-[#E2F0E8] text-[#2A7A4B] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                               ● Aktif
@@ -490,23 +433,23 @@ export default function ManageEmployee() {
                               ○ Nonaktif
                             </Badge>
                           )}
-                        </td>
-                        <td className="p-3 px-4 align-middle">
+                        </TableCell>
+                        <TableCell className="p-3 px-4">
                            <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
                              <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#E0DDD7] text-[#6B6760] hover:text-[#1A1814]" onClick={() => openEditModal(emp)}>Edit</Button>
                              <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#E0DDD7] text-[#C84B2F] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#C84B2F]" onClick={() => openToggleConfirm(emp)}>
                                {emp.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
                              </Button>
                            </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )
                   })}
                   {filtered.length === 0 && (
-                    <tr><td colSpan={7} className="p-10 text-center text-[#A8A49E]">Tidak ada data</td></tr>
+                    <TableRow><TableCell colSpan={7} className="p-10 text-center text-[#A8A49E]">Tidak ada data</TableCell></TableRow>
                   )}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             )}
           </div>
         </Card>
@@ -562,7 +505,10 @@ export default function ManageEmployee() {
                   <div className="mb-5 last:mb-0">
                     <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Info pekerjaan</div>
                     <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Jabatan</span><span className="font-medium text-[#1A1814]">{selectedEmployee.role}</span>
+                      <span className="text-[#6B6760]">Hak Akses</span><span className="font-medium text-[#1A1814] uppercase text-[11px]">{selectedEmployee.role}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
+                      <span className="text-[#6B6760]">Jabatan</span><span className="font-medium text-[#1A1814]">{selectedEmployee.jabatan || '—'}</span>
                     </div>
                     <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
                       <span className="text-[#6B6760]">Jam kerja</span><span className="font-medium text-[#1A1814] font-mono">{selectedEmployee.shift}</span>
@@ -701,8 +647,20 @@ export default function ManageEmployee() {
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
+                    <label className="text-[12px] text-[#6B6760] font-medium">Hak Akses (Role)</label>
+                    <Select value={form.role} onValueChange={v => setFieldDirectly('role', v)}>
+                      <SelectTrigger className="rounded-[10px] border-[#E0DDD7]">
+                        <SelectValue placeholder="Pilih hak akses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="employee">Employee</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
                     <label className="text-[12px] text-[#6B6760] font-medium">Jabatan</label>
-                    <Input type="text" placeholder="Staff, Senior, dll" value={form.role} onChange={setField('role')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <Input type="text" placeholder="Staff, Senior, dll" value={form.jabatan} onChange={setField('jabatan')} className="rounded-[10px] border-[#E0DDD7]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[12px] text-[#6B6760] font-medium">Gaji pokok (Rp)</label>
@@ -766,7 +724,7 @@ export default function ManageEmployee() {
               )}
             </div>
             <div className="font-['Syne'] text-[18px] font-bold text-[#1A1814] mb-2">
-              {confirmData?.newStatus === 'nonaktif' ? `Nonaktifkan ${confirmData.name}?` : `Aktifkan ${confirmData.name}?`}
+              {confirmData?.newStatus === 'nonaktif' ? `Nonaktifkan ${confirmData?.name}?` : `Aktifkan ${confirmData?.name}?`}
             </div>
             <div className="text-[13.5px] text-[#6B6760] leading-relaxed">
               {confirmData?.newStatus === 'nonaktif'
@@ -786,13 +744,6 @@ export default function ManageEmployee() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* ── TOAST ── */}
-      {/* Keeping simple custom toast for simplicity as replacing it fully with sonner requires app-level setup */}
-      <div className={`fixed bottom-7 right-7 bg-[#1A1814] text-white px-[18px] py-3 rounded-[10px] text-[13.5px] z-50 flex items-center gap-2 transition-all duration-300 font-sans ${toast ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-5 opacity-0 pointer-events-none'}`}>
-        <div className="w-2 h-2 rounded-full bg-[#4ade80] shrink-0" />
-        <span>{toast}</span>
-      </div>
     </AdminLayout>
   )
 }
