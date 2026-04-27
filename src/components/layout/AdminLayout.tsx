@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   Home, 
   Users, 
@@ -10,6 +10,7 @@ import {
   LogOut 
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { supabase } from '@/lib/supabase'
 
 export const AV_COLORS = [
   { bg: '#F5E8E4', fg: '#C84B2F' }, { bg: '#E2F0E8', fg: '#2A7A4B' },
@@ -48,6 +49,13 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementTyp
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    navigate('/login')
+  }
+
   return (
     <div className="flex min-h-screen bg-[#F5F2ED] font-sans selection:bg-red-600/30">
       {/* SIDEBAR */}
@@ -77,13 +85,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <NavItem to="/admin/payroll" icon={FileText} label="Payroll" />
 
         <div className="mt-auto px-6 pt-5 border-t border-white/10">
-          <Link
-            to="/"
-            className="flex items-center gap-3 mb-4 text-[#C84B2F] text-[13.5px]"
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 mb-4 text-[#C84B2F] text-[13.5px] hover:text-[#e0583b] transition-colors bg-transparent border-none cursor-pointer w-full text-left"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            Switch Role
-          </Link>
+            Switch Role / Log Out
+          </button>
           <div className="flex items-center gap-2.5">
             <Avatar className="w-8 h-8 rounded-full bg-[#C84B2F] text-white font-['Syne'] font-semibold text-[13px] flex items-center justify-center">
               <AvatarFallback className="bg-transparent">A</AvatarFallback>

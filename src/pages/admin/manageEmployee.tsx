@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from 'react'
+import { useState, useCallback, type ChangeEvent, type FormEvent } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { AdminLayout, AV_COLORS, initials } from '@/components/layout/AdminLayout'
@@ -37,8 +38,7 @@ const EMPTY_FORM: EmployeeFormData = {
 /* ─── component ────────────────────────────────────────── */
 export default function ManageEmployee() {
   /* ── state ── */
-  const [employees, setEmployees] = useState<Employee[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
   const [searchQ, setSearchQ] = useState('')
   const [deptFilter, setDeptFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState<'aktif' | 'nonaktif' | 'all'>('aktif')
@@ -49,7 +49,6 @@ export default function ManageEmployee() {
   const [isEdit, setIsEdit] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState<EmployeeFormData>(EMPTY_FORM)
-  const [saving, setSaving] = useState(false)
 
   // confirm modal
   const [showConfirm, setShowConfirm] = useState(false)
@@ -59,19 +58,22 @@ export default function ManageEmployee() {
     toast.success(msg)
   }, [])
 
-  /* ── fetch employees ── */
-  const fetchEmployees = useCallback(async () => {
-    setLoading(true)
-    const { data, error } = await supabaseAdmin
-      .from('users')
-      .select('*')
-      .order('created_at', { ascending: false })
+  /* ── fetch employees (React Query) ── */
+  const { data: employees = [], isLoading: loading } = useQuery({
+    queryKey: ['employees'],
+    queryFn: async () => {
+      const { data, error } = await supabaseAdmin
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-    if (error) {
-      console.error('Fetch employees error:', error)
-      showToast('Gagal memuat data karyawan')
-    } else if (data) {
-      const mapped: Employee[] = data.map((u: Record<string, unknown>) => ({
+      if (error) {
+        console.error('Fetch employees error:', error)
+        showToast('Gagal memuat data karyawan')
+        throw error
+      }
+
+      return (data || []).map((u: Record<string, unknown>) => ({
         id: u.id as string,
         email: (u.email as string) || '',
         name: (u.name as string) || '',
@@ -89,13 +91,9 @@ export default function ManageEmployee() {
         absen: Number(u.absen) || 0,
         kasbon_used: Number(u.kasbon_used) || 0,
         last_slip: (u.last_slip as string) || '—',
-      }))
-      setEmployees(mapped)
+      })) as Employee[]
     }
-    setLoading(false)
-  }, [showToast])
-
-  useEffect(() => { fetchEmployees() }, [fetchEmployees])
+  })
 
   /* ── filtering ── */
   const filtered = employees.filter(e => {
@@ -158,84 +156,85 @@ export default function ManageEmployee() {
   }
 
   /* ── save (create / update) ── */
-  async function handleSave(ev: FormEvent) {
-    ev.preventDefault()
-    setSaving(true)
+  const saveMutation = useMutation({
+    mutationFn: async (payload: { isEdit: boolean, form: EmployeeFormData, editId: string | null }) => {
+      const { isEdit, form, editId } = payload
+      if (!isEdit) {
+        if (!form.email || !form.password) throw new Error('Email dan password wajib diisi')
 
-    if (!isEdit) {
-      if (!form.email || !form.password) {
-        showToast('Email dan password wajib diisi')
-        setSaving(false)
-        return
-      }
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
+          email: form.email,
+          password: form.password,
+          email_confirm: true,
+          user_metadata: {
+            name: form.name,
+            emp_id: form.emp_id,
+            dept: form.dept,
+            role: form.role,
+          },
+        })
 
-      const { data, error } = await supabaseAdmin.auth.admin.createUser({
-        email: form.email,
-        password: form.password,
-        email_confirm: true,
-        user_metadata: {
+        if (error) throw error
+
+        if (data?.user) {
+          const { error: profileError } = await supabaseAdmin
+            .from('users')
+            .upsert({
+              id: data.user.id,
+              email: form.email,
+              name: form.name,
+              emp_id: form.emp_id,
+              dept: form.dept,
+              role: form.role, 
+              jabatan: form.jabatan,
+              phone: form.phone,
+              salary: parseInt(form.salary) || 0,
+              kasbon_limit: parseInt(form.kasbon_limit) || 0,
+              shift: form.shift,
+              address: form.address,
+              status: form.status,
+            })
+
+          if (profileError) throw new Error(`User dibuat tapi profil gagal: ${profileError.message}`)
+        }
+        return { action: 'add', name: form.name }
+      } else {
+        const updateData: Record<string, unknown> = {
           name: form.name,
           emp_id: form.emp_id,
           dept: form.dept,
           role: form.role,
-        },
-      })
+          jabatan: form.jabatan,
+          phone: form.phone,
+          salary: parseInt(form.salary) || 0,
+          kasbon_limit: parseInt(form.kasbon_limit) || 0,
+          shift: form.shift,
+          address: form.address,
+          status: form.status,
+        }
 
-      if (error) {
-        showToast(`Gagal: ${error.message}`)
-        setSaving(false)
-        return
-      }
-
-      if (data?.user) {
-        const { error: profileError } = await supabaseAdmin
+        const { error } = await supabaseAdmin
           .from('users')
-          .upsert({
-            id: data.user.id,
-            email: form.email,
-            name: form.name,
-            emp_id: form.emp_id,
-            dept: form.dept,
-            role: form.role, 
-            jabatan: form.jabatan,
-            phone: form.phone,
-            salary: parseInt(form.salary) || 0,
-            kasbon_limit: parseInt(form.kasbon_limit) || 0,
-            shift: form.shift,
-            address: form.address,
-            status: form.status,
-          })
+          .update(updateData)
+          .eq('id', editId!)
 
-        if (profileError) showToast(`User dibuat tapi profil gagal: ${profileError.message}`)
-        else showToast(`${form.name} berhasil ditambahkan`)
+        if (error) throw error
+        return { action: 'edit', name: form.name }
       }
-    } else {
-      const updateData: Record<string, unknown> = {
-        name: form.name,
-        emp_id: form.emp_id,
-        dept: form.dept,
-        role: form.role,
-        jabatan: form.jabatan,
-        phone: form.phone,
-        salary: parseInt(form.salary) || 0,
-        kasbon_limit: parseInt(form.kasbon_limit) || 0,
-        shift: form.shift,
-        address: form.address,
-        status: form.status,
-      }
-
-      const { error } = await supabaseAdmin
-        .from('users')
-        .update(updateData)
-        .eq('id', editId!)
-
-      if (error) showToast(`Gagal update: ${error.message}`)
-      else showToast(`Data ${form.name} berhasil diperbarui`)
+    },
+    onSuccess: (res) => {
+      showToast(res.action === 'add' ? `${res.name} berhasil ditambahkan` : `Data ${res.name} berhasil diperbarui`)
+      setShowFormModal(false)
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
+    },
+    onError: (err: Error) => {
+      showToast(`Gagal: ${err.message}`)
     }
+  })
 
-    setSaving(false)
-    setShowFormModal(false)
-    fetchEmployees()
+  function handleSave(ev: FormEvent) {
+    ev.preventDefault()
+    saveMutation.mutate({ isEdit, form, editId })
   }
 
   /* ── toggle status ── */
@@ -248,21 +247,30 @@ export default function ManageEmployee() {
     setShowConfirm(true)
   }
 
-  async function doToggleStatus() {
-    if (!confirmData) return
-    const { error } = await supabaseAdmin
-      .from('users')
-      .update({ status: confirmData.newStatus })
-      .eq('id', confirmData.id)
+  const toggleStatusMutation = useMutation({
+    mutationFn: async (data: { id: string, name: string, newStatus: 'aktif' | 'nonaktif' }) => {
+      const { error } = await supabaseAdmin
+        .from('users')
+        .update({ status: data.newStatus })
+        .eq('id', data.id)
 
-    if (error) {
-      showToast(`Gagal: ${error.message}`)
-    } else {
-      showToast(`${confirmData.name} berhasil ${confirmData.newStatus === 'nonaktif' ? 'dinonaktifkan' : 'diaktifkan'}`)
+      if (error) throw error
+      return data
+    },
+    onSuccess: (data) => {
+      showToast(`${data.name} berhasil ${data.newStatus === 'nonaktif' ? 'dinonaktifkan' : 'diaktifkan'}`)
+      setShowConfirm(false)
+      setConfirmData(null)
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
+    },
+    onError: (err: Error) => {
+      showToast(`Gagal: ${err.message}`)
     }
-    setShowConfirm(false)
-    setConfirmData(null)
-    fetchEmployees()
+  })
+
+  function doToggleStatus() {
+    if (!confirmData) return
+    toggleStatusMutation.mutate(confirmData)
   }
 
   /* ── render ── */
@@ -700,8 +708,8 @@ export default function ManageEmployee() {
             </div>
             <DialogFooter className="p-6 pt-4 border-t border-[#E0DDD7] bg-white">
               <Button type="button" variant="ghost" className="rounded-[10px] text-[#6B6760] hover:text-[#1A1814]" onClick={() => setShowFormModal(false)}>Batal</Button>
-              <Button type="submit" className="rounded-[10px] bg-[#C84B2F] hover:bg-[#b03d24] text-white" disabled={saving}>
-                {saving ? 'Menyimpan...' : 'Simpan Karyawan'}
+              <Button type="submit" className="rounded-[10px] bg-[#C84B2F] hover:bg-[#b03d24] text-white" disabled={saveMutation.isPending}>
+                {saveMutation.isPending ? 'Menyimpan...' : 'Simpan Karyawan'}
               </Button>
             </DialogFooter>
           </form>
@@ -738,8 +746,9 @@ export default function ManageEmployee() {
                className="rounded-[10px] border-none text-white"
                style={{ backgroundColor: confirmData?.newStatus === 'nonaktif' ? '#C84B2F' : '#2A7A4B' }}
                onClick={doToggleStatus}
+               disabled={toggleStatusMutation.isPending}
              >
-               {confirmData?.newStatus === 'nonaktif' ? 'Nonaktifkan' : 'Aktifkan'}
+               {toggleStatusMutation.isPending ? 'Memproses...' : confirmData?.newStatus === 'nonaktif' ? 'Nonaktifkan' : 'Aktifkan'}
              </Button>
           </DialogFooter>
         </DialogContent>
