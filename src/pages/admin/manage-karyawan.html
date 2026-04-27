@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kelola Karyawan — Admin HadiR</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F5F2ED; --surface: #FFFFFF; --surface2: #EDEAE4;
+    --ink: #1A1814; --ink2: #6B6760; --ink3: #A8A49E;
+    --accent: #C84B2F; --accent-light: #F5E8E4;
+    --green: #2A7A4B; --green-light: #E2F0E8;
+    --amber: #B87333; --amber-light: #F5EDE0;
+    --blue: #1A6FAA; --blue-light: #E0EDF5;
+    --border: #E0DDD7; --border2: #CBC8C2;
+    --r: 10px; --r-lg: 16px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; min-height: 100vh; background: var(--ink); display: flex; flex-direction: column; padding: 32px 0; flex-shrink: 0; position: fixed; top: 0; left: 0; bottom: 0; }
+  .sidebar-logo { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #fff; padding: 0 24px 32px; letter-spacing: -0.3px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px; }
+  .sidebar-logo span { display: block; font-size: 11px; font-weight: 400; color: rgba(255,255,255,0.35); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 24px; font-size: 13.5px; color: rgba(255,255,255,0.45); cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.04); }
+  .nav-item.active { color: #fff; background: rgba(255,255,255,0.07); border-left-color: var(--accent); }
+  .nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-section { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.2); padding: 20px 24px 8px; }
+  .sidebar-bottom { margin-top: auto; padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .admin-badge { display: flex; align-items: center; gap: 10px; }
+  .admin-av { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #fff; font-family: 'Syne', sans-serif; flex-shrink: 0; }
+  .admin-name { font-size: 13px; color: #fff; font-weight: 500; }
+  .admin-role { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+  /* MAIN */
+  .main { margin-left: 220px; flex: 1; padding: 40px 48px; }
+  .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .page-sub { font-size: 13.5px; color: var(--ink2); margin-top: 6px; }
+
+  .btn { padding: 9px 18px; border-radius: var(--r); font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-ghost { background: var(--surface); color: var(--ink2); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--border2); color: var(--ink); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #b03d24; }
+
+  /* STAT ROW */
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 20px; }
+  .stat-label { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--ink3); margin-top: 5px; }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 300px; }
+  .search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink3); pointer-events: none; }
+  .search-input { width: 100%; padding: 9px 11px 9px 34px; border: 1px solid var(--border); border-radius: var(--r); font-size: 13px; background: var(--surface); color: var(--ink); outline: none; font-family: 'DM Sans', sans-serif; transition: border-color 0.15s; }
+  .search-input:focus { border-color: var(--border2); }
+  .search-input::placeholder { color: var(--ink3); }
+  select.fsel { padding: 9px 28px 9px 12px; border: 1px solid var(--border); border-radius: var(--r); font-size: 13px; background: var(--surface); color: var(--ink); outline: none; font-family: 'DM Sans', sans-serif; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6760' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .filter-tabs { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 3px; }
+  .ftab { padding: 6px 14px; border-radius: 7px; font-size: 12.5px; cursor: pointer; color: var(--ink2); transition: all 0.15s; border: none; background: none; font-family: 'DM Sans', sans-serif; }
+  .ftab.active { background: var(--ink); color: #fff; font-weight: 500; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+
+  /* TABLE CARD */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; }
+  .card-sub { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  th { padding: 10px 16px; text-align: left; font-size: 10.5px; font-family: 'DM Mono', monospace; color: var(--ink3); letter-spacing: 0.8px; text-transform: uppercase; white-space: nowrap; }
+  td { padding: 13px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAF8; }
+  tr.row-active td { background: #F0F7F3; }
+  tr { cursor: pointer; }
+
+  .emp-cell { display: flex; align-items: center; gap: 10px; }
+  .emp-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: 'Syne', sans-serif; flex-shrink: 0; }
+  .emp-nm { font-weight: 500; font-size: 13.5px; }
+  .emp-id { font-size: 11px; color: var(--ink3); font-family: 'DM Mono', monospace; }
+
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-muted { background: var(--surface2); color: var(--ink3); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+  .mono { font-family: 'DM Mono', monospace; font-size: 12.5px; }
+  .action-row { display: flex; gap: 6px; }
+  .act-btn { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--ink2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .act-btn:hover { border-color: var(--border2); color: var(--ink); }
+  .act-btn.danger:hover { background: var(--accent-light); border-color: #e8b4aa; color: var(--accent); }
+
+  /* DETAIL PANEL */
+  .detail-panel { position: sticky; top: 20px; }
+  .detail-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+
+  .detail-hero { background: var(--ink); padding: 24px; }
+  .detail-av-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+  .detail-av { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; font-family: 'Syne', sans-serif; flex-shrink: 0; }
+  .detail-name { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #fff; }
+  .detail-id { font-size: 12px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; margin-top: 2px; }
+  .detail-status { margin-left: auto; }
+
+  .detail-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; }
+  .ds-item { background: rgba(255,255,255,0.04); padding: 10px 12px; text-align: center; }
+  .ds-val { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; }
+  .ds-label { font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+  .detail-body { padding: 20px; }
+  .detail-section { margin-bottom: 20px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .ds-title { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'DM Mono', monospace; margin-bottom: 10px; }
+  .info-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .info-row:last-child { border-bottom: none; }
+  .info-key { color: var(--ink2); }
+  .info-val { font-weight: 500; }
+
+  .mini-bar-row { display: flex; flex-direction: column; gap: 6px; }
+  .mini-bar { display: flex; align-items: center; gap: 8px; }
+  .mini-bar-label { font-size: 12px; color: var(--ink2); width: 80px; }
+  .mini-bar-track { flex: 1; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .mini-bar-fill { height: 100%; border-radius: 3px; }
+  .mini-bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); width: 28px; text-align: right; }
+
+  .detail-actions { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .da-btn { flex: 1; padding: 9px; border-radius: var(--r); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--ink2); font-family: 'DM Sans', sans-serif; transition: all 0.15s; text-align: center; }
+  .da-btn:hover { border-color: var(--border2); color: var(--ink); background: var(--surface2); }
+  .da-btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .da-btn.primary:hover { background: #2a2620; }
+  .da-btn.danger { color: var(--accent); }
+  .da-btn.danger:hover { background: var(--accent-light); border-color: #e8b4aa; }
+
+  .empty-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 40px 24px; text-align: center; color: var(--ink3); }
+  .empty-panel svg { display: block; margin: 0 auto 12px; opacity: 0.3; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(26,24,20,0.55); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--surface); border-radius: var(--r-lg); width: 520px; max-width: 90vw; max-height: 90vh; overflow-y: auto; transform: translateY(12px); transition: transform 0.2s; border: 1px solid var(--border); }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header { padding: 24px 24px 0; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 1; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .modal-close { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink2); }
+  .modal-close:hover { background: var(--surface2); }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 0 24px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+  .form-section { margin-bottom: 22px; }
+  .form-section-title { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-row { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 12px; color: var(--ink2); font-weight: 500; }
+  .form-input { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r); font-size: 13.5px; font-family: 'DM Sans', sans-serif; color: var(--ink); outline: none; background: var(--surface); transition: border-color 0.15s; width: 100%; }
+  .form-input:focus { border-color: var(--border2); }
+  select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B6760' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  .form-row-full { grid-column: span 2; }
+
+  /* CONFIRM MODAL */
+  .confirm-modal { width: 400px; }
+  .confirm-body { padding: 28px 24px; text-align: center; }
+  .confirm-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .confirm-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .confirm-sub { font-size: 13.5px; color: var(--ink2); line-height: 1.5; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--ink); color: #fff; padding: 12px 18px; border-radius: var(--r); font-size: 13.5px; z-index: 300; display: flex; align-items: center; gap: 8px; transform: translateY(20px); opacity: 0; transition: all 0.25s; pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo"><span>Admin Panel</span>HadiR</div>
+  <div class="nav-section">Main</div>
+  <div class="nav-item" onclick="window.location.href='dashboard.html'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+  <div class="nav-item active" onclick="window.location.href='manage-karyawan.html'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Karyawan</div>
+  <div class="nav-item" onclick="window.location.href='absensi-dashboard.html'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Absensi</div>
+  <div class="nav-section">Keuangan</div>
+  <div class="nav-item" onclick="window.location.href='kasbon-log.html'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M7 15h.01M11 15h2M3 6h18v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6z"/></svg>Kasbon</div>
+  <div class="nav-item" onclick="window.location.href='#'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 14l-4-4 4-4M15 10h6M15 14l4 4-4 4"/></svg>Insentif</div>
+  <div class="nav-item" onclick="window.location.href='generate-payroll.html'"><svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>Payroll</div>
+  <div class="sidebar-bottom">
+    <div class="nav-item" onclick="window.location.href='../index.html'" style="margin-bottom: 16px; color: var(--accent); border-left-color: transparent;">
+      <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" /></svg>
+      Switch Role
+    </div>
+    <div class="admin-badge">
+      <div class="admin-av">F</div>
+      <div><div class="admin-name">Fara</div><div class="admin-role">Administrator</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Kelola Karyawan</div>
+      <div class="page-sub">Data master karyawan · gaji pokok · divisi</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="showToast('Export daftar karyawan')">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Export
+      </button>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+        Tambah Karyawan
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-label">Total aktif</div>
+      <div class="stat-value" style="color:var(--green)">10</div>
+      <div class="stat-sub">karyawan aktif</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Nonaktif</div>
+      <div class="stat-value" style="color:var(--ink3)">2</div>
+      <div class="stat-sub">diarsipkan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total gaji pokok</div>
+      <div class="stat-value">Rp 34jt</div>
+      <div class="stat-sub">per bulan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Divisi terbanyak</div>
+      <div class="stat-value" style="font-size:22px;letter-spacing:-0.5px">Kasir</div>
+      <div class="stat-sub">4 orang</div>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="search-wrap">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input class="search-input" placeholder="Cari nama atau ID..." oninput="doSearch(this.value)"/>
+    </div>
+    <select class="fsel" onchange="filterDept(this.value)">
+      <option value="all">Semua divisi</option>
+      <option value="Kasir">Kasir</option>
+      <option value="Gudang">Gudang</option>
+      <option value="Admin">Admin</option>
+    </select>
+    <div class="filter-tabs">
+      <button class="ftab active" onclick="filterStatus('aktif',this)">Aktif</button>
+      <button class="ftab" onclick="filterStatus('nonaktif',this)">Nonaktif</button>
+      <button class="ftab" onclick="filterStatus('all',this)">Semua</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+    <!-- TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="table-count">10 karyawan aktif</div>
+          <div class="card-sub">Klik baris untuk lihat detail</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Karyawan</th>
+            <th>Divisi</th>
+            <th>No. HP</th>
+            <th>Gaji pokok</th>
+            <th>Tgl bergabung</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="emp-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- DETAIL PANEL -->
+    <div class="detail-panel">
+      <div id="detail-wrap">
+        <div class="empty-panel">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <div style="font-size:13.5px;font-weight:500;color:var(--ink2);margin-bottom:4px">Detail Karyawan</div>
+          <div style="font-size:12.5px">Klik nama karyawan<br/>untuk lihat profil lengkap</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="form-modal" onclick="closeModalOutside(event,'form-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Tambah Karyawan</div>
+      <button class="modal-close" onclick="closeModal('form-modal')">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <div class="form-section-title">Data pribadi</div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label class="form-label">Nama lengkap</label>
+            <input class="form-input" id="f-name" type="text" placeholder="Nama karyawan"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">ID Karyawan</label>
+            <input class="form-input" id="f-id" type="text" placeholder="EMP-013" />
+          </div>
+          <div class="form-row">
+            <label class="form-label">No. HP / WhatsApp</label>
+            <input class="form-input" id="f-phone" type="text" placeholder="08xx-xxxx-xxxx"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Tanggal bergabung</label>
+            <input class="form-input" id="f-join" type="date" value="2025-04-20"/>
+          </div>
+          <div class="form-row form-row-full">
+            <label class="form-label">Alamat</label>
+            <input class="form-input" id="f-address" type="text" placeholder="Alamat lengkap"/>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Pekerjaan & gaji</div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label class="form-label">Divisi</label>
+            <select class="form-input" id="f-dept">
+              <option>Kasir</option>
+              <option>Gudang</option>
+              <option>Admin</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Jabatan</label>
+            <input class="form-input" id="f-role" type="text" placeholder="Staff, Senior, dll"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Gaji pokok (Rp)</label>
+            <input class="form-input" id="f-salary" type="number" placeholder="3000000"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Jam kerja</label>
+            <select class="form-input" id="f-shift">
+              <option>08:00 – 17:00</option>
+              <option>09:00 – 18:00</option>
+              <option>07:00 – 16:00</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Batas kasbon / bulan (Rp)</label>
+            <input class="form-input" id="f-kasbonlimit" type="number" placeholder="1000000"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Status</label>
+            <select class="form-input" id="f-status">
+              <option value="aktif">Aktif</option>
+              <option value="nonaktif">Nonaktif</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('form-modal')">Batal</button>
+      <button class="btn btn-primary" onclick="saveEmployee()">Simpan Karyawan</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal" onclick="closeModalOutside(event,'confirm-modal')">
+  <div class="modal confirm-modal">
+    <div class="confirm-body">
+      <div class="confirm-icon" id="confirm-icon"></div>
+      <div class="confirm-title" id="confirm-title"></div>
+      <div class="confirm-sub" id="confirm-sub"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirm-modal')">Batal</button>
+      <button class="btn" id="confirm-ok-btn" onclick="confirmAction()">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toast-msg"></span></div>
+
+<script>
+const avColors = [
+  {bg:'#F5E8E4',fg:'#C84B2F'},{bg:'#E2F0E8',fg:'#2A7A4B'},{bg:'#F5EDE0',fg:'#B87333'},
+  {bg:'#EDE8F5',fg:'#6B4F9E'},{bg:'#E0EDF5',fg:'#1A6FAA'},{bg:'#F5E8ED',fg:'#A0374F'},
+  {bg:'#E8F5E0',fg:'#3A6B1A'},{bg:'#F0EDE8',fg:'#6B5A3A'},{bg:'#E8EDF5',fg:'#3A4A8B'},
+  {bg:'#F5F0E8',fg:'#8B6A3A'},{bg:'#EBF5E8',fg:'#2A6B4B'},{bg:'#F5E8F0',fg:'#8B3A6A'},
+];
+
+let employees = [
+  { id:'EMP-001', name:'Andi Saputra',  dept:'Kasir',  phone:'0812-3456-7890', salary:3000000, joined:'Jan 2023', status:'aktif',    role:'Senior Kasir',   shift:'08:00–17:00', kasbonLimit:1000000, address:'Jl. Mawar No.12, Jakarta', absen:26, kasbon:500000, lastSlip:'Maret 2025' },
+  { id:'EMP-002', name:'Budi Santoso',  dept:'Gudang', phone:'0856-7890-1234', salary:2800000, joined:'Mar 2022', status:'aktif',    role:'Staff Gudang',   shift:'08:00–17:00', kasbonLimit:800000,  address:'Jl. Kenanga No.5, Jakarta', absen:24, kasbon:900000, lastSlip:'Maret 2025' },
+  { id:'EMP-003', name:'Citra Dewi',    dept:'Admin',  phone:'0877-2345-6789', salary:3200000, joined:'Jun 2021', status:'aktif',    role:'Admin',          shift:'09:00–18:00', kasbonLimit:1000000, address:'Jl. Melati No.3, Jakarta', absen:27, kasbon:500000, lastSlip:'Maret 2025' },
+  { id:'EMP-004', name:'Dian Permata',  dept:'Kasir',  phone:'0821-9876-5432', salary:2500000, joined:'Sep 2023', status:'aktif',    role:'Kasir',          shift:'08:00–17:00', kasbonLimit:700000,  address:'Jl. Anggrek No.8, Jakarta', absen:22, kasbon:550000, lastSlip:'Maret 2025' },
+  { id:'EMP-005', name:'Eko Prasetyo',  dept:'Gudang', phone:'0831-1234-5678', salary:3500000, joined:'Feb 2020', status:'aktif',    role:'Kepala Gudang',  shift:'07:00–16:00', kasbonLimit:1200000, address:'Jl. Dahlia No.15, Jakarta', absen:25, kasbon:350000, lastSlip:'Maret 2025' },
+  { id:'EMP-006', name:'Fitri Rahayu', dept:'Admin',  phone:'0858-6789-0123', salary:3500000, joined:'Nov 2021', status:'aktif',    role:'Senior Admin',   shift:'09:00–18:00', kasbonLimit:1000000, address:'Jl. Tulip No.20, Jakarta', absen:26, kasbon:400000, lastSlip:'Maret 2025' },
+  { id:'EMP-007', name:'Gilang Putra',  dept:'Kasir',  phone:'0813-5678-9012', salary:2600000, joined:'Apr 2024', status:'aktif',    role:'Kasir',          shift:'08:00–17:00', kasbonLimit:700000,  address:'Jl. Cempaka No.7, Jakarta', absen:25, kasbon:200000, lastSlip:'Maret 2025' },
+  { id:'EMP-008', name:'Hana Wijaya',   dept:'Gudang', phone:'0878-9012-3456', salary:2900000, joined:'Jul 2022', status:'aktif',    role:'Staff Gudang',   shift:'07:00–16:00', kasbonLimit:800000,  address:'Jl. Bougenville No.11, Jakarta', absen:26, kasbon:0, lastSlip:'Maret 2025' },
+  { id:'EMP-009', name:'Irwan Kusuma',  dept:'Kasir',  phone:'0822-3456-7891', salary:2600000, joined:'Oct 2023', status:'aktif',    role:'Kasir',          shift:'08:00–17:00', kasbonLimit:700000,  address:'Jl. Flamboyan No.4, Jakarta', absen:20, kasbon:300000, lastSlip:'Maret 2025' },
+  { id:'EMP-010', name:'Julia Sari',    dept:'Admin',  phone:'0877-8901-2345', salary:3000000, joined:'May 2023', status:'aktif',    role:'Admin',          shift:'09:00–18:00', kasbonLimit:900000,  address:'Jl. Seruni No.9, Jakarta', absen:23, kasbon:150000, lastSlip:'Maret 2025' },
+  { id:'EMP-011', name:'Kevin Hadis',   dept:'Gudang', phone:'0812-9012-3456', salary:3100000, joined:'Jan 2022', status:'nonaktif', role:'Staff Gudang',   shift:'07:00–16:00', kasbonLimit:900000,  address:'Jl. Teratai No.2, Jakarta', absen:0,  kasbon:0, lastSlip:'Feb 2025' },
+  { id:'EMP-012', name:'Linda Sari',    dept:'Admin',  phone:'0856-0123-4567', salary:2800000, joined:'Aug 2023', status:'nonaktif', role:'Admin',          shift:'09:00–18:00', kasbonLimit:800000,  address:'Jl. Kamboja No.6, Jakarta', absen:0,  kasbon:0, lastSlip:'Jan 2025' },
+];
+
+let activeFilter = 'aktif';
+let deptFilter = 'all';
+let searchQ = '';
+let activeIdx = null;
+let pendingAction = null;
+let editIdx = null;
+
+function ini(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function fmt(n) {
+  if(n>=1000000) return 'Rp '+(n/1000000).toFixed(1).replace('.0','')+'jt';
+  if(n>=1000) return 'Rp '+(n/1000)+'k';
+  return 'Rp '+n;
+}
+
+function getFiltered() {
+  return employees.filter((e,i) => {
+    const matchStatus = activeFilter==='all' || e.status===activeFilter;
+    const matchDept = deptFilter==='all' || e.dept===deptFilter;
+    const matchSearch = e.name.toLowerCase().includes(searchQ) || e.id.toLowerCase().includes(searchQ);
+    return matchStatus && matchDept && matchSearch;
+  });
+}
+
+function renderTable() {
+  const rows = getFiltered();
+  document.getElementById('table-count').textContent = `${rows.length} karyawan ${activeFilter==='all'?'':activeFilter}`;
+  const tbody = document.getElementById('emp-tbody');
+  tbody.innerHTML = rows.map(e => {
+    const i = employees.indexOf(e);
+    const c = avColors[i % avColors.length];
+    const isActive = activeIdx === i;
+    return `<tr class="${isActive?'row-active':''}" onclick="selectRow(${i})">
+      <td>
+        <div class="emp-cell">
+          <div class="emp-av" style="background:${c.bg};color:${c.fg}">${ini(e.name)}</div>
+          <div><div class="emp-nm">${e.name}</div><div class="emp-id">${e.id}</div></div>
+        </div>
+      </td>
+      <td><span style="font-size:12.5px;color:var(--ink2)">${e.dept}</span><br/><span style="font-size:11px;color:var(--ink3)">${e.role}</span></td>
+      <td><span class="mono" style="font-size:12px">${e.phone}</span></td>
+      <td><span class="mono">${fmt(e.salary)}</span></td>
+      <td><span style="font-size:12.5px;color:var(--ink2)">${e.joined}</span></td>
+      <td>
+        <span class="badge ${e.status==='aktif'?'badge-green':'badge-muted'}">
+          ${e.status==='aktif'?'● Aktif':'○ Nonaktif'}
+        </span>
+      </td>
+      <td>
+        <div class="action-row" onclick="event.stopPropagation()">
+          <button class="act-btn" onclick="openEditModal(${i})">Edit</button>
+          <button class="act-btn danger" onclick="openConfirm(${i},'${e.status==='aktif'?'nonaktif':'aktif'}')">${e.status==='aktif'?'Nonaktifkan':'Aktifkan'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function selectRow(i) {
+  activeIdx = i;
+  renderTable();
+  renderDetail(i);
+}
+
+function renderDetail(i) {
+  const e = employees[i];
+  const c = avColors[i % avColors.length];
+  const kasbonPct = Math.round((e.kasbon / e.kasbonLimit) * 100) || 0;
+  const absenPct = Math.round((e.absen / 26) * 100);
+
+  document.getElementById('detail-wrap').innerHTML = `
+    <div class="detail-card">
+      <div class="detail-hero">
+        <div class="detail-av-row">
+          <div class="detail-av" style="background:${c.bg};color:${c.fg}">${ini(e.name)}</div>
+          <div>
+            <div class="detail-name">${e.name}</div>
+            <div class="detail-id">${e.id} · ${e.dept}</div>
+          </div>
+          <div class="detail-status">
+            <span class="badge ${e.status==='aktif'?'badge-green':'badge-muted'}" style="font-size:11px">${e.status==='aktif'?'Aktif':'Nonaktif'}</span>
+          </div>
+        </div>
+        <div class="detail-stats">
+          <div class="ds-item">
+            <div class="ds-val">${e.absen}</div>
+            <div class="ds-label">Hari hadir</div>
+          </div>
+          <div class="ds-item">
+            <div class="ds-val">${fmt(e.kasbon)}</div>
+            <div class="ds-label">Kasbon</div>
+          </div>
+          <div class="ds-item">
+            <div class="ds-val">${fmt(e.salary)}</div>
+            <div class="ds-label">Gaji pokok</div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-section">
+          <div class="ds-title">Info pekerjaan</div>
+          <div class="info-row"><span class="info-key">Jabatan</span><span class="info-val">${e.role}</span></div>
+          <div class="info-row"><span class="info-key">Jam kerja</span><span class="info-val mono">${e.shift}</span></div>
+          <div class="info-row"><span class="info-key">Bergabung</span><span class="info-val">${e.joined}</span></div>
+          <div class="info-row"><span class="info-key">Batas kasbon</span><span class="info-val mono">${fmt(e.kasbonLimit)}/bln</span></div>
+          <div class="info-row"><span class="info-key">Slip terakhir</span><span class="info-val">${e.lastSlip}</span></div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-title">Kontak</div>
+          <div class="info-row"><span class="info-key">No. HP</span><span class="info-val mono" style="font-size:12px">${e.phone}</span></div>
+          <div class="info-row"><span class="info-key">Alamat</span><span class="info-val" style="font-size:12px;text-align:right;max-width:180px">${e.address}</span></div>
+        </div>
+        <div class="detail-section">
+          <div class="ds-title">Bulan ini</div>
+          <div class="mini-bar-row">
+            <div class="mini-bar">
+              <div class="mini-bar-label">Kehadiran</div>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${absenPct}%;background:var(--green)"></div></div>
+              <div class="mini-bar-val">${absenPct}%</div>
+            </div>
+            <div class="mini-bar">
+              <div class="mini-bar-label">Kasbon</div>
+              <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${Math.min(kasbonPct,100)}%;background:${kasbonPct>80?'var(--accent)':'var(--amber)'}"></div></div>
+              <div class="mini-bar-val">${kasbonPct}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <button class="da-btn" onclick="showToast('Riwayat absensi ${e.name}')">Absensi</button>
+        <button class="da-btn" onclick="showToast('Riwayat kasbon ${e.name}')">Kasbon</button>
+        <button class="da-btn primary" onclick="openEditModal(${i})">Edit data</button>
+      </div>
+    </div>`;
+}
+
+function doSearch(val) { searchQ = val.toLowerCase(); renderTable(); }
+function filterDept(val) { deptFilter = val; renderTable(); }
+function filterStatus(val, el) {
+  activeFilter = val;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+// MODAL
+let isEdit = false;
+function openAddModal() {
+  isEdit = false; editIdx = null;
+  document.getElementById('modal-title').textContent = 'Tambah Karyawan';
+  ['f-name','f-id','f-phone','f-address','f-role','f-salary','f-kasbonlimit'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-join').value = '2025-04-20';
+  document.getElementById('form-modal').classList.add('open');
+}
+
+function openEditModal(i) {
+  isEdit = true; editIdx = i;
+  const e = employees[i];
+  document.getElementById('modal-title').textContent = 'Edit Karyawan';
+  document.getElementById('f-name').value = e.name;
+  document.getElementById('f-id').value = e.id;
+  document.getElementById('f-phone').value = e.phone;
+  document.getElementById('f-address').value = e.address;
+  document.getElementById('f-role').value = e.role;
+  document.getElementById('f-salary').value = e.salary;
+  document.getElementById('f-kasbonlimit').value = e.kasbonLimit;
+  document.getElementById('f-dept').value = e.dept;
+  document.getElementById('f-shift').value = e.shift;
+  document.getElementById('f-status').value = e.status;
+  document.getElementById('form-modal').classList.add('open');
+}
+
+function saveEmployee() {
+  const name = document.getElementById('f-name').value.trim() || 'Karyawan Baru';
+  const salary = parseInt(document.getElementById('f-salary').value) || 3000000;
+  const kasbonLimit = parseInt(document.getElementById('f-kasbonlimit').value) || 1000000;
+
+  if(isEdit && editIdx !== null) {
+    employees[editIdx].name = name;
+    employees[editIdx].salary = salary;
+    employees[editIdx].kasbonLimit = kasbonLimit;
+    employees[editIdx].phone = document.getElementById('f-phone').value;
+    employees[editIdx].dept = document.getElementById('f-dept').value;
+    employees[editIdx].role = document.getElementById('f-role').value;
+    employees[editIdx].shift = document.getElementById('f-shift').value;
+    employees[editIdx].status = document.getElementById('f-status').value;
+    employees[editIdx].address = document.getElementById('f-address').value;
+    if(activeIdx === editIdx) renderDetail(editIdx);
+    showToast('Data '+name+' berhasil diperbarui');
+  } else {
+    const newEmp = {
+      id: document.getElementById('f-id').value || 'EMP-0'+Math.floor(Math.random()*99),
+      name, dept: document.getElementById('f-dept').value,
+      phone: document.getElementById('f-phone').value,
+      salary, joined: 'Apr 2025', status: 'aktif',
+      role: document.getElementById('f-role').value,
+      shift: document.getElementById('f-shift').value,
+      kasbonLimit, address: document.getElementById('f-address').value,
+      absen: 0, kasbon: 0, lastSlip: '—'
+    };
+    employees.push(newEmp);
+    showToast(name+' berhasil ditambahkan');
+  }
+  closeModal('form-modal');
+  renderTable();
+}
+
+function openConfirm(i, newStatus) {
+  const e = employees[i];
+  const isDeactivate = newStatus === 'nonaktif';
+  document.getElementById('confirm-icon').innerHTML = isDeactivate
+    ? `<div style="background:var(--accent-light);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" stroke-width="1.5"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>`
+    : `<div style="background:var(--green-light);width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="var(--green)" stroke-width="1.5"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg></div>`;
+  document.getElementById('confirm-title').textContent = isDeactivate ? `Nonaktifkan ${e.name}?` : `Aktifkan ${e.name}?`;
+  document.getElementById('confirm-sub').textContent = isDeactivate
+    ? `Data karyawan akan diarsipkan. Riwayat absensi dan kasbon tetap tersimpan. Karyawan tidak bisa login atau absen.`
+    : `Karyawan akan diaktifkan kembali dan bisa melakukan absensi mulai hari ini.`;
+  const btn = document.getElementById('confirm-ok-btn');
+  btn.className = `btn ${isDeactivate?'btn-primary':'btn-ghost'}`;
+  btn.style.background = isDeactivate ? 'var(--accent)' : 'var(--green)';
+  btn.style.color = '#fff';
+  btn.style.border = 'none';
+  btn.textContent = isDeactivate ? 'Nonaktifkan' : 'Aktifkan';
+  pendingAction = { i, newStatus };
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function confirmAction() {
+  if(pendingAction) {
+    const { i, newStatus } = pendingAction;
+    employees[i].status = newStatus;
+    if(activeIdx === i) renderDetail(i);
+    renderTable();
+    closeModal('confirm-modal');
+    showToast(`${employees[i].name} berhasil ${newStatus==='nonaktif'?'dinonaktifkan':'diaktifkan'}`);
+    pendingAction = null;
+  }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOutside(e, id) { if(e.target.id===id) closeModal(id); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+renderTable();
+</script>
+</body>
+</html>
