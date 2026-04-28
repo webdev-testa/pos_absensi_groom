@@ -5,8 +5,11 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthGuard } from '@/components/auth/AuthGuard'
 import { RoleGuard } from '@/components/auth/RoleGuard'
+import Dashboard from '@/pages/admin/Dashboard'
 import ManageEmployee from '@/pages/admin/manageEmployee'
-import AdminDashboard from '@/pages/admin/Dashboard'
+import Kasbon from '@/pages/admin/manageKasbon'
+import Payroll from '@/pages/admin/managePayroll'
+import AbsenEmployee from '@/pages/admin/absenEmployee'
 import LoginPage from '@/pages/admin/loginPage'
 import EmployeeHome from '@/pages/employee/Home'
 
@@ -28,7 +31,19 @@ const router = createBrowserRouter([
         children: [
           {
             path: "/admin/dashboard",
-            element: <AdminDashboard />,
+            element: <Dashboard />,
+          },
+          {
+            path: "/admin/absensi",
+            element: <AbsenEmployee />,
+          },
+          {
+            path: "/admin/kasbon",
+            element: <Kasbon />,
+          },
+          {
+            path: "/admin/payroll",
+            element: <Payroll />,
           },
           {
             path: "/admin/karyawan",

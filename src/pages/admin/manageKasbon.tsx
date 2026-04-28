@@ -1,9 +1,9 @@
 import { AdminLayout } from '@/components/layout/AdminLayout'
 
-export default function Dashboard() {
+export default function Kasbon() {
   return (
     <AdminLayout>
-      <h1>Dashboard</h1>
+      <h1>Kasbon</h1>
     </AdminLayout>
   )
 }

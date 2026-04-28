@@ -4,8 +4,7 @@ import {
   Home, 
   Users, 
   CalendarClock, 
-  Wallet, 
-  Award, 
+  Wallet,  
   FileText,
   LogOut 
 } from 'lucide-react'
@@ -81,7 +80,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           Keuangan
         </div>
         <NavItem to="/admin/kasbon" icon={Wallet} label="Kasbon" />
-        <NavItem to="/admin/insentif" icon={Award} label="Insentif" />
         <NavItem to="/admin/payroll" icon={FileText} label="Payroll" />
 
         <div className="mt-auto px-6 pt-5 border-t border-white/10">
