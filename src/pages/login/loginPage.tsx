@@ -1,39 +1,72 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login, user, loading: authLoading, logout } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    
-    setLoading(true)
-    setError('')
+  // if already logged in, redirect immediately
+  useEffect(() => {
+    if (!authLoading && user) {
+      redirectByRole(user.role)
+    }
+  }, [user, authLoading])
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
+  const redirectByRole = (role: string) => {
+    const from = location.state?.from?.pathname
+    if (from) {
+      navigate(from, { replace: true })
       return
     }
 
-    // Redirect based on role
-    const role = (data.user?.user_metadata?.role || 'employee').toLowerCase()
-    if (role === 'superadmin' || role === 'admin') {
-      navigate('/admin/dashboard')
+    if (role === 'admin' || role === 'superadmin') {
+      navigate('/admin/dashboard', { replace: true })
     } else {
-      navigate('/employee/home')
+      navigate('/employee/home', { replace: true })
+    }
+  }
+
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    setLoading(true)
+    setError('')
+    try {
+      const { error: loginError, data } = await login(email, password)
+      console.log('Login result:', { error: loginError, data })
+
+      if (loginError) {
+        setError(loginError.message)
+        setLoading(false)
+        return
+      }
+
+      // Check if the user has a profile in our public.users table
+      if (data?.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+
+        if (!profile || profileError) {
+          setError('Your account is missing a profile or role. Please contact the administrator.')
+          await logout()
+          setLoading(false)
+          return
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred')
+      setLoading(false)
     }
   }
 

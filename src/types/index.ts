@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'employee'
+export type UserRole = 'admin' | 'superadmin' | 'employee'
 
 export type AttendanceStatus = 'ontime' | 'late' | 'absent'
 

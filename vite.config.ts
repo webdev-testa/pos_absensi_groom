@@ -20,10 +20,10 @@ export default defineConfig({
       },
     }),
   ],
-  // server: {
-  //   host: true,
-  //   port: 5173,
-  // },
+  server: {
+    host: true,
+    port: 5173,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
