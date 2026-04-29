@@ -1,12 +1,20 @@
-import { createBrowserRouter, Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth, AuthProvider } from '@/hooks/useAuth'
-import Dashboard from '@/pages/admin/Dashboard'
-import ManageEmployee from '@/pages/admin/manageEmployee'
-import Kasbon from '@/pages/admin/manageKasbon'
-import Payroll from '@/pages/admin/managePayroll'
-import AbsenEmployee from '@/pages/admin/absenEmployee'
-import LoginPage from '@/pages/login/loginPage'
-import EmployeeHome from '@/pages/employee/Home'
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
+import { useAuth, AuthProvider } from "@/hooks/useAuth";
+import Dashboard from "@/pages/admin/Dashboard";
+import ManageEmployee from "@/pages/admin/manageEmployee";
+import Kasbon from "@/pages/admin/manageKasbon";
+import Payroll from "@/pages/admin/managePayroll";
+import AbsenEmployee from "@/pages/admin/absenEmployee";
+import LoginPage from "@/pages/login/loginPage";
+import EmployeeHome from "@/pages/employee/Home";
+import EmployeeKasbon from "@/pages/employee/Kasbon";
+import EmployeeProfil from "@/pages/employee/Profil";
+import { EmployeeLayout } from "@/components/layout/EmployeeLayout";
 
 // Auth
 
@@ -15,56 +23,63 @@ function AuthLayout() {
     <AuthProvider>
       <Outlet />
     </AuthProvider>
-  )
+  );
 }
 
 function AuthGuard() {
-  const { user, loading } = useAuth()
-  const location = useLocation()
+  const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center font-mono text-sm text-neutral-500">Authenticating...</div>
+    return (
+      <div className="flex h-screen items-center justify-center font-mono text-sm text-neutral-500">
+        Authenticating...
+      </div>
+    );
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  return <Outlet />
+  return <Outlet />;
 }
 
 function RoleGuard({ allowedRoles }: { allowedRoles: string[] }) {
-  const { user, loading, logout } = useAuth()
+  const { user, loading, logout } = useAuth();
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center font-mono text-sm text-[#A8A49E]">Checking permissions...</div>
+    return (
+      <div className="flex h-screen items-center justify-center font-mono text-sm text-[#8ABAC8]">
+        Checking permissions...
+      </div>
+    );
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
   if (!allowedRoles.includes(user.role)) {
-    if (user.role === 'admin' || user.role === 'superadmin') {
-      return <Navigate to="/admin/dashboard" replace />
-    } else if (user.role === 'employee') {
-      return <Navigate to="/employee/home" replace />
+    if (user.role === "admin" || user.role === "superadmin") {
+      return <Navigate to="/admin/dashboard" replace />;
+    } else if (user.role === "employee") {
+      return <Navigate to="/employee/home" replace />;
     } else {
       return (
         <div className="flex flex-col h-screen items-center justify-center font-mono text-sm">
-          <div className="text-[#C84B2F] mb-2">Error: Invalid or missing user role ({user.role || 'none'}).</div>
-          <button 
-            onClick={() => logout()} 
-            className="text-blue-500 underline"
-          >
+          <div className="text-[#F5A940] mb-2">
+            Error: Invalid or missing user role ({user.role || "none"}).
+          </div>
+          <button onClick={() => logout()} className="text-blue-500 underline">
             Log out
           </button>
         </div>
-      )
+      );
     }
   }
 
-  return <Outlet />
+  return <Outlet />;
 }
 
 // Route
@@ -75,7 +90,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Navigate to="/admin/dashboard" replace />
+        element: <Navigate to="/admin/dashboard" replace />,
       },
       {
         path: "/login",
@@ -85,7 +100,7 @@ export const router = createBrowserRouter([
         element: <AuthGuard />,
         children: [
           {
-            element: <RoleGuard allowedRoles={['admin', 'superadmin']} />,
+            element: <RoleGuard allowedRoles={["admin", "superadmin"]} />,
             children: [
               {
                 path: "/admin/dashboard",
@@ -107,19 +122,36 @@ export const router = createBrowserRouter([
                 path: "/admin/karyawan",
                 element: <ManageEmployee />,
               },
-            ]
+            ],
           },
           {
-            element: <RoleGuard allowedRoles={['employee']} />,
+            element: <RoleGuard allowedRoles={["employee"]} />,
             children: [
               {
-                path: "/employee/home",
-                element: <EmployeeHome />,
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-])
+                element: <EmployeeLayout />,
+                children: [
+                  {
+                    path: "/employee/home",
+                    element: <EmployeeHome />,
+                  },
+                  {
+                    path: "/employee/kasbon",
+                    element: <EmployeeKasbon />,
+                  },
+                  {
+                    path: "/employee/profil",
+                    element: <EmployeeProfil />,
+                  },
+                  {
+                    path: "/employee",
+                    element: <Navigate to="/employee/home" replace />,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);

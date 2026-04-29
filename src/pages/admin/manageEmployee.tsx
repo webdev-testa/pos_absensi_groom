@@ -279,15 +279,15 @@ export default function ManageEmployee() {
       {/* HEADER */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="font-['Syne'] text-[28px] font-bold tracking-tight text-[#1A1814]">Kelola Karyawan</h1>
-          <p className="text-[13.5px] text-[#6B6760] mt-1.5">Data master karyawan · gaji pokok · divisi</p>
+          <h1 className="font-['Syne'] text-[28px] font-bold tracking-tight text-[#1A3A4A]">Kelola Karyawan</h1>
+          <p className="text-[13.5px] text-[#4A7A8A] mt-1.5">Data master karyawan · gaji pokok · divisi</p>
         </div>
         <div className="flex gap-2.5">
-          <Button variant="outline" className="border-[#E0DDD7] text-[#6B6760] hover:text-[#1A1814] hover:bg-[#F5F2ED]" onClick={() => showToast('Export daftar karyawan')}>
+          <Button variant="outline" className="border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A] hover:bg-[#F0FAFF]" onClick={() => showToast('Export daftar karyawan')}>
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
-          <Button className="bg-[#C84B2F] hover:bg-[#b03d24] text-white border-none" onClick={openAddModal}>
+          <Button className="bg-[#F5A940] hover:bg-[#b03d24] text-white border-none" onClick={openAddModal}>
             <Plus className="w-4 h-4 mr-2" strokeWidth={2.5} />
             Tambah Karyawan
           </Button>
@@ -296,32 +296,32 @@ export default function ManageEmployee() {
 
       {/* STATS */}
       <div className="grid grid-cols-4 gap-4 mb-7">
-        <Card className="rounded-[16px] shadow-sm border-[#E0DDD7]">
+        <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
           <CardContent className="p-[18px_20px]">
-             <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">Total aktif</div>
-             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">{totalAktif}</div>
-             <div className="text-[12px] text-[#A8A49E] mt-1.5">karyawan aktif</div>
+             <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Total aktif</div>
+             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#3AAD7A]">{totalAktif}</div>
+             <div className="text-[12px] text-[#8ABAC8] mt-1.5">karyawan aktif</div>
           </CardContent>
         </Card>
-        <Card className="rounded-[16px] shadow-sm border-[#E0DDD7]">
+        <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
           <CardContent className="p-[18px_20px]">
-             <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">Nonaktif</div>
-             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#A8A49E]">{totalNonaktif}</div>
-             <div className="text-[12px] text-[#A8A49E] mt-1.5">diarsipkan</div>
+             <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Nonaktif</div>
+             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#8ABAC8]">{totalNonaktif}</div>
+             <div className="text-[12px] text-[#8ABAC8] mt-1.5">diarsipkan</div>
           </CardContent>
         </Card>
-        <Card className="rounded-[16px] shadow-sm border-[#E0DDD7]">
+        <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
           <CardContent className="p-[18px_20px]">
-             <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">Total gaji pokok</div>
-             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#1A1814]">{fmtCurrency(totalSalary)}</div>
-             <div className="text-[12px] text-[#A8A49E] mt-1.5">per bulan</div>
+             <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Total gaji pokok</div>
+             <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#1A3A4A]">{fmtCurrency(totalSalary)}</div>
+             <div className="text-[12px] text-[#8ABAC8] mt-1.5">per bulan</div>
           </CardContent>
         </Card>
-        <Card className="rounded-[16px] shadow-sm border-[#E0DDD7]">
+        <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
           <CardContent className="p-[18px_20px]">
-             <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">Divisi terbanyak</div>
-             <div className="font-['Syne'] text-[22px] font-bold tracking-[-0.5px] leading-[30px] text-[#1A1814]">{topDept?.[0] || '—'}</div>
-             <div className="text-[12px] text-[#A8A49E] mt-1.5">{topDept ? `${topDept[1]} orang` : '-'}</div>
+             <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Divisi terbanyak</div>
+             <div className="font-['Syne'] text-[22px] font-bold tracking-[-0.5px] leading-[30px] text-[#1A3A4A]">{topDept?.[0] || '—'}</div>
+             <div className="text-[12px] text-[#8ABAC8] mt-1.5">{topDept ? `${topDept[1]} orang` : '-'}</div>
           </CardContent>
         </Card>
       </div>
@@ -329,9 +329,9 @@ export default function ManageEmployee() {
       {/* FILTER BAR */}
       <div className="flex items-center gap-2.5 mb-[18px] flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A8A49E]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8ABAC8]" />
           <Input 
-            className="pl-9 bg-white border-[#E0DDD7] rounded-[10px] text-[13px] h-[38px] placeholder:text-[#A8A49E]" 
+            className="pl-9 bg-white border-[#C8E8F5] rounded-[10px] text-[13px] h-[38px] placeholder:text-[#8ABAC8]" 
             placeholder="Cari nama atau ID..." 
             value={searchQ} 
             onChange={e => setSearchQ(e.target.value)} 
@@ -339,7 +339,7 @@ export default function ManageEmployee() {
         </div>
         
         <Select value={deptFilter} onValueChange={setDeptFilter}>
-          <SelectTrigger className="w-[160px] bg-white border-[#E0DDD7] rounded-[10px] h-[38px] text-[13px]">
+          <SelectTrigger className="w-[160px] bg-white border-[#C8E8F5] rounded-[10px] h-[38px] text-[13px]">
             <SelectValue placeholder="Pilih divisi" />
           </SelectTrigger>
           <SelectContent>
@@ -348,14 +348,14 @@ export default function ManageEmployee() {
           </SelectContent>
         </Select>
 
-        <div className="flex gap-[3px] bg-white border border-[#E0DDD7] rounded-[10px] p-[3px]">
+        <div className="flex gap-[3px] bg-white border border-[#C8E8F5] rounded-[10px] p-[3px]">
           {(['aktif', 'nonaktif', 'all'] as const).map(s => (
             <button
               key={s}
               className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] transition-all font-sans border-none bg-none cursor-pointer ${
                 statusFilter === s 
-                  ? 'bg-[#1A1814] text-white font-medium' 
-                  : 'text-[#6B6760] hover:bg-[#F5F2ED]'
+                  ? 'bg-[#0D2D3D] text-white font-medium' 
+                  : 'text-[#4A7A8A] hover:bg-[#F0FAFF]'
               }`}
               onClick={() => setStatusFilter(s)}
             >
@@ -369,29 +369,29 @@ export default function ManageEmployee() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
         
         {/* TABLE CARD */}
-        <Card className="rounded-[16px] border-[#E0DDD7] shadow-sm overflow-hidden bg-white">
-          <div className="p-4 px-5 border-b border-[#E0DDD7] flex items-center justify-between">
+        <Card className="rounded-[16px] border-[#C8E8F5] shadow-sm overflow-hidden bg-white">
+          <div className="p-4 px-5 border-b border-[#C8E8F5] flex items-center justify-between">
             <div>
-              <div className="font-['Syne'] text-[15px] font-semibold text-[#1A1814]">
+              <div className="font-['Syne'] text-[15px] font-semibold text-[#1A3A4A]">
                 {filtered.length} karyawan {statusFilter === 'all' ? '' : statusFilter}
               </div>
-              <div className="text-[12px] text-[#A8A49E] mt-0.5">Klik baris untuk lihat detail</div>
+              <div className="text-[12px] text-[#8ABAC8] mt-0.5">Klik baris untuk lihat detail</div>
             </div>
           </div>
           
           <div className="overflow-x-auto">
             {loading ? (
-              <div className="p-10 text-center text-[#A8A49E] text-sm">Memuat data...</div>
+              <div className="p-10 text-center text-[#8ABAC8] text-sm">Memuat data...</div>
             ) : (
               <Table>
-                <TableHeader className="bg-[#EDEAE4]">
+                <TableHeader className="bg-[#E4F4FD]">
                   <TableRow className="border-none hover:bg-transparent">
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</TableHead>
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Divisi</TableHead>
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Email</TableHead>
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Gaji pokok</TableHead>
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Tgl Bergabung</TableHead>
-                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#A8A49E] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Status</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Divisi</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Email</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Gaji pokok</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Tgl Bergabung</TableHead>
+                    <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Status</TableHead>
                     <TableHead className="h-auto py-3 px-4"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -404,7 +404,7 @@ export default function ManageEmployee() {
                     return (
                       <TableRow 
                         key={emp.id} 
-                        className={`cursor-pointer border-b border-[#E0DDD7] last:border-none transition-colors ${isActive ? 'bg-[#F0F7F3]' : 'hover:bg-[#FAFAF8]'}`}
+                        className={`cursor-pointer border-b border-[#C8E8F5] last:border-none transition-colors ${isActive ? 'bg-[#F0F7F3]' : 'hover:bg-[#FAFAF8]'}`}
                         onClick={() => setSelectedId(emp.id)}
                       >
                         <TableCell className="p-3 px-4">
@@ -413,39 +413,39 @@ export default function ManageEmployee() {
                               <AvatarFallback className="bg-transparent">{initials(emp.name || '?')}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-[13.5px] text-[#1A1814]">{emp.name}</div>
-                              <div className="text-[11px] text-[#A8A49E] font-mono">{emp.emp_id}</div>
+                              <div className="font-medium text-[13.5px] text-[#1A3A4A]">{emp.name}</div>
+                              <div className="text-[11px] text-[#8ABAC8] font-mono">{emp.emp_id}</div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="p-3 px-4">
-                          <span className="text-[12.5px] text-[#6B6760] block">{emp.dept}</span>
-                          <span className="text-[11px] text-[#A8A49E]">{emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff')}</span>
+                          <span className="text-[12.5px] text-[#4A7A8A] block">{emp.dept}</span>
+                          <span className="text-[11px] text-[#8ABAC8]">{emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff')}</span>
                         </TableCell>
                         <TableCell className="p-3 px-4">
-                          <span className="font-mono text-[12px] text-[#1A1814]">{emp.email}</span>
+                          <span className="font-mono text-[12px] text-[#1A3A4A]">{emp.email}</span>
                         </TableCell>
                         <TableCell className="p-3 px-4">
-                          <span className="font-mono text-[12.5px] text-[#1A1814]">{fmtCurrency(emp.salary)}</span>
+                          <span className="font-mono text-[12.5px] text-[#1A3A4A]">{fmtCurrency(emp.salary)}</span>
                         </TableCell>
                         <TableCell className="p-3 px-4">
-                          <span className="text-[12.5px] text-[#6B6760]">{fmtDate(emp.joined)}</span>
+                          <span className="text-[12.5px] text-[#4A7A8A]">{fmtDate(emp.joined)}</span>
                         </TableCell>
                         <TableCell className="p-3 px-4">
                           {emp.status === 'aktif' ? (
-                            <Badge className="bg-[#E2F0E8] text-[#2A7A4B] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                            <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                               ● Aktif
                             </Badge>
                           ) : (
-                            <Badge className="bg-[#EDEAE4] text-[#A8A49E] hover:bg-[#EDEAE4] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                            <Badge className="bg-[#E4F4FD] text-[#8ABAC8] hover:bg-[#E4F4FD] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                               ○ Nonaktif
                             </Badge>
                           )}
                         </TableCell>
                         <TableCell className="p-3 px-4">
                            <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
-                             <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#E0DDD7] text-[#6B6760] hover:text-[#1A1814]" onClick={() => openEditModal(emp)}>Edit</Button>
-                             <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#E0DDD7] text-[#C84B2F] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#C84B2F]" onClick={() => openToggleConfirm(emp)}>
+                             <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A]" onClick={() => openEditModal(emp)}>Edit</Button>
+                             <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#F5A940] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#F5A940]" onClick={() => openToggleConfirm(emp)}>
                                {emp.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
                              </Button>
                            </div>
@@ -454,7 +454,7 @@ export default function ManageEmployee() {
                     )
                   })}
                   {filtered.length === 0 && (
-                    <TableRow><TableCell colSpan={7} className="p-10 text-center text-[#A8A49E]">Tidak ada data</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="p-10 text-center text-[#8ABAC8]">Tidak ada data</TableCell></TableRow>
                   )}
                 </TableBody>
               </Table>
@@ -470,8 +470,8 @@ export default function ManageEmployee() {
             const absenPct = Math.round(((selectedEmployee.absen || 0) / 26) * 100)
 
             return (
-              <Card className="rounded-[16px] border-[#E0DDD7] shadow-sm overflow-hidden bg-white">
-                <div className="bg-[#1A1814] p-6">
+              <Card className="rounded-[16px] border-[#C8E8F5] shadow-sm overflow-hidden bg-white">
+                <div className="bg-[#0D2D3D] p-6">
                   <div className="flex items-center gap-3.5 mb-4">
                     <Avatar className="w-[52px] h-[52px] rounded-full shrink-0 flex items-center justify-center font-['Syne'] text-[18px] font-bold" style={{ backgroundColor: c.bg, color: c.fg }}>
                       <AvatarFallback className="bg-transparent">{initials(selectedEmployee.name || '?')}</AvatarFallback>
@@ -482,11 +482,11 @@ export default function ManageEmployee() {
                     </div>
                     <div className="ml-auto">
                       {selectedEmployee.status === 'aktif' ? (
-                        <Badge className="bg-[#E2F0E8] text-[#2A7A4B] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                        <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                           Aktif
                         </Badge>
                       ) : (
-                        <Badge className="bg-white/10 text-[#A8A49E] hover:bg-white/10 shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                        <Badge className="bg-white/10 text-[#8ABAC8] hover:bg-white/10 shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                           Nonaktif
                         </Badge>
                       )}
@@ -511,72 +511,72 @@ export default function ManageEmployee() {
 
                 <div className="p-5">
                   <div className="mb-5 last:mb-0">
-                    <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Info pekerjaan</div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Hak Akses</span><span className="font-medium text-[#1A1814] uppercase text-[11px]">{selectedEmployee.role}</span>
+                    <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2.5">Info pekerjaan</div>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Hak Akses</span><span className="font-medium text-[#1A3A4A] uppercase text-[11px]">{selectedEmployee.role}</span>
                     </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Jabatan</span><span className="font-medium text-[#1A1814]">{selectedEmployee.jabatan || '—'}</span>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Jabatan</span><span className="font-medium text-[#1A3A4A]">{selectedEmployee.jabatan || '—'}</span>
                     </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Jam kerja</span><span className="font-medium text-[#1A1814] font-mono">{selectedEmployee.shift}</span>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Jam kerja</span><span className="font-medium text-[#1A3A4A] font-mono">{selectedEmployee.shift}</span>
                     </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Bergabung</span><span className="font-medium text-[#1A1814]">{fmtDate(selectedEmployee.joined)}</span>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Bergabung</span><span className="font-medium text-[#1A3A4A]">{fmtDate(selectedEmployee.joined)}</span>
                     </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Batas kasbon</span><span className="font-medium text-[#1A1814] font-mono">{fmtCurrency(selectedEmployee.kasbon_limit)}/bln</span>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Batas kasbon</span><span className="font-medium text-[#1A3A4A] font-mono">{fmtCurrency(selectedEmployee.kasbon_limit)}/bln</span>
                     </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Slip terakhir</span><span className="font-medium text-[#1A1814]">{selectedEmployee.last_slip || '—'}</span>
-                    </div>
-                  </div>
-
-                  <div className="mb-5 last:mb-0">
-                    <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Kontak</div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Email</span><span className="font-medium text-[#1A1814] font-mono text-[12px]">{selectedEmployee.email}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">No. HP</span><span className="font-medium text-[#1A1814] font-mono text-[12px]">{selectedEmployee.phone}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1.5 border-b border-[#E0DDD7] last:border-none text-[13px]">
-                      <span className="text-[#6B6760]">Alamat</span><span className="font-medium text-[#1A1814] text-[12px] text-right max-w-[180px]">{selectedEmployee.address}</span>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Slip terakhir</span><span className="font-medium text-[#1A3A4A]">{selectedEmployee.last_slip || '—'}</span>
                     </div>
                   </div>
 
                   <div className="mb-5 last:mb-0">
-                    <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Bulan ini</div>
+                    <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2.5">Kontak</div>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Email</span><span className="font-medium text-[#1A3A4A] font-mono text-[12px]">{selectedEmployee.email}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">No. HP</span><span className="font-medium text-[#1A3A4A] font-mono text-[12px]">{selectedEmployee.phone}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1.5 border-b border-[#C8E8F5] last:border-none text-[13px]">
+                      <span className="text-[#4A7A8A]">Alamat</span><span className="font-medium text-[#1A3A4A] text-[12px] text-right max-w-[180px]">{selectedEmployee.address}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-5 last:mb-0">
+                    <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2.5">Bulan ini</div>
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="text-[12px] text-[#6B6760] w-20">Kehadiran</div>
-                        <div className="flex-1 bg-[#EDEAE4] h-[5px] rounded-full overflow-hidden">
-                           <div className="h-full bg-[#2A7A4B] rounded-full" style={{ width: `${absenPct}%` }} />
+                        <div className="text-[12px] text-[#4A7A8A] w-20">Kehadiran</div>
+                        <div className="flex-1 bg-[#E4F4FD] h-[5px] rounded-full overflow-hidden">
+                           <div className="h-full bg-[#3AAD7A] rounded-full" style={{ width: `${absenPct}%` }} />
                         </div>
-                        <div className="font-mono text-[11px] text-[#A8A49E] w-7 text-right">{absenPct}%</div>
+                        <div className="font-mono text-[11px] text-[#8ABAC8] w-7 text-right">{absenPct}%</div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="text-[12px] text-[#6B6760] w-20">Kasbon</div>
-                        <div className="flex-1 bg-[#EDEAE4] h-[5px] rounded-full overflow-hidden">
-                           <div className="h-full rounded-full" style={{ width: `${Math.min(kasbonPct, 100)}%`, backgroundColor: kasbonPct > 80 ? '#C84B2F' : '#B87333' }} />
+                        <div className="text-[12px] text-[#4A7A8A] w-20">Kasbon</div>
+                        <div className="flex-1 bg-[#E4F4FD] h-[5px] rounded-full overflow-hidden">
+                           <div className="h-full rounded-full" style={{ width: `${Math.min(kasbonPct, 100)}%`, backgroundColor: kasbonPct > 80 ? '#F5A940' : '#B87333' }} />
                         </div>
-                        <div className="font-mono text-[11px] text-[#A8A49E] w-7 text-right">{kasbonPct}%</div>
+                        <div className="font-mono text-[11px] text-[#8ABAC8] w-7 text-right">{kasbonPct}%</div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-4 px-5 border-t border-[#E0DDD7] flex gap-2">
-                  <Button variant="outline" className="flex-1 text-[13px] border-[#E0DDD7] text-[#6B6760] hover:bg-[#EDEAE4] hover:text-[#1A1814]" onClick={() => showToast(`Riwayat absensi ${selectedEmployee.name}`)}>Absensi</Button>
-                  <Button variant="outline" className="flex-1 text-[13px] border-[#E0DDD7] text-[#6B6760] hover:bg-[#EDEAE4] hover:text-[#1A1814]" onClick={() => showToast(`Riwayat kasbon ${selectedEmployee.name}`)}>Kasbon</Button>
-                  <Button className="flex-1 text-[13px] bg-[#1A1814] text-white hover:bg-[#2a2620]" onClick={() => openEditModal(selectedEmployee)}>Edit data</Button>
+                <div className="p-4 px-5 border-t border-[#C8E8F5] flex gap-2">
+                  <Button variant="outline" className="flex-1 text-[13px] border-[#C8E8F5] text-[#4A7A8A] hover:bg-[#E4F4FD] hover:text-[#1A3A4A]" onClick={() => showToast(`Riwayat absensi ${selectedEmployee.name}`)}>Absensi</Button>
+                  <Button variant="outline" className="flex-1 text-[13px] border-[#C8E8F5] text-[#4A7A8A] hover:bg-[#E4F4FD] hover:text-[#1A3A4A]" onClick={() => showToast(`Riwayat kasbon ${selectedEmployee.name}`)}>Kasbon</Button>
+                  <Button className="flex-1 text-[13px] bg-[#0D2D3D] text-white hover:bg-[#2a2620]" onClick={() => openEditModal(selectedEmployee)}>Edit data</Button>
                 </div>
               </Card>
             )
           })() : (
-            <Card className="rounded-[16px] border-[#E0DDD7] shadow-sm bg-white p-10 text-center text-[#A8A49E] flex flex-col items-center justify-center">
+            <Card className="rounded-[16px] border-[#C8E8F5] shadow-sm bg-white p-10 text-center text-[#8ABAC8] flex flex-col items-center justify-center">
                <Info className="w-10 h-10 mb-3 opacity-30"/>
-               <div className="text-[13.5px] font-medium text-[#6B6760] mb-1">Detail Karyawan</div>
+               <div className="text-[13.5px] font-medium text-[#4A7A8A] mb-1">Detail Karyawan</div>
                <div className="text-[12.5px]">Klik nama karyawan<br />untuk lihat profil lengkap</div>
             </Card>
           )}
@@ -585,10 +585,10 @@ export default function ManageEmployee() {
 
       {/* ── ADD / EDIT MODAL ── */}
       <Dialog open={showFormModal} onOpenChange={setShowFormModal}>
-        <DialogContent className="sm:max-w-[520px] p-0 border-[#E0DDD7] rounded-[16px] overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-[520px] p-0 border-[#C8E8F5] rounded-[16px] overflow-hidden gap-0">
           <form onSubmit={handleSave}>
-            <DialogHeader className="p-6 pb-4 border-b border-[#E0DDD7] bg-white sticky top-0 z-10">
-              <DialogTitle className="font-['Syne'] text-[18px] font-bold text-[#1A1814]">
+            <DialogHeader className="p-6 pb-4 border-b border-[#C8E8F5] bg-white sticky top-0 z-10">
+              <DialogTitle className="font-['Syne'] text-[18px] font-bold text-[#1A3A4A]">
                 {isEdit ? 'Edit Karyawan' : 'Tambah Karyawan'}
               </DialogTitle>
               <DialogDescription className="hidden">Employee form details</DialogDescription>
@@ -597,53 +597,53 @@ export default function ManageEmployee() {
               {/* Account section — only for new employees */}
               {!isEdit && (
                 <div className="mb-5 last:mb-0">
-                  <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-3">Akun login</div>
+                  <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Akun login</div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[12px] text-[#6B6760] font-medium">Email *</label>
-                      <Input type="email" placeholder="nama@drmeow.com" value={form.email} onChange={setField('email')} required className="rounded-[10px] border-[#E0DDD7]" />
+                      <label className="text-[12px] text-[#4A7A8A] font-medium">Email *</label>
+                      <Input type="email" placeholder="nama@drmeow.com" value={form.email} onChange={setField('email')} required className="rounded-[10px] border-[#C8E8F5]" />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[12px] text-[#6B6760] font-medium">Password *</label>
-                      <Input type="password" placeholder="Min. 6 karakter" value={form.password} onChange={setField('password')} required minLength={6} className="rounded-[10px] border-[#E0DDD7]" />
+                      <label className="text-[12px] text-[#4A7A8A] font-medium">Password *</label>
+                      <Input type="password" placeholder="Min. 6 karakter" value={form.password} onChange={setField('password')} required minLength={6} className="rounded-[10px] border-[#C8E8F5]" />
                     </div>
                   </div>
                 </div>
               )}
 
               <div className="mb-5 last:mb-0">
-                <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-3">Data pribadi</div>
+                <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Data pribadi</div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Nama lengkap</label>
-                    <Input type="text" placeholder="Nama karyawan" value={form.name} onChange={setField('name')} required className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Nama lengkap</label>
+                    <Input type="text" placeholder="Nama karyawan" value={form.name} onChange={setField('name')} required className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">ID Karyawan</label>
-                    <Input type="text" placeholder="EMP-001" value={form.emp_id} onChange={setField('emp_id')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">ID Karyawan</label>
+                    <Input type="text" placeholder="EMP-001" value={form.emp_id} onChange={setField('emp_id')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">No. HP / WhatsApp</label>
-                    <Input type="text" placeholder="08xx-xxxx-xxxx" value={form.phone} onChange={setField('phone')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">No. HP / WhatsApp</label>
+                    <Input type="text" placeholder="08xx-xxxx-xxxx" value={form.phone} onChange={setField('phone')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Tanggal bergabung</label>
-                    <Input type="date" value={form.joined} onChange={setField('joined')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Tanggal bergabung</label>
+                    <Input type="date" value={form.joined} onChange={setField('joined')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5 col-span-2">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Alamat</label>
-                    <Input type="text" placeholder="Alamat lengkap" value={form.address} onChange={setField('address')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Alamat</label>
+                    <Input type="text" placeholder="Alamat lengkap" value={form.address} onChange={setField('address')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                 </div>
               </div>
 
               <div className="mb-5 last:mb-0">
-                <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-3">Pekerjaan & gaji</div>
+                <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Pekerjaan & gaji</div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Divisi (dept)</label>
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Divisi (dept)</label>
                     <Select value={form.dept} onValueChange={v => setFieldDirectly('dept', v)}>
-                      <SelectTrigger className="rounded-[10px] border-[#E0DDD7]">
+                      <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
                         <SelectValue placeholder="Pilih divisi" />
                       </SelectTrigger>
                       <SelectContent>
@@ -655,9 +655,9 @@ export default function ManageEmployee() {
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Hak Akses (Role)</label>
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Hak Akses (Role)</label>
                     <Select value={form.role} onValueChange={v => setFieldDirectly('role', v)}>
-                      <SelectTrigger className="rounded-[10px] border-[#E0DDD7]">
+                      <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
                         <SelectValue placeholder="Pilih hak akses" />
                       </SelectTrigger>
                       <SelectContent>
@@ -667,17 +667,17 @@ export default function ManageEmployee() {
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Jabatan</label>
-                    <Input type="text" placeholder="Staff, Senior, dll" value={form.jabatan} onChange={setField('jabatan')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Jabatan</label>
+                    <Input type="text" placeholder="Staff, Senior, dll" value={form.jabatan} onChange={setField('jabatan')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Gaji pokok (Rp)</label>
-                    <Input type="number" placeholder="3000000" value={form.salary} onChange={setField('salary')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Gaji pokok (Rp)</label>
+                    <Input type="number" placeholder="3000000" value={form.salary} onChange={setField('salary')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Jam kerja</label>
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Jam kerja</label>
                     <Select value={form.shift} onValueChange={v => setFieldDirectly('shift', v)}>
-                      <SelectTrigger className="rounded-[10px] border-[#E0DDD7]">
+                      <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
                         <SelectValue placeholder="Pilih jam kerja" />
                       </SelectTrigger>
                       <SelectContent>
@@ -688,13 +688,13 @@ export default function ManageEmployee() {
                     </Select>
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Batas kasbon / bulan (Rp)</label>
-                    <Input type="number" placeholder="1000000" value={form.kasbon_limit} onChange={setField('kasbon_limit')} className="rounded-[10px] border-[#E0DDD7]" />
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Batas kasbon / bulan (Rp)</label>
+                    <Input type="number" placeholder="1000000" value={form.kasbon_limit} onChange={setField('kasbon_limit')} className="rounded-[10px] border-[#C8E8F5]" />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[12px] text-[#6B6760] font-medium">Status</label>
+                    <label className="text-[12px] text-[#4A7A8A] font-medium">Status</label>
                     <Select value={form.status} onValueChange={v => setFieldDirectly('status', v)}>
-                      <SelectTrigger className="rounded-[10px] border-[#E0DDD7]">
+                      <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
                         <SelectValue placeholder="Pilih status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -706,9 +706,9 @@ export default function ManageEmployee() {
                 </div>
               </div>
             </div>
-            <DialogFooter className="p-6 pt-4 border-t border-[#E0DDD7] bg-white">
-              <Button type="button" variant="ghost" className="rounded-[10px] text-[#6B6760] hover:text-[#1A1814]" onClick={() => setShowFormModal(false)}>Batal</Button>
-              <Button type="submit" className="rounded-[10px] bg-[#C84B2F] hover:bg-[#b03d24] text-white" disabled={saveMutation.isPending}>
+            <DialogFooter className="p-6 pt-4 border-t border-[#C8E8F5] bg-white">
+              <Button type="button" variant="ghost" className="rounded-[10px] text-[#4A7A8A] hover:text-[#1A3A4A]" onClick={() => setShowFormModal(false)}>Batal</Button>
+              <Button type="submit" className="rounded-[10px] bg-[#F5A940] hover:bg-[#b03d24] text-white" disabled={saveMutation.isPending}>
                 {saveMutation.isPending ? 'Menyimpan...' : 'Simpan Karyawan'}
               </Button>
             </DialogFooter>
@@ -718,33 +718,33 @@ export default function ManageEmployee() {
 
       {/* ── CONFIRM MODAL ── */}
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-        <DialogContent className="sm:max-w-[400px] p-0 border-[#E0DDD7] rounded-[16px] overflow-hidden gap-0">
+        <DialogContent className="sm:max-w-[400px] p-0 border-[#C8E8F5] rounded-[16px] overflow-hidden gap-0">
           <div className="p-7 px-6 text-center">
             <div className="mx-auto mb-4 flex justify-center">
               {confirmData?.newStatus === 'nonaktif' ? (
                 <div className="w-14 h-14 bg-[#F5E8E4] rounded-full flex items-center justify-center">
-                  <UserX className="w-6 h-6 text-[#C84B2F]" />
+                  <UserX className="w-6 h-6 text-[#F5A940]" />
                 </div>
               ) : (
                  <div className="w-14 h-14 bg-[#E2F0E8] rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-[#2A7A4B]" />
+                  <CheckCircle className="w-6 h-6 text-[#3AAD7A]" />
                  </div>
               )}
             </div>
-            <div className="font-['Syne'] text-[18px] font-bold text-[#1A1814] mb-2">
+            <div className="font-['Syne'] text-[18px] font-bold text-[#1A3A4A] mb-2">
               {confirmData?.newStatus === 'nonaktif' ? `Nonaktifkan ${confirmData?.name}?` : `Aktifkan ${confirmData?.name}?`}
             </div>
-            <div className="text-[13.5px] text-[#6B6760] leading-relaxed">
+            <div className="text-[13.5px] text-[#4A7A8A] leading-relaxed">
               {confirmData?.newStatus === 'nonaktif'
                 ? 'Data karyawan akan diarsipkan. Riwayat absensi dan kasbon tetap tersimpan. Karyawan tidak bisa login atau absen.'
                 : 'Karyawan akan diaktifkan kembali dan bisa melakukan absensi mulai hari ini.'}
             </div>
           </div>
           <DialogFooter className="p-6 pt-0 sm:justify-end gap-2">
-             <Button variant="ghost" className="rounded-[10px] text-[#6B6760]" onClick={() => setShowConfirm(false)}>Batal</Button>
+             <Button variant="ghost" className="rounded-[10px] text-[#4A7A8A]" onClick={() => setShowConfirm(false)}>Batal</Button>
              <Button 
                className="rounded-[10px] border-none text-white"
-               style={{ backgroundColor: confirmData?.newStatus === 'nonaktif' ? '#C84B2F' : '#2A7A4B' }}
+               style={{ backgroundColor: confirmData?.newStatus === 'nonaktif' ? '#F5A940' : '#3AAD7A' }}
                onClick={doToggleStatus}
                disabled={toggleStatusMutation.isPending}
              >

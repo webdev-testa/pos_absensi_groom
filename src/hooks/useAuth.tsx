@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const fetchProfile = async (authUserId: string) => {
       try {
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+          setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
         )
         
         const fetchPromise = supabase
@@ -36,11 +36,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) {
            console.error('Fetch profile query error:', error)
         }
-        if (mounted) setUser(data || null)
-        return data
+        
+        if (data) {
+          localStorage.setItem(`profile_${authUserId}`, JSON.stringify(data))
+          if (mounted) setUser(data)
+          return data
+        } else {
+          // If fetch fails but we have a cached profile, use it
+          const cached = localStorage.getItem(`profile_${authUserId}`)
+          if (cached) {
+            const parsed = JSON.parse(cached)
+            if (mounted) setUser(parsed)
+            return parsed
+          }
+          if (mounted) setUser(prev => prev ? prev : null)
+          return null
+        }
       } catch (err) {
         console.error('Fetch profile exception:', err)
-        if (mounted) setUser(null)
+        const cached = localStorage.getItem(`profile_${authUserId}`)
+        if (cached) {
+          const parsed = JSON.parse(cached)
+          if (mounted) setUser(parsed)
+          return parsed
+        }
+        if (mounted) setUser(prev => prev ? prev : null)
         return null
       }
     }
@@ -49,6 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data } = await supabase.auth.getSession()
         if (data?.session?.user) {
+          // Check for cached profile first to avoid UI blocking if network is slow
+          const cached = localStorage.getItem(`profile_${data.session.user.id}`)
+          if (cached) {
+            setUser(JSON.parse(cached))
+          }
           await fetchProfile(data.session.user.id)
         } else {
           if (mounted) setUser(null)

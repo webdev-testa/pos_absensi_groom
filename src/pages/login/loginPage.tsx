@@ -71,32 +71,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F2ED] flex items-center justify-center p-6 font-sans selection:bg-red-600/30">
-      <div className="w-full max-w-[420px] bg-white rounded-[16px] shadow-sm border border-[#E0DDD7] p-8 lg:p-10">
+    <div className="min-h-screen bg-[#F0FAFF] flex items-center justify-center p-6 font-sans selection:bg-[#4DC8F5]/30">
+      <div className="w-full max-w-[420px] bg-white rounded-[16px] shadow-sm border border-[#C8E8F5] p-8 lg:p-10">
         
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1A1814] text-white font-['Syne'] font-bold text-xl mb-4 tracking-tight">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0D2D3D] text-white font-['Syne'] font-bold text-xl mb-4 tracking-tight">
             HR
           </div>
-          <h1 className="font-['Syne'] text-[24px] font-bold tracking-tight text-[#1A1814]">HadiR Login</h1>
-          <p className="text-[13.5px] text-[#6B6760] mt-1.5">Sign in to your account</p>
+          <h1 className="font-['Syne'] text-[24px] font-bold tracking-tight text-[#1A3A4A]">HadiR Login</h1>
+          <p className="text-[13.5px] text-[#4A7A8A] mt-1.5">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[12px] text-[#6B6760] font-medium">Email address</label>
+            <label className="text-[12px] text-[#4A7A8A] font-medium">Email address</label>
             <input 
               type="email" 
               placeholder="nama@drmeow.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full h-10 px-3.5 rounded-[10px] border border-[#E0DDD7] text-[13.5px] text-[#1A1814] placeholder:text-[#A8A49E] focus:outline-none focus:border-[#1A1814] transition-colors"
+              className="w-full h-10 px-3.5 rounded-[10px] border border-[#C8E8F5] text-[13.5px] text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus:border-[#1A3A4A] transition-colors"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[12px] text-[#6B6760] font-medium">Password</label>
+            <label className="text-[12px] text-[#4A7A8A] font-medium">Password</label>
             <div className="relative">
               <input 
                 type={showPassword ? "text" : "password"} 
@@ -104,12 +104,12 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full h-10 pl-3.5 pr-10 rounded-[10px] border border-[#E0DDD7] text-[13.5px] text-[#1A1814] placeholder:text-[#A8A49E] focus:outline-none focus:border-[#1A1814] transition-colors"
+                className="w-full h-10 pl-3.5 pr-10 rounded-[10px] border border-[#C8E8F5] text-[13.5px] text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus:border-[#1A3A4A] transition-colors"
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A8A49E] hover:text-[#6B6760] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ABAC8] hover:text-[#4A7A8A] transition-colors"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -117,7 +117,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 rounded-[8px] bg-[#F5E8E4] border border-[#e8b4aa] text-[12.5px] text-[#C84B2F]">
+            <div className="p-3 rounded-[8px] bg-[#F5E8E4] border border-[#e8b4aa] text-[12.5px] text-[#F5A940]">
               {error}
             </div>
           )}
@@ -125,7 +125,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading || !email || !password}
-            className="w-full h-10 mt-2 bg-[#C84B2F] hover:bg-[#b03d24] text-white rounded-[10px] text-[13.5px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full h-10 mt-2 bg-[#F5A940] hover:bg-[#b03d24] text-white rounded-[10px] text-[13.5px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : 'Log in'}
           </button>

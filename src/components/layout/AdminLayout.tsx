@@ -12,9 +12,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { supabase } from '@/lib/supabase'
 
 export const AV_COLORS = [
-  { bg: '#F5E8E4', fg: '#C84B2F' }, { bg: '#E2F0E8', fg: '#2A7A4B' },
+  { bg: '#F5E8E4', fg: '#F5A940' }, { bg: '#E2F0E8', fg: '#3AAD7A' },
   { bg: '#F5EDE0', fg: '#B87333' }, { bg: '#EDE8F5', fg: '#6B4F9E' },
-  { bg: '#E0EDF5', fg: '#1A6FAA' }, { bg: '#F5E8ED', fg: '#A0374F' },
+  { bg: '#E0EDF5', fg: '#4DC8F5' }, { bg: '#F5E8ED', fg: '#A0374F' },
   { bg: '#E8F5E0', fg: '#3A6B1A' }, { bg: '#F0EDE8', fg: '#6B5A3A' },
   { bg: '#E8EDF5', fg: '#3A4A8B' }, { bg: '#F5F0E8', fg: '#8B6A3A' },
   { bg: '#EBF5E8', fg: '#2A6B4B' }, { bg: '#F5E8F0', fg: '#8B3A6A' },
@@ -37,7 +37,7 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementTyp
       to={to}
       className={`flex items-center gap-3 px-6 py-2.5 text-[13.5px] transition-all border-l-2 ${
         isActive 
-          ? 'text-white bg-white/5 border-red-600' 
+          ? 'text-white bg-white/5 border-[#4DC8F5]' 
           : 'text-white/45 border-transparent hover:text-white/80 hover:bg-white/5'
       }`}
     >
@@ -56,9 +56,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F5F2ED] font-sans selection:bg-red-600/30">
+    <div className="flex min-h-screen bg-[#F0FAFF] font-sans selection:bg-[#4DC8F5]/30">
       {/* SIDEBAR */}
-      <aside className="fixed inset-y-0 left-0 z-50 flex flex-col w-[220px] bg-[#1A1814] py-8 shrink-0">
+      <aside className="fixed inset-y-0 left-0 z-50 flex flex-col w-[220px] bg-[#0D2D3D] py-8 shrink-0">
         <div className="px-6 mb-6 pb-8 border-b border-white/10">
           <div className="font-['Syne'] font-bold text-lg text-white tracking-tight">
             <span className="block text-[11px] font-normal text-white/35 tracking-[1.5px] uppercase mb-1 font-mono">
@@ -85,13 +85,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="mt-auto px-6 pt-5 border-t border-white/10">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 mb-4 text-[#C84B2F] text-[13.5px] hover:text-[#e0583b] transition-colors bg-transparent border-none cursor-pointer w-full text-left"
+            className="flex items-center gap-3 mb-4 text-[#F5A940] text-[13.5px] hover:text-[#FEF3E0] transition-colors bg-transparent border-none cursor-pointer w-full text-left"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             Switch Role / Log Out
           </button>
           <div className="flex items-center gap-2.5">
-            <Avatar className="w-8 h-8 rounded-full bg-[#C84B2F] text-white font-['Syne'] font-semibold text-[13px] flex items-center justify-center">
+            <Avatar className="w-8 h-8 rounded-full bg-[#F5A940] text-white font-['Syne'] font-semibold text-[13px] flex items-center justify-center">
               <AvatarFallback className="bg-transparent">A</AvatarFallback>
             </Avatar>
             <div>

@@ -31,21 +31,9 @@ export function useClockIn() {
     })
   }
 
-  // Step 3 — Upload photo + save attendance
-  const clockIn = async () => {
-    // 1. Trigger photo capture IMMEDIATELY to preserve user activation
-    // Do NOT await anything before this, otherwise the browser blocks the file chooser.
-    const photoPromise = capturePhoto()
-
-    // 2. Now we can safely await other async operations
+  const saveAttendance = async (photo: Blob, coords: GeolocationCoordinates) => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not logged in')
-
-    // Get GPS
-    const coords = await getLocation()
-    
-    // Wait for the photo capture to complete
-    const photo = await photoPromise
 
     // Upload photo to storage
     const filename = `${user.id}/${Date.now()}.jpg`
@@ -62,7 +50,7 @@ export function useClockIn() {
       .from('attendance-photos')
       .getPublicUrl(filename)
 
-    // Save to attendance (removed .schema('hr') as it's not defined in other parts)
+    // Save to attendance
     const { error } = await supabase
       .from('attendance')
       .insert({
@@ -78,7 +66,15 @@ export function useClockIn() {
     if (error) throw error
   }
 
-  return { clockIn }
+  // Legacy clockIn for backward compatibility
+  const clockIn = async () => {
+    const photoPromise = capturePhoto()
+    const coords = await getLocation()
+    const photo = await photoPromise
+    await saveAttendance(photo, coords)
+  }
+
+  return { clockIn, capturePhoto, getLocation, saveAttendance }
 }
 
 export function useClockOut() {
