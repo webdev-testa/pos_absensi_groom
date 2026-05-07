@@ -31,7 +31,7 @@ const EMPTY_FORM: EmployeeFormData = {
   salary: '',
   shift: '08:00 – 17:00',
   kasbon_limit: '',
-  status: 'aktif',
+  status: 'active',
   joined: new Date().toISOString().slice(0, 10),
 }
 
@@ -41,7 +41,7 @@ export default function ManageEmployee() {
   const queryClient = useQueryClient()
   const [searchQ, setSearchQ] = useState('')
   const [deptFilter, setDeptFilter] = useState('all')
-  const [statusFilter, setStatusFilter] = useState<'aktif' | 'nonaktif' | 'all'>('aktif')
+  const [statusFilter, setStatusFilter] = useState<'active' | 'inactive' | 'all'>('active')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   // modal
@@ -52,7 +52,7 @@ export default function ManageEmployee() {
 
   // confirm modal
   const [showConfirm, setShowConfirm] = useState(false)
-  const [confirmData, setConfirmData] = useState<{ id: string; name: string; newStatus: 'aktif' | 'nonaktif' } | null>(null)
+  const [confirmData, setConfirmData] = useState<{ id: string; name: string; newStatus: 'active' | 'inactive' } | null>(null)
 
   const showToast = useCallback((msg: string) => {
     toast.success(msg)
@@ -87,7 +87,7 @@ export default function ManageEmployee() {
         shift: (u.shift as string) || '08:00 – 17:00',
         address: (u.address as string) || '',
         joined: (u.created_at as string) || '',
-        status: ((u.status as string) === 'active' ? 'aktif' : (u.status as string) === 'inactive' ? 'nonaktif' : (u.status as string) || 'aktif') as 'aktif' | 'nonaktif',
+        status: ((u.status as string) === 'inactive' ? 'inactive' : 'active') as 'active' | 'inactive',
         absen: Number(u.absen) || 0,
         kasbon_used: Number(u.kasbon_used) || 0,
         last_slip: (u.last_slip as string) || '—',
@@ -105,10 +105,10 @@ export default function ManageEmployee() {
   })
 
   const departments = [...new Set(employees.map(e => e.dept).filter(Boolean))]
-  const totalAktif = employees.filter(e => e.status === 'aktif').length
-  const totalNonaktif = employees.filter(e => e.status === 'nonaktif').length
-  const totalSalary = employees.filter(e => e.status === 'aktif').reduce((s, e) => s + e.salary, 0)
-  const deptCounts = employees.filter(e => e.status === 'aktif').reduce<Record<string, number>>((acc, e) => {
+  const totalAktif = employees.filter(e => e.status === 'active').length
+  const totalNonaktif = employees.filter(e => e.status === 'inactive').length
+  const totalSalary = employees.filter(e => e.status === 'active').reduce((s, e) => s + e.salary, 0)
+  const deptCounts = employees.filter(e => e.status === 'active').reduce<Record<string, number>>((acc, e) => {
     acc[e.dept] = (acc[e.dept] || 0) + 1; return acc
   }, {})
   const topDept = Object.entries(deptCounts).sort((a, b) => b[1] - a[1])[0]
@@ -188,8 +188,8 @@ export default function ManageEmployee() {
               role: form.role, 
               jabatan: form.jabatan,
               phone: form.phone,
-              salary: parseInt(form.salary) || 0,
-              kasbon_limit: parseInt(form.kasbon_limit) || 0,
+              salary: Number(form.salary) || 0,
+              kasbon_limit: Number(form.kasbon_limit) || 0,
               shift: form.shift,
               address: form.address,
               status: form.status,
@@ -206,8 +206,8 @@ export default function ManageEmployee() {
           role: form.role,
           jabatan: form.jabatan,
           phone: form.phone,
-          salary: parseInt(form.salary) || 0,
-          kasbon_limit: parseInt(form.kasbon_limit) || 0,
+          salary: Number(form.salary) || 0,
+          kasbon_limit: Number(form.kasbon_limit) || 0,
           shift: form.shift,
           address: form.address,
           status: form.status,
@@ -242,13 +242,13 @@ export default function ManageEmployee() {
     setConfirmData({
       id: emp.id,
       name: emp.name,
-      newStatus: emp.status === 'aktif' ? 'nonaktif' : 'aktif',
+      newStatus: emp.status === 'active' ? 'inactive' : 'active',
     })
     setShowConfirm(true)
   }
 
   const toggleStatusMutation = useMutation({
-    mutationFn: async (data: { id: string, name: string, newStatus: 'aktif' | 'nonaktif' }) => {
+    mutationFn: async (data: { id: string, name: string, newStatus: 'active' | 'inactive' }) => {
       const { error } = await supabaseAdmin
         .from('users')
         .update({ status: data.newStatus })
@@ -258,7 +258,7 @@ export default function ManageEmployee() {
       return data
     },
     onSuccess: (data) => {
-      showToast(`${data.name} berhasil ${data.newStatus === 'nonaktif' ? 'dinonaktifkan' : 'diaktifkan'}`)
+      showToast(`${data.name} berhasil ${data.newStatus === 'inactive' ? 'dinonaktifkan' : 'diaktifkan'}`)
       setShowConfirm(false)
       setConfirmData(null)
       queryClient.invalidateQueries({ queryKey: ['employees'] })
@@ -349,7 +349,7 @@ export default function ManageEmployee() {
         </Select>
 
         <div className="flex gap-[3px] bg-white border border-[#C8E8F5] rounded-[10px] p-[3px]">
-          {(['aktif', 'nonaktif', 'all'] as const).map(s => (
+          {(['active', 'inactive', 'all'] as const).map(s => (
             <button
               key={s}
               className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] transition-all font-sans border-none bg-none cursor-pointer ${
@@ -359,7 +359,7 @@ export default function ManageEmployee() {
               }`}
               onClick={() => setStatusFilter(s)}
             >
-              {s === 'all' ? 'Semua' : s === 'aktif' ? 'Aktif' : 'Nonaktif'}
+              {s === 'all' ? 'Semua' : s === 'active' ? 'Aktif' : 'Nonaktif'}
             </button>
           ))}
         </div>
@@ -432,7 +432,7 @@ export default function ManageEmployee() {
                           <span className="text-[12.5px] text-[#4A7A8A]">{fmtDate(emp.joined)}</span>
                         </TableCell>
                         <TableCell className="p-3 px-4">
-                          {emp.status === 'aktif' ? (
+                          {emp.status === 'active' ? (
                             <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                               ● Aktif
                             </Badge>
@@ -446,7 +446,7 @@ export default function ManageEmployee() {
                            <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
                              <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A]" onClick={() => openEditModal(emp)}>Edit</Button>
                              <Button size="sm" variant="outline" className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#F5A940] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#F5A940]" onClick={() => openToggleConfirm(emp)}>
-                               {emp.status === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'}
+                               {emp.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
                              </Button>
                            </div>
                         </TableCell>
@@ -481,7 +481,7 @@ export default function ManageEmployee() {
                       <div className="text-[12px] text-white/40 font-mono mt-0.5">{selectedEmployee.emp_id} · {selectedEmployee.dept}</div>
                     </div>
                     <div className="ml-auto">
-                      {selectedEmployee.status === 'aktif' ? (
+                      {selectedEmployee.status === 'active' ? (
                         <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
                           Aktif
                         </Badge>
@@ -698,8 +698,8 @@ export default function ManageEmployee() {
                         <SelectValue placeholder="Pilih status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="aktif">Aktif</SelectItem>
-                        <SelectItem value="nonaktif">Nonaktif</SelectItem>
+                        <SelectItem value="active">Aktif</SelectItem>
+                        <SelectItem value="inactive">Nonaktif</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -721,7 +721,7 @@ export default function ManageEmployee() {
         <DialogContent className="sm:max-w-[400px] p-0 border-[#C8E8F5] rounded-[16px] overflow-hidden gap-0">
           <div className="p-7 px-6 text-center">
             <div className="mx-auto mb-4 flex justify-center">
-              {confirmData?.newStatus === 'nonaktif' ? (
+              {confirmData?.newStatus === 'inactive' ? (
                 <div className="w-14 h-14 bg-[#F5E8E4] rounded-full flex items-center justify-center">
                   <UserX className="w-6 h-6 text-[#F5A940]" />
                 </div>
@@ -732,10 +732,10 @@ export default function ManageEmployee() {
               )}
             </div>
             <div className="font-['Syne'] text-[18px] font-bold text-[#1A3A4A] mb-2">
-              {confirmData?.newStatus === 'nonaktif' ? `Nonaktifkan ${confirmData?.name}?` : `Aktifkan ${confirmData?.name}?`}
+              {confirmData?.newStatus === 'inactive' ? `Nonaktifkan ${confirmData?.name}?` : `Aktifkan ${confirmData?.name}?`}
             </div>
             <div className="text-[13.5px] text-[#4A7A8A] leading-relaxed">
-              {confirmData?.newStatus === 'nonaktif'
+              {confirmData?.newStatus === 'inactive'
                 ? 'Data karyawan akan diarsipkan. Riwayat absensi dan kasbon tetap tersimpan. Karyawan tidak bisa login atau absen.'
                 : 'Karyawan akan diaktifkan kembali dan bisa melakukan absensi mulai hari ini.'}
             </div>
@@ -744,11 +744,11 @@ export default function ManageEmployee() {
              <Button variant="ghost" className="rounded-[10px] text-[#4A7A8A]" onClick={() => setShowConfirm(false)}>Batal</Button>
              <Button 
                className="rounded-[10px] border-none text-white"
-               style={{ backgroundColor: confirmData?.newStatus === 'nonaktif' ? '#F5A940' : '#3AAD7A' }}
+               style={{ backgroundColor: confirmData?.newStatus === 'inactive' ? '#F5A940' : '#3AAD7A' }}
                onClick={doToggleStatus}
                disabled={toggleStatusMutation.isPending}
              >
-               {toggleStatusMutation.isPending ? 'Memproses...' : confirmData?.newStatus === 'nonaktif' ? 'Nonaktifkan' : 'Aktifkan'}
+               {toggleStatusMutation.isPending ? 'Memproses...' : confirmData?.newStatus === 'inactive' ? 'Nonaktifkan' : 'Aktifkan'}
              </Button>
           </DialogFooter>
         </DialogContent>
