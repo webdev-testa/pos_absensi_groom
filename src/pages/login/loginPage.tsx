@@ -52,6 +52,7 @@ export default function LoginPage() {
       // Check if the user has a profile in our public.users table
       if (data?.user) {
         const { data: profile, error: profileError } = await supabase
+          .schema('hr')
           .from('users')
           .select('role')
           .eq('id', data.user.id)

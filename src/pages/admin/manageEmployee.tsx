@@ -63,6 +63,7 @@ export default function ManageEmployee() {
     queryKey: ['employees'],
     queryFn: async () => {
       const { data, error } = await supabaseAdmin
+        .schema('hr')
         .from('users')
         .select('*')
         .order('created_at', { ascending: false })
@@ -178,6 +179,7 @@ export default function ManageEmployee() {
 
         if (data?.user) {
           const { error: profileError } = await supabaseAdmin
+            .schema('hr')
             .from('users')
             .upsert({
               id: data.user.id,
@@ -214,6 +216,7 @@ export default function ManageEmployee() {
         }
 
         const { error } = await supabaseAdmin
+          .schema('hr')
           .from('users')
           .update(updateData)
           .eq('id', editId!)
@@ -250,6 +253,7 @@ export default function ManageEmployee() {
   const toggleStatusMutation = useMutation({
     mutationFn: async (data: { id: string, name: string, newStatus: 'active' | 'inactive' }) => {
       const { error } = await supabaseAdmin
+        .schema('hr')
         .from('users')
         .update({ status: data.newStatus })
         .eq('id', data.id)

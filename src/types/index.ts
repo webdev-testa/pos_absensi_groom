@@ -23,7 +23,7 @@ export type Kasbon = Omit<HrSchema['kasbon']['Row'], 'status'> & {
   status: KasbonStatus
 }
 
-export interface Employee extends Omit<User, 'status' | 'role'> {
+export interface Employee extends Omit<User, 'status' | 'role' | 'salary' | 'dept' | 'kasbon_limit'> {
   email: string
   jabatan: string
   role: 'admin' | 'employee'
@@ -32,6 +32,9 @@ export interface Employee extends Omit<User, 'status' | 'role'> {
   address: string
   joined: string
   status: UserStatus
+  salary: number
+  dept: string
+  kasbon_limit: number
   absen?: number
   kasbon_used?: number
   last_slip?: string

@@ -11,10 +11,6 @@ import Kasbon from "@/pages/admin/manageKasbon";
 import Payroll from "@/pages/admin/managePayroll";
 import AbsenEmployee from "@/pages/admin/absenEmployee";
 import LoginPage from "@/pages/login/loginPage";
-import EmployeeHome from "@/pages/employee/Home";
-import EmployeeKasbon from "@/pages/employee/Kasbon";
-import EmployeeProfil from "@/pages/employee/Profil";
-import { EmployeeLayout } from "@/components/layout/EmployeeLayout";
 
 // Auth
 
@@ -64,7 +60,19 @@ function RoleGuard({ allowedRoles }: { allowedRoles: string[] }) {
     if (user.role === "admin" || user.role === "superadmin") {
       return <Navigate to="/admin/dashboard" replace />;
     } else if (user.role === "employee") {
-      return <Navigate to="/employee/home" replace />;
+      return (
+        <div className="flex flex-col h-screen items-center justify-center font-mono text-sm bg-[#F5F2ED] text-[#1A1814] p-6 text-center">
+          <div className="text-[#C84B2F] mb-4 text-base font-bold font-['Syne']">
+            Akses Terbatas
+          </div>
+          <div className="text-[#6B6760] mb-6 max-w-xs leading-relaxed">
+            Akun karyawan hanya dapat digunakan untuk melakukan absensi melalui aplikasi mobile native (Capacitor).
+          </div>
+          <button onClick={() => logout()} className="px-5 py-2.5 bg-[#1A1814] hover:bg-[#33302C] text-white rounded-[10px] font-sans font-medium transition-colors cursor-pointer">
+            Log out
+          </button>
+        </div>
+      );
     } else {
       return (
         <div className="flex flex-col h-screen items-center justify-center font-mono text-sm">
@@ -121,32 +129,6 @@ export const router = createBrowserRouter([
               {
                 path: "/admin/karyawan",
                 element: <ManageEmployee />,
-              },
-            ],
-          },
-          {
-            element: <RoleGuard allowedRoles={["employee"]} />,
-            children: [
-              {
-                element: <EmployeeLayout />,
-                children: [
-                  {
-                    path: "/employee/home",
-                    element: <EmployeeHome />,
-                  },
-                  {
-                    path: "/employee/kasbon",
-                    element: <EmployeeKasbon />,
-                  },
-                  {
-                    path: "/employee/profil",
-                    element: <EmployeeProfil />,
-                  },
-                  {
-                    path: "/employee",
-                    element: <Navigate to="/employee/home" replace />,
-                  },
-                ],
               },
             ],
           },
