@@ -101,9 +101,7 @@ export function usePayroll() {
         .schema('hr')
         .from('kasbon')
         .select('*')
-        .gte('requested_at', periodDates.startOfPeriod)
-        .lt('requested_at', periodDates.endOfPeriod)
-        .in('status', ['approved', 'deducted']);
+        .or(`and(status.eq.approved,requested_at.lt.${periodDates.endOfPeriod}),and(status.eq.deducted,requested_at.gte.${periodDates.startOfPeriod},requested_at.lt.${periodDates.endOfPeriod})`);
       
       if (error) {
         toast.error('Gagal memuat data kasbon');
@@ -123,7 +121,7 @@ export function usePayroll() {
         .select('user_id, status')
         .gte('date', periodDates.startOfPeriod)
         .lt('date', periodDates.endOfPeriod)
-        .in('status', ['ontime', 'late']);
+        .in('status', ['ontime', 'late', 'cuti', 'izin', 'sakit']);
       
       if (error) {
         toast.error('Gagal memuat data absensi');
@@ -151,8 +149,8 @@ export function usePayroll() {
       const empKasbons = kasbons.filter(k => k.user_id === emp.id);
       const totalKasbon = empKasbons.reduce((sum, k) => sum + Number(k.amount), 0);
       
-      // 3. Get basic salary
-      const basicSalary = emp.salary || 0;
+      // 3. Get basic salary (historical basic_salary from generated payroll if exists, otherwise employee profile salary)
+      const basicSalary = payrollRecord ? (payrollRecord.basic_salary || 0) : (emp.salary || 0);
       
       // 4. Get incentives
       const incentives = payrollRecord ? (payrollRecord.incentives || 0) : 0;
@@ -288,7 +286,6 @@ export function usePayroll() {
         .update({ status: 'deducted' })
         .eq('user_id', item.user.id)
         .eq('status', 'approved')
-        .gte('requested_at', periodDates.startOfPeriod)
         .lt('requested_at', periodDates.endOfPeriod);
         
       if (kasbonError) throw kasbonError;
@@ -334,7 +331,6 @@ export function usePayroll() {
         .update({ status: 'deducted' })
         .in('user_id', userIds)
         .eq('status', 'approved')
-        .gte('requested_at', periodDates.startOfPeriod)
         .lt('requested_at', periodDates.endOfPeriod);
         
       if (kasbonError) throw kasbonError;
@@ -427,13 +423,13 @@ export function usePayroll() {
   // 3. Open Incentive Form Modal
   const openIncentiveModal = (item: PayrollItem) => {
     setIncentiveUserId(item.user.id);
-    setIncentiveAmount(item.incentives > 0 ? String(item.incentives) : '');
+    setIncentiveAmount(item.incentives > 0 ? String(item.incentives).replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '');
     setShowIncentiveModal(true);
   };
 
   const handleSaveIncentive = () => {
     if (!incentiveUserId) return;
-    const amt = parseInt(incentiveAmount) || 0;
+    const amt = parseInt(incentiveAmount.replace(/\./g, ''), 10) || 0;
     updateIncentiveMutation.mutate({ userId: incentiveUserId, amount: amt });
   };
 

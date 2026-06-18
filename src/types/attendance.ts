@@ -20,6 +20,7 @@ export interface CutiRecord {
   date: string;
   status: string;
   is_flagged: boolean | null;
+  clock_in_photo_url?: string | null;
   users: { name: string; emp_id: string; dept: string } | null;
 }
 
@@ -30,7 +31,7 @@ export interface CutiGroup {
   dept: string;
   type: string; // "cuti" | "izin" | "sakit"
   status: string; // full status e.g. "cuti_pending"
-  dates: { id: string; date: string }[];
+  dates: { id: string; date: string; clock_in_photo_url?: string | null }[];
 }
 
 export interface Holiday {

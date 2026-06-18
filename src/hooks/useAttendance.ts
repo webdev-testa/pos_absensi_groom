@@ -124,7 +124,7 @@ export function useAttendance() {
     const { data, error } = await supabaseAdmin
       .schema("hr")
       .from("attendance")
-      .select("id, user_id, date, status, is_flagged, users(name, emp_id, dept)")
+      .select("id, user_id, date, status, is_flagged, clock_in_photo_url, users(name, emp_id, dept)")
       .or(
         "status.eq.cuti_pending,status.eq.izin_pending,status.eq.sakit_pending," +
         "status.eq.cuti_rejected,status.eq.izin_rejected,status.eq.sakit_rejected"
@@ -180,7 +180,7 @@ export function useAttendance() {
           dates: [],
         };
       }
-      groups[key].dates.push({ id: record.id, date: record.date });
+      groups[key].dates.push({ id: record.id, date: record.date, clock_in_photo_url: record.clock_in_photo_url });
     });
     // Sort: pending first, then by earliest date
     return Object.values(groups).sort((a, b) => {
@@ -333,10 +333,15 @@ export function useAttendance() {
   }, [attendanceToday]);
 
   const statAbsent = useMemo(() => {
+    const todayDate = new Date();
+    const isWeekend = todayDate.getDay() === 0 || todayDate.getDay() === 6;
+    const isHoliday = holidays.some(h => h.date === todayStr);
+    if (isWeekend || isHoliday) return 0;
+
     return employees.filter(e => 
       !attendanceToday.some(a => a.user_id === e.id)
     ).length;
-  }, [employees, attendanceToday]);
+  }, [employees, attendanceToday, holidays, todayStr]);
 
   // Unified Chronological Activity Feed Events
   const feedEvents = useMemo(() => {

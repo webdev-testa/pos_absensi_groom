@@ -38,10 +38,15 @@ export function IncentiveDialog({
           <div className="relative">
             <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] font-mono text-[#6B6760]">Rp</div>
             <Input 
-              type="number"
-              placeholder="Contoh: 500000" 
+              type="text"
+              inputMode="numeric"
+              placeholder="Contoh: 500.000" 
               value={incentiveAmount}
-              onChange={e => setIncentiveAmount(e.target.value)}
+              onChange={e => {
+                const rawVal = e.target.value.replace(/\D/g, '');
+                const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                setIncentiveAmount(formatted);
+              }}
               className="pl-9 bg-white border-[#E0DDD7] rounded-[10px] text-[13.5px] h-[40px] focus-visible:ring-0 focus-visible:border-[#CBC8C2] font-mono"
             />
           </div>

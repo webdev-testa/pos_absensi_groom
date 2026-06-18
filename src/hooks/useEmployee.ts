@@ -47,19 +47,46 @@ export function useEmployee() {
   const { data: employees = [], isLoading: loading } = useQuery<Employee[]>({
     queryKey: ['employees'],
     queryFn: async () => {
-      const { data, error } = await supabaseAdmin
+      const now = new Date()
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString()
+
+      // Fetch users
+      const { data: userData, error: userError } = await supabaseAdmin
         .schema('hr')
         .from('users')
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) {
-        console.error('Fetch employees error:', error)
+      if (userError) {
+        console.error('Fetch employees error:', userError)
         showToast('Gagal memuat data karyawan')
-        throw error
+        throw userError
       }
 
-      return (data || []).map((u: Record<string, unknown>) => ({
+      // Fetch kasbon usage for the current month
+      const { data: kasbonData, error: kasbonError } = await supabaseAdmin
+        .schema('hr')
+        .from('kasbon')
+        .select('user_id, amount')
+        .neq('status', 'rejected')
+        .gte('requested_at', startOfMonth)
+        .lt('requested_at', endOfMonth)
+
+      if (kasbonError) {
+        console.error('Fetch kasbon usage error:', kasbonError)
+      }
+
+      const kasbonMap: Record<string, number> = {}
+      if (kasbonData) {
+        kasbonData.forEach((k: any) => {
+          if (k.user_id) {
+            kasbonMap[k.user_id] = (kasbonMap[k.user_id] || 0) + Number(k.amount)
+          }
+        })
+      }
+
+      return (userData || []).map((u: Record<string, unknown>) => ({
         id: u.id as string,
         email: (u.email as string) || '',
         name: (u.name as string) || '',
@@ -75,7 +102,7 @@ export function useEmployee() {
         joined: (u.created_at as string) || '',
         status: ((u.status as string) === 'inactive' ? 'inactive' : 'active') as 'active' | 'inactive',
         absen: Number(u.absen) || 0,
-        kasbon_used: Number(u.kasbon_used) || 0,
+        kasbon_used: kasbonMap[u.id as string] || 0,
         last_slip: (u.last_slip as string) || '—',
       })) as Employee[]
     }
@@ -133,9 +160,9 @@ export function useEmployee() {
       dept: emp.dept,
       jabatan: emp.jabatan,
       role: emp.role,
-      salary: String(emp.salary),
+      salary: String(emp.salary || '').replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
       shift: emp.shift,
-      kasbon_limit: String(emp.kasbon_limit),
+      kasbon_limit: String(emp.kasbon_limit || '').replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
       status: emp.status,
       joined: emp.joined ? emp.joined.slice(0, 10) : '',
     })
@@ -176,8 +203,8 @@ export function useEmployee() {
               role: form.role, 
               jabatan: form.jabatan,
               phone: form.phone,
-              salary: Number(form.salary) || 0,
-              kasbon_limit: Number(form.kasbon_limit) || 0,
+              salary: Number(String(form.salary).replace(/\./g, '')) || 0,
+              kasbon_limit: Number(String(form.kasbon_limit).replace(/\./g, '')) || 0,
               shift: form.shift,
               address: form.address,
               status: form.status,
@@ -204,8 +231,8 @@ export function useEmployee() {
           role: form.role,
           jabatan: form.jabatan,
           phone: form.phone,
-          salary: Number(form.salary) || 0,
-          kasbon_limit: Number(form.kasbon_limit) || 0,
+          salary: Number(String(form.salary).replace(/\./g, '')) || 0,
+          kasbon_limit: Number(String(form.kasbon_limit).replace(/\./g, '')) || 0,
           shift: form.shift,
           address: form.address,
           status: form.status,

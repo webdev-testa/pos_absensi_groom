@@ -18,4 +18,5 @@ export interface ActiveEmployeeOption {
   id: string
   name: string
   emp_id: string
+  kasbon_limit?: number | null
 }

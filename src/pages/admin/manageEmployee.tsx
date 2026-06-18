@@ -1,5 +1,6 @@
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useEmployee } from '@/hooks/useEmployee'
+import { useNavigate } from 'react-router-dom'
 import { EmployeeHeader } from '@/components/page-sections/employee/EmployeeHeader'
 import { EmployeeStats } from '@/components/page-sections/employee/EmployeeStats'
 import { EmployeeFilters } from '@/components/page-sections/employee/EmployeeFilters'
@@ -9,6 +10,7 @@ import { EmployeeFormDialog } from '@/components/page-sections/employee/Employee
 import { ConfirmToggleDialog } from '@/components/page-sections/employee/ConfirmToggleDialog'
 
 export default function ManageEmployee() {
+  const navigate = useNavigate()
   const {
     employees,
     loading,
@@ -89,7 +91,7 @@ export default function ManageEmployee() {
           selectedIdx={selectedIdx}
           onEdit={openEditModal}
           onShowAttendance={name => showToast(`Riwayat absensi ${name}`)}
-          onShowKasbon={name => showToast(`Riwayat kasbon ${name}`)}
+          onShowKasbon={name => navigate(`/admin/kasbon?search=${encodeURIComponent(name)}`)}
         />
       </div>
 

@@ -167,11 +167,17 @@ export function EmployeeFormDialog({
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12px] text-[#4A7A8A] font-medium">Gaji pokok (Rp)</label>
                   <Input 
-                    type="number" 
-                    placeholder="3000000" 
+                    type="text" 
+                    inputMode="numeric"
+                    placeholder="3.000.000" 
                     value={form.salary} 
-                    onChange={onChange('salary')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    onChange={e => {
+                      const rawVal = e.target.value.replace(/\D/g, '');
+                      const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                      e.target.value = formatted;
+                      onChange('salary')(e);
+                    }}
+                    className="rounded-[10px] border-[#C8E8F5] font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -190,11 +196,17 @@ export function EmployeeFormDialog({
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[12px] text-[#4A7A8A] font-medium">Batas kasbon / bulan (Rp)</label>
                   <Input 
-                    type="number" 
-                    placeholder="1000000" 
+                    type="text" 
+                    inputMode="numeric"
+                    placeholder="1.000.000" 
                     value={form.kasbon_limit} 
-                    onChange={onChange('kasbon_limit')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    onChange={e => {
+                      const rawVal = e.target.value.replace(/\D/g, '');
+                      const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                      e.target.value = formatted;
+                      onChange('kasbon_limit')(e);
+                    }}
+                    className="rounded-[10px] border-[#C8E8F5] font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">

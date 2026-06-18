@@ -197,6 +197,16 @@ export function LeaveRequests({
                             <span className="inline-flex items-center px-2 py-0.5 bg-[#F5F2ED] rounded text-[11px] font-mono text-[#6B6760]">
                               {group.dates.length} hari kerja
                             </span>
+                            {group.dates.some(d => d.clock_in_photo_url) && (
+                              <a
+                                href={group.dates.find(d => d.clock_in_photo_url)?.clock_in_photo_url || "#"}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FAF0E1] border border-[#E89E3A]/30 text-[#E89E3A] hover:bg-[#FAF0E1]/80 text-[11px] font-medium rounded transition-colors"
+                              >
+                                📄 Lihat Lampiran
+                              </a>
+                            )}
                           </div>
                         </div>
 
@@ -277,9 +287,20 @@ export function LeaveRequests({
                                 {getCutiTypeLabel(group.type)}
                               </span>
                             </div>
-                            <div className="text-[11.5px] text-[#A8A49E]">
-                              {formatDateRange(group.dates)} ·{" "}
-                              {group.dates.length} hari
+                            <div className="text-[11.5px] text-[#A8A49E] flex items-center gap-2">
+                              <span>
+                                {formatDateRange(group.dates)} · {group.dates.length} hari
+                              </span>
+                              {group.dates.some(d => d.clock_in_photo_url) && (
+                                <a
+                                  href={group.dates.find(d => d.clock_in_photo_url)?.clock_in_photo_url || "#"}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[11px] text-[#E89E3A] hover:underline"
+                                >
+                                  (Lampiran)
+                                </a>
+                              )}
                             </div>
                           </div>
                           <span className="inline-flex items-center px-2 py-0.5 bg-[#F5E8E4] text-[#C84B2F] rounded-full text-[10.5px] font-semibold shrink-0">

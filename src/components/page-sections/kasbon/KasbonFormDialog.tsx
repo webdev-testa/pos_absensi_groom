@@ -22,6 +22,7 @@ interface KasbonFormDialogProps {
   reasonInput: string
   onReasonInputChange: (val: string) => void
   isPending: boolean
+  selectedEmpLimitInfo?: { limit: number; used: number; remaining: number } | null
 }
 
 export function KasbonFormDialog({
@@ -40,6 +41,7 @@ export function KasbonFormDialog({
   reasonInput,
   onReasonInputChange,
   isPending,
+  selectedEmpLimitInfo,
 }: KasbonFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,16 +73,40 @@ export function KasbonFormDialog({
               </Select>
             </div>
 
+            {selectedEmpLimitInfo && (
+              <div className="p-3 bg-[#F0FAFF] border border-[#C8E8F5] rounded-[10px] text-[12.5px] space-y-1.5 shadow-sm">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#4A7A8A]">Limit Kasbon:</span>
+                  <span className="font-semibold text-[#1A3A4A] font-mono">Rp {selectedEmpLimitInfo.limit.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[#4A7A8A]">Terpakai Bulan Ini:</span>
+                  <span className="font-semibold text-[#1A3A4A] font-mono">Rp {selectedEmpLimitInfo.used.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-[#C8E8F5] pt-1.5 mt-1">
+                  <span className="text-[#4A7A8A] font-medium">Sisa Limit:</span>
+                  <span className={`font-bold font-mono ${selectedEmpLimitInfo.remaining <= 0 ? 'text-[#C84B2F]' : 'text-[#3AAD7A]'}`}>
+                    Rp {selectedEmpLimitInfo.remaining.toLocaleString('id-ID')}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
                 <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Jumlah (Rp)</label>
                 <Input 
-                  type="number" 
-                  placeholder="200000" 
+                  type="text" 
+                  inputMode="numeric"
+                  placeholder="200.000" 
                   required 
                   value={amountInput}
-                  onChange={e => onAmountInputChange(e.target.value)}
-                  className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px]" 
+                  onChange={e => {
+                    const rawVal = e.target.value.replace(/\D/g, '');
+                    const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    onAmountInputChange(formatted);
+                  }}
+                  className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px] font-mono" 
                 />
               </div>
               <div className="flex flex-col gap-1.5">

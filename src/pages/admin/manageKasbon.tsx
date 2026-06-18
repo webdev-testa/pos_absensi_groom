@@ -44,6 +44,7 @@ export default function ManageKasbon() {
     rejectMutation,
     markDeductedMutation,
     addKasbonMutation,
+    selectedEmpLimitInfo,
   } = useKasbon()
 
   return (
@@ -103,6 +104,7 @@ export default function ManageKasbon() {
         reasonInput={reasonInput}
         onReasonInputChange={setReasonInput}
         isPending={addKasbonMutation.isPending}
+        selectedEmpLimitInfo={selectedEmpLimitInfo}
       />
     </AdminLayout>
   )

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useSearchParams } from 'react-router-dom'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { useAuth } from '@/hooks/useAuth'
 import type { KasbonStatus, KasbonMapped, ActiveEmployeeOption } from '@/types/kasbon'
@@ -10,7 +11,19 @@ export function useKasbon() {
   const queryClient = useQueryClient()
 
   // Filters & Modal State
-  const [searchQ, setSearchQ] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const searchQ = searchParams.get('search') || ''
+  const setSearchQ = useCallback((val: string) => {
+    setSearchParams(prev => {
+      if (val) {
+        prev.set('search', val)
+      } else {
+        prev.delete('search')
+      }
+      return prev
+    }, { replace: true })
+  }, [setSearchParams])
+
   const [statusFilter, setStatusFilter] = useState<'all' | KasbonStatus>('all')
   const [tabFilter, setTabFilter] = useState<'all' | 'minggu' | 'hari'>('all')
   
@@ -50,7 +63,7 @@ export function useKasbon() {
       const { data, error } = await supabaseAdmin
         .schema('hr')
         .from('users')
-        .select('id, name, emp_id')
+        .select('id, name, emp_id, kasbon_limit')
         .eq('status', 'active')
         .eq('role', 'employee')
         .order('name')
@@ -63,6 +76,7 @@ export function useKasbon() {
         id: u.id as string,
         name: (u.name as string) || '',
         emp_id: (u.emp_id as string) || '',
+        kasbon_limit: u.kasbon_limit !== undefined && u.kasbon_limit !== null ? Number(u.kasbon_limit) : 0,
       })) as ActiveEmployeeOption[]
     }
   })
@@ -138,7 +152,7 @@ export function useKasbon() {
     const monthData = mappedKasbon.filter(r => {
       const itemDate = new Date(r.requested_at)
       const itemPeriod = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`
-      return monthFilter === 'all' || itemPeriod === monthFilter
+      return (monthFilter === 'all' || itemPeriod === monthFilter) && r.status !== 'rejected'
     })
 
     const total = monthData.reduce((sum, item) => sum + item.amount, 0)
@@ -212,6 +226,7 @@ export function useKasbon() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kasbon_list'] })
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
       toast.success('Kasbon berhasil disetujui')
     },
     onError: (err: any) => {
@@ -235,6 +250,7 @@ export function useKasbon() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kasbon_list'] })
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
       toast.success('Kasbon berhasil ditolak')
     },
     onError: (err: any) => {
@@ -254,6 +270,7 @@ export function useKasbon() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kasbon_list'] })
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
       toast.success('Status berhasil diperbarui menjadi sudah dipotong gaji')
     },
     onError: (err: any) => {
@@ -281,6 +298,7 @@ export function useKasbon() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kasbon_list'] })
+      queryClient.invalidateQueries({ queryKey: ['employees'] })
       toast.success('Kasbon berhasil ditambahkan')
       setShowModal(false)
       // Reset form
@@ -308,16 +326,52 @@ export function useKasbon() {
     markDeductedMutation.mutate(id)
   }, [markDeductedMutation])
 
+  // Calculate remaining limit for selected employee
+  const selectedEmpLimitInfo = useMemo(() => {
+    if (!selectedUserId) return null
+    const emp = employees.find(e => e.id === selectedUserId)
+    if (!emp) return null
+
+    const limit = Number(emp.kasbon_limit) || 0
+
+    // Sum all non-rejected kasbon for this user in the current calendar month
+    const now = new Date()
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth()
+
+    const used = rawKasbon
+      .filter((k: any) => {
+        if (k.user_id !== selectedUserId || k.status === 'rejected') return false
+        const reqDate = new Date(k.requested_at)
+        return reqDate.getFullYear() === currentYear && reqDate.getMonth() === currentMonth
+      })
+      .reduce((sum: number, k: any) => sum + Number(k.amount), 0)
+
+    return {
+      limit,
+      used,
+      remaining: limit - used
+    }
+  }, [selectedUserId, employees, rawKasbon])
+
   const handleCreateKasbon = useCallback((e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedUserId) {
       toast.error('Pilih karyawan terlebih dahulu')
       return
     }
-    const amt = parseFloat(amountInput)
+    const amt = parseFloat(amountInput.replace(/\./g, ''))
     if (isNaN(amt) || amt <= 0) {
       toast.error('Jumlah kasbon harus valid dan lebih dari 0')
       return
+    }
+
+    if (selectedEmpLimitInfo) {
+      const remaining = selectedEmpLimitInfo.remaining
+      if (amt > remaining) {
+        toast.error(`Jumlah kasbon melebihi sisa limit karyawan (Sisa: Rp ${remaining.toLocaleString('id-ID')})`)
+        return
+      }
     }
 
     addKasbonMutation.mutate({
@@ -327,7 +381,7 @@ export function useKasbon() {
       date: dateInput,
       category: categoryInput
     })
-  }, [selectedUserId, amountInput, reasonInput, dateInput, categoryInput, addKasbonMutation])
+  }, [selectedUserId, amountInput, reasonInput, dateInput, categoryInput, addKasbonMutation, selectedEmpLimitInfo])
 
   return {
     searchQ,
@@ -364,5 +418,6 @@ export function useKasbon() {
     rejectMutation,
     markDeductedMutation,
     addKasbonMutation,
+    selectedEmpLimitInfo,
   }
 }
