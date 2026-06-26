@@ -1,7 +1,7 @@
 import { Search, Image as ImageIcon, Download } from "lucide-react";
 import type { AttendanceRecord } from "@/types/attendance";
 import { AttendanceStatusBadge } from "@/components/ui/status-badge";
-import { avColors, ini, calcDur, durPct } from "@/utils/helpers";
+import { avColors, ini, calcDur, durPct, formatDayAndDate } from "@/utils/helpers";
  
 interface AttendanceTableProps {
   filteredData: AttendanceRecord[];
@@ -31,7 +31,11 @@ export function AttendanceTable({
       <div className="p-4 px-5 border-b border-[#E0DDD7] flex items-center justify-between">
         <div>
           <h2 className="font-['Syne'] text-[15px] font-semibold text-[#1A1814]">
-            Rekap kehadiran hari ini
+            {activeTab === "today"
+              ? "Rekap kehadiran hari ini"
+              : activeTab === "week"
+              ? "Rekap kehadiran minggu ini"
+              : "Rekap kehadiran bulan ini"}
           </h2>
           <p className="text-[12px] text-[#A8A49E] mt-0.5">
             Klik baris untuk detail foto & lokasi
@@ -102,6 +106,11 @@ export function AttendanceTable({
               <th className="px-4 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal whitespace-nowrap">
                 Karyawan
               </th>
+              {activeTab !== "today" && (
+                <th className="px-4 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal whitespace-nowrap">
+                  Hari & Tanggal
+                </th>
+              )}
               <th className="px-4 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal whitespace-nowrap">
                 Divisi
               </th>
@@ -127,7 +136,7 @@ export function AttendanceTable({
             {filteredData.length === 0 ? (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={activeTab === "today" ? 8 : 9}
                   className="px-4 py-12 text-center text-[#A8A49E] text-[13px]"
                 >
                   Tidak ada data absensi yang sesuai.
@@ -165,6 +174,11 @@ export function AttendanceTable({
                         </div>
                       </div>
                     </td>
+                    {activeTab !== "today" && (
+                      <td className="px-4 py-3 text-[12.5px] text-[#1A1814] font-medium whitespace-nowrap">
+                        {formatDayAndDate(record.date)}
+                      </td>
+                    )}
                     <td className="px-4 py-3 text-[12.5px] text-[#6B6760]">
                       {record.users?.dept || "—"}
                     </td>

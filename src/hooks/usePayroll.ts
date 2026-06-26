@@ -5,6 +5,17 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import type { PayrollItem } from '@/types/payroll';
 import * as XLSX from 'xlsx';
 
+const generateUUID = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export function usePayroll() {
   const queryClient = useQueryClient();
 
@@ -233,7 +244,7 @@ export function usePayroll() {
       if (activeEmployees.length === 0) return;
       
       const payload = activeEmployees.map(item => ({
-        id: item.payrollId || undefined,
+        id: item.payrollId || generateUUID(),
         user_id: item.user.id,
         period: selectedPeriod,
         basic_salary: item.basicSalary,
@@ -263,7 +274,7 @@ export function usePayroll() {
   const markPaidMutation = useMutation({
     mutationFn: async (item: PayrollItem) => {
       const record = {
-        id: item.payrollId || undefined,
+        id: item.payrollId || generateUUID(),
         user_id: item.user.id,
         period: selectedPeriod,
         basic_salary: item.basicSalary,
@@ -307,7 +318,7 @@ export function usePayroll() {
       if (draftItems.length === 0) return;
       
       const payrollPayload = draftItems.map(item => ({
-        id: item.payrollId || undefined,
+        id: item.payrollId || generateUUID(),
         user_id: item.user.id,
         period: selectedPeriod,
         basic_salary: item.basicSalary,
@@ -352,7 +363,7 @@ export function usePayroll() {
       if (!item) throw new Error('Karyawan tidak ditemukan');
       
       const record = {
-        id: item.payrollId || undefined,
+        id: item.payrollId || generateUUID(),
         user_id: userId,
         period: selectedPeriod,
         basic_salary: item.basicSalary,

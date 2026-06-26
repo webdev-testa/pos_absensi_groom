@@ -93,6 +93,14 @@ export function formatDateShort(dateStr: string) {
   });
 }
 
+export function formatDayAndDate(dateStr: string) {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+  });
+}
+
 export function formatDateRange(dates: { date: string }[]) {
   if (dates.length === 0) return "—";
   const sorted = [...dates].sort((a, b) => a.date.localeCompare(b.date));
