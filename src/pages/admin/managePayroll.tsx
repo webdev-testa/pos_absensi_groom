@@ -53,7 +53,7 @@ export default function Payroll() {
   if (isInitialLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[500px] bg-[#F5F2ED] -m-10 lg:-m-12 p-10 lg:p-12">
+        <div className="flex items-center justify-center min-h-[400px] w-full">
           <Loader2 className="w-8 h-8 animate-spin text-[#C84B2F]" />
         </div>
       </AdminLayout>
@@ -88,7 +88,7 @@ export default function Payroll() {
         }}
       />
 
-      <div className="bg-[#F5F2ED] text-[#1A1814] -m-10 lg:-m-12 p-10 lg:p-12 min-h-screen font-sans flex flex-col gap-6 select-none">
+      <div className="text-[#1A1814] w-full font-sans flex flex-col gap-6 select-none">
         {/* HEADER */}
         <PayrollHeader />
 

@@ -87,3 +87,46 @@ export function KasbonStatusBadge({ status, className }: KasbonStatusBadgeProps)
     </Badge>
   )
 }
+
+interface LeaveStatusBadgeProps {
+  status: string
+  className?: string
+}
+
+export function LeaveStatusBadge({ status, className }: LeaveStatusBadgeProps) {
+  const getStyle = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return "bg-[#FAF0E1] text-[#E89E3A] border-transparent font-medium"
+      case 'approved':
+        return "bg-[#E2F0E8] text-[#2A7A4B] border-transparent font-medium"
+      case 'rejected':
+        return "bg-[#F5E8E4] text-[#C84B2F] border-transparent font-medium"
+      default:
+        return "bg-[#EDEAE4] text-[#A8A49E] border-transparent font-medium"
+    }
+  }
+
+  const getLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return "⏳ Menunggu Persetujuan"
+      case 'approved':
+        return "✓ Disetujui"
+      case 'rejected':
+        return "✗ Ditolak"
+      default:
+        return status
+    }
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className={`${getStyle(status)} ${className || ""}`}
+    >
+      {getLabel(status)}
+    </Badge>
+  )
+}
+

@@ -70,17 +70,17 @@ export default function AbsenEmployee() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-[#1A1814] -m-10 lg:-m-12 p-10 lg:p-12 min-h-screen" style={{ backgroundColor: "#F5F2ED" }}>
+      <div className="font-sans text-[#1A1814] w-full">
         
         {/* HEADER */}
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h1 className="font-['Syne'] text-[28px] font-bold tracking-tight text-[#1A1814]">
+            <h1 className="font-['Syne'] text-2xl font-bold tracking-tight text-[#1A1814]">
               {mainTab === "absensi" && "Dashboard Absensi"}
               {mainTab === "cuti" && "Kelola Cuti & Izin"}
               {mainTab === "libur" && "Hari Libur & Cuti Bersama"}
             </h1>
-            <p className="text-[13.5px] text-[#6B6760] mt-1.5">
+            <p className="text-sm text-[#6B6760] mt-1.5">
               {mainTab === "absensi" && "Pantau kehadiran karyawan secara real-time"}
               {mainTab === "cuti" && "Setujui atau tolak pengajuan cuti, izin, dan sakit karyawan"}
               {mainTab === "libur" && "Kelola hari libur nasional, cuti bersama, dan jadwal tutup kantor"}
@@ -88,7 +88,7 @@ export default function AbsenEmployee() {
           </div>
           <div className="flex items-center gap-2.5">
             {mainTab === "absensi" && (
-              <div className="flex items-center gap-2 bg-white border border-[#E0DDD7] rounded-[10px] px-3.5 py-2 text-[13px] text-[#6B6760]">
+              <div className="flex items-center gap-2 bg-white border border-[#E0DDD7] rounded-[10px] px-3.5 py-2 text-xs text-[#6B6760]">
                 <div className="w-2 h-2 rounded-full bg-[#2A7A4B] shrink-0 animate-pulse"></div>
                 <span>Live · <strong className="text-[#1A1814] font-semibold">
                   {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -97,8 +97,10 @@ export default function AbsenEmployee() {
             )}
             {mainTab === "cuti" && (
               <button
+                type="button"
+                aria-label="Refresh data pengajuan cuti"
                 onClick={() => fetchCutiRequests()}
-                className="bg-white border border-[#E0DDD7] hover:border-[#CBC8C2] hover:text-[#1A1814] text-[#6B6760] rounded-[10px] px-4 py-2 text-[13px] font-medium flex items-center gap-2 transition-colors"
+                className="bg-white border border-[#E0DDD7] hover:border-[#CBC8C2] hover:text-[#1A1814] text-[#6B6760] rounded-[10px] px-4 py-2 text-xs font-medium flex items-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5]"
               >
                 <Clock className="w-4 h-4" />
                 Refresh
@@ -106,8 +108,10 @@ export default function AbsenEmployee() {
             )}
             {mainTab === "libur" && (
               <button
+                type="button"
+                aria-label="Tambah hari libur baru"
                 onClick={() => document.getElementById('holiday-form')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-[#1A1814] text-white rounded-[10px] px-4 py-2 text-[13px] font-medium flex items-center gap-2 hover:bg-[#2A2824] transition-colors"
+                className="bg-[#1A1814] text-white rounded-[10px] px-4 py-2 text-xs font-medium flex items-center gap-2 hover:bg-[#2A2824] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5]"
               >
                 <Plus className="w-4 h-4" />
                 Tambah Hari Libur
@@ -126,7 +130,7 @@ export default function AbsenEmployee() {
             <button
               key={tab.key}
               onClick={() => setMainTab(tab.key)}
-              className={`relative px-5 py-2.5 rounded-[10px] text-[13.5px] font-medium transition-all flex items-center gap-2 ${
+              className={`relative px-5 py-2.5 rounded-[10px] text-sm font-medium transition-all flex items-center gap-2 ${
                 mainTab === tab.key
                   ? "bg-[#1A1814] text-white shadow-sm"
                   : "text-[#6B6760] hover:text-[#1A1814] hover:bg-[#F5F2ED]"
@@ -135,7 +139,7 @@ export default function AbsenEmployee() {
               {tab.icon}
               {tab.label}
               {"badge" in tab && tab.badge > 0 && (
-                <span className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center text-[10.5px] font-bold rounded-full px-1 ${
+                <span className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center text-xs font-bold rounded-full px-1 ${
                   mainTab === tab.key ? "bg-white text-[#1A1814]" : "bg-[#C84B2F] text-white"
                 }`}>
                   {tab.badge}

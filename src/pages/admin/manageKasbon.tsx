@@ -54,7 +54,7 @@ export default function ManageKasbon() {
       {loadingKasbon ? (
         <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#C8E8F5] rounded-[16px] shadow-sm">
           <Loader2 className="w-8 h-8 text-[#F5A940] animate-spin mb-4" />
-          <p className="text-[14px] text-[#4A7A8A]">Memuat data kasbon...</p>
+          <p className="text-sm text-[#4A7A8A]">Memuat data kasbon...</p>
         </div>
       ) : (
         <>

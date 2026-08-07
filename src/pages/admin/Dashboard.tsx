@@ -29,7 +29,7 @@ export default function Dashboard() {
   if (isInitialLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[500px] bg-[#F5F2ED] -m-10 lg:-m-12 p-10 lg:p-12">
+        <div className="flex items-center justify-center min-h-[400px] w-full">
           <Loader2 className="w-8 h-8 animate-spin text-[#C84B2F]" />
         </div>
       </AdminLayout>
@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-[#1A1814] -m-10 lg:-m-12 p-10 lg:p-12 min-h-[calc(100vh-1px)]" style={{ backgroundColor: '#F5F2ED' }}>
+      <div className="font-sans text-[#1A1814] w-full">
         
         {/* HEADER */}
         <DashboardHeader

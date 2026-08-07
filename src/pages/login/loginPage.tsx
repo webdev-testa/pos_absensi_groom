@@ -80,37 +80,44 @@ export default function LoginPage() {
             HR
           </div>
           <h1 className="font-['Syne'] text-[24px] font-bold tracking-tight text-[#1A3A4A]">HadiR Login</h1>
-          <p className="text-[13.5px] text-[#4A7A8A] mt-1.5">Sign in to your account</p>
+          <p className="text-sm text-[#4A7A8A] mt-1.5">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[12px] text-[#4A7A8A] font-medium">Email address</label>
+            <label htmlFor="login-email" className="text-xs text-[#4A7A8A] font-medium block">
+              Email address
+            </label>
             <input 
+              id="login-email"
               type="email" 
               placeholder="nama@drmeow.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full h-10 px-3.5 rounded-[10px] border border-[#C8E8F5] text-[13.5px] text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus:border-[#1A3A4A] transition-colors"
+              className="w-full h-10 px-3.5 rounded-[10px] border border-[#C8E8F5] text-sm text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5] focus:border-[#1A3A4A] transition-colors"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[12px] text-[#4A7A8A] font-medium">Password</label>
+            <label htmlFor="login-password" className="text-xs text-[#4A7A8A] font-medium block">
+              Password
+            </label>
             <div className="relative">
               <input 
+                id="login-password"
                 type={showPassword ? "text" : "password"} 
                 placeholder="Enter your password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full h-10 pl-3.5 pr-10 rounded-[10px] border border-[#C8E8F5] text-[13.5px] text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus:border-[#1A3A4A] transition-colors"
+                className="w-full h-10 pl-3.5 pr-10 rounded-[10px] border border-[#C8E8F5] text-sm text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5] focus:border-[#1A3A4A] transition-colors"
               />
               <button 
                 type="button"
+                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ABAC8] hover:text-[#4A7A8A] transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ABAC8] hover:text-[#4A7A8A] focus-visible:ring-2 focus-visible:ring-[#4DC8F5] rounded p-1 transition-colors"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -118,7 +125,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 rounded-[8px] bg-[#F5E8E4] border border-[#e8b4aa] text-[12.5px] text-[#F5A940]">
+            <div className="p-3 rounded-[8px] bg-[#F5E8E4] border border-[#e8b4aa] text-xs text-[#F5A940]">
               {error}
             </div>
           )}
@@ -126,7 +133,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading || !email || !password}
-            className="w-full h-10 mt-2 bg-[#F5A940] hover:bg-[#b03d24] text-white rounded-[10px] text-[13.5px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full h-10 mt-2 bg-[#F5A940] hover:bg-[#b03d24] text-white rounded-[10px] text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : 'Log in'}
           </button>
