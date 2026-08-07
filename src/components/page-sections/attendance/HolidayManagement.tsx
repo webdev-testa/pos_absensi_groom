@@ -42,7 +42,7 @@ export function HolidayManagement({
       {/* HOLIDAY STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 mb-7">
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Total Hari Libur
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
@@ -53,7 +53,7 @@ export function HolidayManagement({
           </div>
         </div>
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Akan Datang
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">
@@ -64,7 +64,7 @@ export function HolidayManagement({
           </div>
         </div>
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Sudah Lewat
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#A8A49E]">

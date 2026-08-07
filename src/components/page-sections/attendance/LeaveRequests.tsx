@@ -38,7 +38,7 @@ export function LeaveRequests({
       {/* CUTI STAT CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-7">
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Total Menunggu
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#B87333]">
@@ -56,7 +56,7 @@ export function LeaveRequests({
         </div>
 
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Cuti
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#6B4F9E]">
@@ -74,7 +74,7 @@ export function LeaveRequests({
         </div>
 
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Izin
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#B87333]">
@@ -92,7 +92,7 @@ export function LeaveRequests({
         </div>
 
         <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
-          <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">
+          <div className="stat-title mb-2.5">
             Sakit
           </div>
           <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#C84B2F]">

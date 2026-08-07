@@ -36,7 +36,7 @@ export function StatCards({
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
       <Link to="/admin/absensi" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
-        <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Hadir hari ini</div>
+        <div className="stat-title mb-2.5">Hadir hari ini</div>
         <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">
           {attendanceTodayStats.countPresent}
         </div>
@@ -54,7 +54,7 @@ export function StatCards({
 
       <Link to="/admin/kasbon" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
-        <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Kasbon bulan ini</div>
+        <div className="stat-title mb-2.5">Kasbon bulan ini</div>
         <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#C84B2F]">
           {fmtCurrency(kasbonStats.totalKasbonAmt)}
         </div>
@@ -72,7 +72,7 @@ export function StatCards({
 
       <Link to="/admin/payroll" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
-        <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Gaji dibayarkan</div>
+        <div className="stat-title mb-2.5">Gaji dibayarkan</div>
         <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
           {payrollStats.isGenerated ? fmtCurrency(payrollStats.totalPayrollPaid) : fmtCurrency(payrollStats.estimatedSalary)}
         </div>
@@ -94,7 +94,7 @@ export function StatCards({
 
       <Link to="/admin/karyawan" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
-        <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Total karyawan</div>
+        <div className="stat-title mb-2.5">Total karyawan</div>
         <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
           {activeEmployeesCount}
         </div>

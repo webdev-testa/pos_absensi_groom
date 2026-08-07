@@ -13,7 +13,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
     <div className="grid grid-cols-4 gap-4 mb-7">
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Total aktif</div>
+          <div className="stat-title mb-2">Total aktif</div>
           <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#3AAD7A]">
             {totalAktif}
           </div>
@@ -22,7 +22,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Nonaktif</div>
+          <div className="stat-title mb-2">Nonaktif</div>
           <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#8ABAC8]">
             {totalNonaktif}
           </div>
@@ -31,7 +31,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Total gaji pokok</div>
+          <div className="stat-title mb-2">Total gaji pokok</div>
           <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#1A3A4A]">
             {fmtCurrency(totalSalary)}
           </div>
@@ -40,7 +40,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Divisi terbanyak</div>
+          <div className="stat-title mb-2">Divisi terbanyak</div>
           <div className="font-['Syne'] text-[22px] font-bold tracking-[-0.5px] leading-[30px] text-[#1A3A4A]">
             {topDept?.[0] || '—'}
           </div>

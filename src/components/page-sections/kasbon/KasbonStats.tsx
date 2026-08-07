@@ -20,7 +20,7 @@ export function KasbonStats({ monthlyStats }: KasbonStatsProps) {
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Total kasbon</div>
+          <div className="stat-title mb-2">Total kasbon</div>
           <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#F5A940]">
             {fmtCurrency(monthlyStats.total)}
           </div>
@@ -32,7 +32,7 @@ export function KasbonStats({ monthlyStats }: KasbonStatsProps) {
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Belum dipotong</div>
+          <div className="stat-title mb-2">Belum dipotong</div>
           <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#E89E3A]">
             {fmtCurrency(monthlyStats.unpaid)}
           </div>
@@ -44,7 +44,7 @@ export function KasbonStats({ monthlyStats }: KasbonStatsProps) {
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Sudah dipotong</div>
+          <div className="stat-title mb-2">Sudah dipotong</div>
           <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#3AAD7A]">
             {fmtCurrency(monthlyStats.settled)}
           </div>
@@ -56,7 +56,7 @@ export function KasbonStats({ monthlyStats }: KasbonStatsProps) {
       </Card>
       <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
         <CardContent className="p-[18px_20px]">
-          <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-2">Rata-rata per orang</div>
+          <div className="stat-title mb-2">Rata-rata per orang</div>
           <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#1A3A4A]">
             {fmtCurrency(monthlyStats.average)}
           </div>

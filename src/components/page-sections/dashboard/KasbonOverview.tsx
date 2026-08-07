@@ -36,11 +36,11 @@ export function KasbonOverview({ kasbonStats }: KasbonOverviewProps) {
         />
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#F5F2ED] rounded-[10px] p-3">
-            <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.7px] font-mono mb-1">Belum dipotong</div>
+            <div className="stat-title mb-1">Belum dipotong</div>
             <div className="font-['Syne'] text-[18px] font-bold tracking-[-0.5px] text-[#C84B2F]">{fmtCurrency(kasbonStats.unpaidKasbonAmt)}</div>
           </div>
           <div className="bg-[#F5F2ED] rounded-[10px] p-3">
-            <div className="text-[11px] text-[#A8A49E] uppercase tracking-[0.7px] font-mono mb-1">Sudah dipotong</div>
+            <div className="stat-title mb-1">Sudah dipotong</div>
             <div className="font-['Syne'] text-[18px] font-bold tracking-[-0.5px] text-[#2A7A4B]">{fmtCurrency(kasbonStats.deductedKasbonAmt)}</div>
           </div>
         </div>
