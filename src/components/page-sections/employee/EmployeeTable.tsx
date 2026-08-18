@@ -34,25 +34,25 @@ export function EmployeeTable({
   onExportClick,
 }: EmployeeTableProps) {
   return (
-    <Card className="rounded-[16px] border-[#C8E8F5] shadow-sm overflow-hidden bg-white">
-      <div className="p-4 px-5 border-b border-[#C8E8F5] flex items-center justify-between">
+    <Card className="rounded-xl border border-border shadow-xs overflow-hidden bg-card">
+      <div className="p-4 px-5 border-b border-border flex items-center justify-between flex-wrap gap-4">
         <div>
-          <div className="font-['Syne'] text-[15px] font-semibold text-[#1A3A4A]">
-            Karyawan
+          <div className="font-heading text-[15px] font-bold text-foreground">
+            Daftar Staf Klinik
           </div>
-          <div className="text-[12px] text-[#8ABAC8] mt-0.5">Klik baris untuk lihat detail</div>
+          <div className="text-[12px] text-muted-foreground mt-0.5">Klik baris untuk melihat profil lengkap</div>
         </div>
         <div className="flex gap-2.5">
           <Button 
             variant="outline" 
-            className="border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A] hover:bg-[#F0FAFF]" 
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-[38px] cursor-pointer" 
             onClick={onExportClick}
           >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
           <Button 
-            className="bg-[#F5A940] hover:bg-[#b03d24] text-white border-none" 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[38px] font-semibold cursor-pointer shadow-xs" 
             onClick={onAddClick}
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2.5} />
@@ -63,17 +63,17 @@ export function EmployeeTable({
       
       <div className="overflow-x-auto">
         {loading ? (
-          <div className="p-10 text-center text-[#8ABAC8] text-sm">Memuat data...</div>
+          <div className="p-10 text-center text-muted-foreground text-sm">Memuat data staf...</div>
         ) : (
           <Table>
-            <TableHeader className="bg-[#E4F4FD]">
-              <TableRow className="border-none hover:bg-transparent">
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</TableHead>
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Divisi</TableHead>
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Email</TableHead>
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Gaji pokok</TableHead>
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Tgl Bergabung</TableHead>
-                <TableHead className="h-auto py-3 px-4 font-mono text-[10.5px] text-[#8ABAC8] font-normal tracking-[0.8px] uppercase whitespace-nowrap">Status</TableHead>
+            <TableHeader className="bg-surface-soft">
+              <TableRow className="border-b border-border hover:bg-transparent">
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Staf</TableHead>
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Posisi</TableHead>
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Email</TableHead>
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Gaji Pokok</TableHead>
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Tgl Bergabung</TableHead>
+                <TableHead className="h-auto py-3 px-4 font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Status</TableHead>
                 <TableHead className="h-auto py-3 px-4"></TableHead>
               </TableRow>
             </TableHeader>
@@ -86,43 +86,43 @@ export function EmployeeTable({
                 return (
                   <TableRow 
                     key={emp.id} 
-                    className={`cursor-pointer border-b border-[#C8E8F5] last:border-none transition-colors ${isActive ? 'bg-[#F0F7F3]' : 'hover:bg-[#FAFAF8]'}`}
+                    className={`cursor-pointer border-b border-border/60 last:border-none transition-colors ${isActive ? 'bg-[#E6F7F0]/40' : 'hover:bg-surface-soft/60'}`}
                     onClick={() => onSelect(emp.id)}
                   >
                     <TableCell className="p-3 px-4">
                       <div className="flex items-center gap-2.5">
                         <Avatar 
-                          className="w-[34px] h-[34px] rounded-full shrink-0 flex items-center justify-center font-['Syne'] text-[12px] font-bold" 
+                          className="w-[34px] h-[34px] rounded-full shrink-0 flex items-center justify-center font-heading text-[12px] font-bold" 
                           style={{ backgroundColor: c.bg, color: c.fg }}
                         >
                           <AvatarFallback className="bg-transparent">{getInitials(emp.name || '?')}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <div className="font-medium text-[13.5px] text-[#1A3A4A]">{emp.name}</div>
-                          <div className="text-[11px] text-[#8ABAC8] font-mono">{emp.emp_id}</div>
+                          <div className="font-medium text-[13.5px] text-foreground">{emp.name}</div>
+                          <div className="text-[11px] text-muted-foreground font-mono">{emp.emp_id}</div>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="p-3 px-4">
-                      <span className="text-[12.5px] text-[#4A7A8A] block">{emp.dept}</span>
-                      <span className="text-[11px] text-[#8ABAC8]">{emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff')}</span>
+                      <span className="text-[12.5px] text-foreground font-medium block">{emp.dept}</span>
+                      <span className="text-[11px] text-muted-foreground">{emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff')}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
-                      <span className="font-mono text-[12px] text-[#1A3A4A]">{emp.email}</span>
+                      <span className="font-mono text-[12px] text-muted-foreground">{emp.email}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
-                      <span className="font-mono text-[12.5px] text-[#1A3A4A]">{fmtCurrency(emp.salary)}</span>
+                      <span className="font-mono text-[12.5px] text-foreground font-semibold">{fmtCurrency(emp.salary)}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
-                      <span className="text-[12.5px] text-[#4A7A8A]">{fmtDate(emp.joined)}</span>
+                      <span className="text-[12.5px] text-muted-foreground">{fmtDate(emp.joined)}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
                       {emp.status === 'active' ? (
-                        <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                        <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] hover:bg-[#E6F7F0] shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11.5px]">
                           ● Aktif
                         </Badge>
                       ) : (
-                        <Badge className="bg-[#E4F4FD] text-[#8ABAC8] hover:bg-[#E4F4FD] shadow-none font-medium px-2 py-0.5 rounded-full text-[11px]">
+                        <Badge className="bg-surface-soft text-muted-foreground border border-border hover:bg-surface-soft shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11.5px]">
                           ○ Nonaktif
                         </Badge>
                       )}
@@ -132,7 +132,7 @@ export function EmployeeTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A]" 
+                          className="h-7 text-xs px-2.5 rounded-md border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft cursor-pointer shadow-xs" 
                           onClick={() => onEdit(emp)}
                         >
                           Edit
@@ -140,7 +140,7 @@ export function EmployeeTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-7 text-xs px-2.5 rounded-[7px] border-[#C8E8F5] text-[#F5A940] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#F5A940]" 
+                          className="h-7 text-xs px-2.5 rounded-md border-border text-muted-foreground hover:bg-[#FEE2E2] hover:border-[#FECACA] hover:text-[#991B1B] cursor-pointer shadow-xs" 
                           onClick={() => onToggleStatus(emp)}
                         >
                           {emp.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
@@ -152,8 +152,8 @@ export function EmployeeTable({
               })}
               {filtered.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="p-10 text-center text-[#8ABAC8]">
-                    Tidak ada data
+                  <TableCell colSpan={7} className="p-10 text-center text-muted-foreground">
+                    Tidak ada data staf
                   </TableCell>
                 </TableRow>
               )}

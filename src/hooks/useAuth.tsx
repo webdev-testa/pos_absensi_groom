@@ -19,51 +19,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
+    const getCachedProfile = (authUserId: string): User | null => {
+      const cached = localStorage.getItem(`profile_${authUserId}`)
+      if (!cached) return null
+      try {
+        return JSON.parse(cached)
+      } catch {
+        return null
+      }
+    }
+
     const fetchProfile = async (authUserId: string) => {
       try {
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
-        )
-        
-        const fetchPromise = supabase
+        const { data, error } = await supabase
           .schema('hr')
           .from('users')
           .select('*')
           .eq('id', authUserId)
           .single()
 
-        const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any
-        
-        if (error) {
-           console.error('Fetch profile query error:', error)
-        }
-        
-        if (data) {
+        if (!error && data) {
           localStorage.setItem(`profile_${authUserId}`, JSON.stringify(data))
-          if (mounted) setUser(data)
+          if (mounted) setUser(data as User)
           return data
-        } else {
-          // If fetch fails but we have a cached profile, use it
-          const cached = localStorage.getItem(`profile_${authUserId}`)
-          if (cached) {
-            const parsed = JSON.parse(cached)
-            if (mounted) setUser(parsed)
-            return parsed
-          }
-          if (mounted) setUser(prev => prev ? prev : null)
-          return null
         }
       } catch (err) {
-        console.error('Fetch profile exception:', err)
-        const cached = localStorage.getItem(`profile_${authUserId}`)
-        if (cached) {
-          const parsed = JSON.parse(cached)
-          if (mounted) setUser(parsed)
-          return parsed
-        }
-        if (mounted) setUser(prev => prev ? prev : null)
-        return null
+        console.error('Fetch profile error:', err)
       }
+
+      const cached = getCachedProfile(authUserId)
+      if (mounted) setUser(cached)
+      return cached
     }
 
     const init = async () => {

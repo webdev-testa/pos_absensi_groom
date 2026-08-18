@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Printer, Download, Plus, Loader2 } from "lucide-react";
 import { fmtCurrency } from "@/lib/utils";
-import { AV_COLORS, initials } from "@/components/layout/AdminLayout";
+import { AV_COLORS, getInitials } from "@/utils/helpers";
 import type { PayrollItem } from "@/types/payroll";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,16 +57,16 @@ export function PayrollTable({
   generateMutation,
 }: PayrollTableProps) {
   return (
-    <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden">
-      <div className="p-[16px_20px] border-b border-[#E0DDD7] flex items-center justify-between flex-wrap gap-4">
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xs">
+      <div className="p-4 px-5 border-b border-border flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h3 className="font-['Syne'] text-[15px] font-bold text-[#1A1814]">Daftar Gaji Karyawan</h3>
-          <p className="text-[12px] text-[#A8A49E] mt-0.5">{filteredData.length} data karyawan ditampilkan</p>
+          <h3 className="font-heading text-[15px] font-bold text-foreground">Daftar Gaji Staf</h3>
+          <p className="text-[12px] text-muted-foreground mt-0.5">{filteredData.length} data staf klinik</p>
         </div>
         
         <div className="flex items-center gap-3">
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-[180px] bg-white border-[#E0DDD7] rounded-[10px] h-[38px] text-[13px]">
+            <SelectTrigger className="w-[180px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground">
               <SelectValue placeholder="Pilih Periode" />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +76,7 @@ export function PayrollTable({
             </SelectContent>
           </Select>
 
-          <Button onClick={exportExcel} variant="outline" className="bg-white border-[#E0DDD7] text-[#6B6760] hover:text-[#1A1814] hover:border-[#CBC8C2] rounded-[10px] h-[38px] text-[13px]">
+          <Button onClick={exportExcel} variant="outline" className="bg-card border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft rounded-lg h-[38px] text-[13px] cursor-pointer">
             <Download className="w-4 h-4 mr-1.5" />
             Export Excel
           </Button>
@@ -84,7 +84,7 @@ export function PayrollTable({
           <Button 
             onClick={() => generateMutation.mutate()} 
             disabled={generateMutation.isPending}
-            className="bg-[#C84B2F] hover:bg-[#b03d24] text-white border-none rounded-[10px] h-[38px] text-[13px] font-medium"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none rounded-lg h-[38px] text-[13px] font-semibold cursor-pointer shadow-xs"
           >
             {generateMutation.isPending ? (
               <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
@@ -97,22 +97,22 @@ export function PayrollTable({
       </div>
       
       <Table>
-        <TableHeader className="bg-[#EDEAE4]">
-          <TableRow className="border-b border-[#E0DDD7] hover:bg-transparent">
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Karyawan</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Divisi</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Gaji Pokok</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Insentif</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Kasbon</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Gaji Bersih</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4">Status</TableHead>
-            <TableHead className="text-[10.5px] font-mono font-medium text-[#A8A49E] uppercase tracking-[0.8px] h-10 px-4"></TableHead>
+        <TableHeader className="bg-surface-soft">
+          <TableRow className="border-b border-border hover:bg-transparent">
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Staf Klinik</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Posisi</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Gaji Pokok</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Insentif</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Kasbon</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Gaji Bersih</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4">Status</TableHead>
+            <TableHead className="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider h-10 px-4"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-10 text-[#A8A49E] text-[13px]">
+              <TableCell colSpan={8} className="text-center py-10 text-muted-foreground text-[13px]">
                 Tidak ada data payroll yang cocok.
               </TableCell>
             </TableRow>
@@ -124,47 +124,47 @@ export function PayrollTable({
                 <TableRow 
                   key={item.user.id} 
                   onClick={() => setSelectedUserId(item.user.id)}
-                  className={`border-b border-[#E0DDD7] cursor-pointer transition-colors ${isSelected ? 'bg-[#F0F7F3]' : 'hover:bg-[#FAFAF8]'}`}
+                  className={`border-b border-border/60 cursor-pointer transition-colors ${isSelected ? 'bg-[#E6F7F0]/40' : 'hover:bg-surface-soft/60'}`}
                 >
                   <TableCell className="p-3.5 px-4">
                     <div className="flex items-center gap-2.5">
-                      <Avatar className="w-[34px] h-[34px] rounded-full font-['Syne'] font-bold text-[12px] flex items-center justify-center shrink-0" style={{ backgroundColor: c.bg, color: c.fg }}>
-                        <AvatarFallback className="bg-transparent">{initials(item.user.name)}</AvatarFallback>
+                      <Avatar className="w-[34px] h-[34px] rounded-full font-heading font-bold text-[12px] flex items-center justify-center shrink-0" style={{ backgroundColor: c.bg, color: c.fg }}>
+                        <AvatarFallback className="bg-transparent">{getInitials(item.user.name)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-[13.5px] text-[#1A1814]">{item.user.name}</div>
-                        <div className="text-[11px] text-[#A8A49E] font-mono">{item.user.emp_id}</div>
+                        <div className="font-medium text-[13.5px] text-foreground">{item.user.name}</div>
+                        <div className="text-[11px] text-muted-foreground font-mono">{item.user.emp_id}</div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[13px] text-[#6B6760]">
+                  <TableCell className="p-3.5 px-4 text-[13px] text-muted-foreground">
                     {item.user.dept || '—'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#1A1814]">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-foreground">
                     {fmtCurrency(item.basicSalary)}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#2A7A4B] font-medium">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#10B981] font-semibold">
                     {item.incentives > 0 ? `+${fmtCurrency(item.incentives)}` : 'Rp 0'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#C84B2F]">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#FF5600] font-semibold">
                     {item.kasbonDeduction > 0 ? `-${fmtCurrency(item.kasbonDeduction)}` : 'Rp 0'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono font-semibold text-[#1A1814]">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono font-bold text-foreground">
                     {fmtCurrency(item.netSalary)}
                   </TableCell>
                   <TableCell className="p-3.5 px-4">
                     {item.status === 'paid' && (
-                      <Badge className="bg-[#E2F0E8] text-[#2A7A4B] border-none font-medium text-[11px] px-2 py-0.5 rounded-full hover:bg-[#E2F0E8] shadow-none">
+                      <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#E6F7F0] shadow-none">
                         ● Terbayar
                       </Badge>
                     )}
                     {item.status === 'draft' && (
-                      <Badge className="bg-[#F5EDE0] text-[#B87333] border-none font-medium text-[11px] px-2 py-0.5 rounded-full hover:bg-[#F5EDE0] shadow-none">
+                      <Badge className="bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#EFF6FF] shadow-none">
                         ● Draft
                       </Badge>
                     )}
                     {item.status === 'not_generated' && (
-                      <Badge className="bg-[#EDEAE4] text-[#A8A49E] border-none font-medium text-[11px] px-2 py-0.5 rounded-full hover:bg-[#EDEAE4] shadow-none">
+                      <Badge className="bg-[#F3EFE9] text-[#5C6B73] border border-[#E2DDD5] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#F3EFE9] shadow-none">
                         ○ Belum Dibuat
                       </Badge>
                     )}
@@ -173,7 +173,7 @@ export function PayrollTable({
                     <div className="flex items-center gap-1.5 justify-end">
                       <button 
                         onClick={() => openIncentiveModal(item)}
-                        className="px-2.5 py-1 rounded-[7px] text-[12px] font-medium border border-[#E0DDD7] bg-white text-[#6B6760] hover:border-[#CBC8C2] hover:text-[#1A1814] transition-all cursor-pointer"
+                        className="px-2.5 py-1 rounded-md text-[12px] font-semibold border border-border bg-card text-muted-foreground hover:border-[#C8C2B8] hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
                       >
                         Insentif
                       </button>
@@ -181,7 +181,7 @@ export function PayrollTable({
                         <button 
                           onClick={() => markPaidMutation.mutate(item)}
                           disabled={markPaidMutation.isPending}
-                          className="px-2.5 py-1 rounded-[7px] text-[12px] font-medium border-none bg-[#2A7A4B] text-white hover:bg-[#1f5d37] transition-all cursor-pointer"
+                          className="px-2.5 py-1 rounded-md text-[12px] font-semibold border-none bg-[#10B981] text-white hover:bg-[#059669] transition-all cursor-pointer shadow-xs"
                         >
                           Bayar
                         </button>
@@ -189,7 +189,7 @@ export function PayrollTable({
                       {item.status !== 'not_generated' && (
                         <button 
                           onClick={() => handlePrint(item)}
-                          className="p-1 rounded-[7px] border border-[#E0DDD7] bg-white text-[#6B6760] hover:border-[#CBC8C2] hover:text-[#1A1814] transition-all cursor-pointer"
+                          className="p-1.5 rounded-md border border-border bg-card text-muted-foreground hover:border-[#C8C2B8] hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
                           title="Cetak Slip Gaji"
                         >
                           <Printer className="w-3.5 h-3.5" />

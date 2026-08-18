@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { FileText, Printer } from "lucide-react";
 import { fmtCurrency } from "@/lib/utils";
-import { initials } from "@/components/layout/AdminLayout";
+import { getInitials } from "@/utils/helpers";
 import type { PayrollItem } from "@/types/payroll";
 
 interface PayrollDetailPanelProps {
@@ -22,47 +22,47 @@ export function PayrollDetailPanel({
 }: PayrollDetailPanelProps) {
   if (!selectedItem) {
     return (
-      <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-10 text-center text-[#A8A49E] flex flex-col items-center gap-3">
-        <FileText className="w-10 h-10 stroke-[1.2] text-[#A8A49E]" />
+      <div className="bg-card border border-border rounded-xl p-10 text-center text-muted-foreground flex flex-col items-center gap-3 shadow-xs">
+        <FileText className="w-10 h-10 stroke-[1.2] text-muted-foreground/50" />
         <div>
-          <div className="font-semibold text-[13.5px] text-[#6B6760] mb-0.5">Detail Slip Gaji</div>
-          <div className="text-[12.5px]">Pilih salah satu karyawan di tabel untuk menampilkan rincian dan mencetak slip gaji.</div>
+          <div className="font-semibold text-[13.5px] text-foreground mb-0.5">Detail Slip Gaji</div>
+          <div className="text-[12.5px] text-muted-foreground">Pilih salah satu staf klinik di tabel untuk menampilkan rincian dan mencetak slip gaji.</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden flex flex-col">
+    <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shadow-xs">
       {/* HERO DETAIL */}
-      <div className="bg-[#1A1814] p-5 text-white flex flex-col gap-4">
+      <div className="bg-primary p-5 text-white flex flex-col gap-4">
         <div className="flex items-center gap-3.5">
-          <Avatar className="w-[52px] h-[52px] rounded-full font-['Syne'] font-bold text-[18px] flex items-center justify-center shrink-0 bg-[#F5EDE0] text-[#B87333]">
-            <AvatarFallback className="bg-transparent">{initials(selectedItem.user.name)}</AvatarFallback>
+          <Avatar className="w-[52px] h-[52px] rounded-full font-heading font-bold text-[18px] flex items-center justify-center shrink-0 bg-[#FEF3C7] text-[#92400E]">
+            <AvatarFallback className="bg-transparent text-primary font-bold">{getInitials(selectedItem.user.name)}</AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-['Syne'] text-[17px] font-bold leading-tight">{selectedItem.user.name}</div>
-            <div className="text-[12px] text-white/40 font-mono mt-1">{selectedItem.user.emp_id} · {selectedItem.user.dept || 'No Dept'}</div>
+            <div className="font-heading text-[17px] font-bold leading-tight">{selectedItem.user.name}</div>
+            <div className="text-[12px] text-white/60 font-mono mt-0.5">{selectedItem.user.emp_id} · {selectedItem.user.dept || 'No Dept'}</div>
           </div>
           <div className="ml-auto">
-            {selectedItem.status === 'paid' && <Badge className="bg-[#2A7A4B]/20 text-[#4ade80] border-none text-[11px] px-2 shadow-none font-medium rounded-full">Lunas</Badge>}
-            {selectedItem.status === 'draft' && <Badge className="bg-[#B87333]/20 text-[#F5EDE0] border-none text-[11px] px-2 shadow-none font-medium rounded-full">Draft</Badge>}
-            {selectedItem.status === 'not_generated' && <Badge className="bg-white/10 text-white/40 border-none text-[11px] px-2 shadow-none font-medium rounded-full">Belum Ada</Badge>}
+            {selectedItem.status === 'paid' && <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] text-[11px] px-2.5 shadow-none font-semibold rounded-full">Lunas</Badge>}
+            {selectedItem.status === 'draft' && <Badge className="bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE] text-[11px] px-2.5 shadow-none font-semibold rounded-full">Draft</Badge>}
+            {selectedItem.status === 'not_generated' && <Badge className="bg-white/10 text-white/60 border border-white/20 text-[11px] px-2.5 shadow-none font-semibold rounded-full">Belum Dibuat</Badge>}
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-0.5 bg-white/15 rounded-lg overflow-hidden border border-white/5">
-          <div className="bg-white/5 p-2.5 text-center">
-            <div className="font-['Syne'] text-[15px] font-bold text-white">{selectedItem.presentDays} hari</div>
-            <div className="text-[9.5px] text-white/35 uppercase tracking-[0.5px] font-mono mt-0.5">Kehadiran</div>
+        <div className="grid grid-cols-3 gap-1 bg-white/10 rounded-lg overflow-hidden border border-white/10 p-1">
+          <div className="bg-white/5 p-2 text-center rounded-md">
+            <div className="font-heading text-[15px] font-bold text-white">{selectedItem.presentDays} hari</div>
+            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Kehadiran</div>
           </div>
-          <div className="bg-white/5 p-2.5 text-center">
-            <div className="font-['Syne'] text-[15px] font-bold text-white">{fmtCurrency(selectedItem.kasbonDeduction)}</div>
-            <div className="text-[9.5px] text-white/35 uppercase tracking-[0.5px] font-mono mt-0.5">Kasbon</div>
+          <div className="bg-white/5 p-2 text-center rounded-md">
+            <div className="font-mono text-[13px] font-bold text-[#FF5600]">{fmtCurrency(selectedItem.kasbonDeduction)}</div>
+            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Kasbon</div>
           </div>
-          <div className="bg-white/5 p-2.5 text-center">
-            <div className="font-['Syne'] text-[15px] font-bold text-white">{fmtCurrency(selectedItem.basicSalary)}</div>
-            <div className="text-[9.5px] text-white/35 uppercase tracking-[0.5px] font-mono mt-0.5">Gaji Pokok</div>
+          <div className="bg-white/5 p-2 text-center rounded-md">
+            <div className="font-mono text-[13px] font-bold text-white">{fmtCurrency(selectedItem.basicSalary)}</div>
+            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Gaji Pokok</div>
           </div>
         </div>
       </div>
@@ -70,41 +70,41 @@ export function PayrollDetailPanel({
       {/* DETAIL BODY */}
       <div className="p-5 flex flex-col gap-5">
         <div>
-          <h4 className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2.5">Rincian Slip Gaji ({selectedPeriodLabel})</h4>
-          <div className="flex flex-col text-[13px] border-b border-[#E0DDD7] pb-2">
+          <h4 className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-2.5">Rincian Slip Gaji ({selectedPeriodLabel})</h4>
+          <div className="flex flex-col text-[13px] border-b border-border/60 pb-2">
             <div className="flex justify-between py-1.5">
-              <span className="text-[#6B6760]">Gaji Pokok</span>
-              <span className="font-medium font-mono">{fmtCurrency(selectedItem.basicSalary)}</span>
+              <span className="text-muted-foreground">Gaji Pokok</span>
+              <span className="font-medium font-mono text-foreground">{fmtCurrency(selectedItem.basicSalary)}</span>
             </div>
-            <div className="flex justify-between py-1.5 text-[#2A7A4B]">
+            <div className="flex justify-between py-1.5 text-[#10B981]">
               <span>Insentif / Tambahan</span>
-              <span className="font-medium font-mono">+{fmtCurrency(selectedItem.incentives)}</span>
+              <span className="font-semibold font-mono">+{fmtCurrency(selectedItem.incentives)}</span>
             </div>
-            <div className="flex justify-between py-1.5 text-[#C84B2F]">
+            <div className="flex justify-between py-1.5 text-[#FF5600]">
               <span>Potongan Kasbon</span>
-              <span className="font-medium font-mono">-{fmtCurrency(selectedItem.kasbonDeduction)}</span>
+              <span className="font-semibold font-mono">-{fmtCurrency(selectedItem.kasbonDeduction)}</span>
             </div>
           </div>
-          <div className="flex justify-between items-center pt-3 text-[14.5px] font-bold text-[#1A1814]">
+          <div className="flex justify-between items-center pt-3 text-[14.5px] font-bold text-foreground">
             <span>Gaji Bersih Diterima</span>
-            <span className="font-mono text-[#C84B2F]">{fmtCurrency(selectedItem.netSalary)}</span>
+            <span className="font-mono text-foreground">{fmtCurrency(selectedItem.netSalary)}</span>
           </div>
         </div>
 
         <div>
-          <h4 className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">Info Karyawan</h4>
+          <h4 className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-2">Info Staf Klinik</h4>
           <div className="flex flex-col text-[13px]">
-            <div className="flex justify-between py-1 border-b border-dashed border-[#E0DDD7]">
-              <span className="text-[#6B6760]">Role Status</span>
-              <span className="font-medium capitalize">{selectedItem.user.role || 'Employee'}</span>
+            <div className="flex justify-between py-1.5 border-b border-dashed border-border/60">
+              <span className="text-muted-foreground">Hak Akses</span>
+              <span className="font-semibold capitalize text-foreground">{selectedItem.user.role || 'Staff'}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-dashed border-[#E0DDD7]">
-              <span className="text-[#6B6760]">Status Karyawan</span>
-              <span className="font-medium capitalize">{selectedItem.user.status === 'active' ? 'Aktif' : 'Nonaktif'}</span>
+            <div className="flex justify-between py-1.5 border-b border-dashed border-border/60">
+              <span className="text-muted-foreground">Status Keaktifan</span>
+              <span className="font-semibold capitalize text-foreground">{selectedItem.user.status === 'active' ? 'Aktif' : 'Nonaktif'}</span>
             </div>
-            <div className="flex justify-between py-1 border-b border-dashed border-[#E0DDD7]">
-              <span className="text-[#6B6760]">Bergabung Sejak</span>
-              <span className="font-medium">
+            <div className="flex justify-between py-1.5 border-b border-dashed border-border/60">
+              <span className="text-muted-foreground">Bergabung Sejak</span>
+              <span className="font-medium text-foreground">
                 {selectedItem.user.created_at ? new Date(selectedItem.user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
               </span>
             </div>
@@ -113,23 +113,24 @@ export function PayrollDetailPanel({
 
         {/* ATTENDANCE & KASBON PROGRESS BARS */}
         <div>
-          <h4 className="text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-3">Persentase Bulan Ini</h4>
+          <h4 className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-3">Persentase Bulan Ini</h4>
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-[12px] text-[#6B6760]">
+              <div className="flex justify-between text-[12px] text-muted-foreground">
                 <span>Kehadiran (Target 26 hari)</span>
-                <span className="font-mono">{Math.round((selectedItem.presentDays / 26) * 100)}%</span>
+                <span className="font-mono text-foreground font-semibold">{Math.round((selectedItem.presentDays / 26) * 100)}%</span>
               </div>
               <Progress 
                 value={Math.min(Math.round((selectedItem.presentDays / 26) * 100), 100)} 
-                indicatorClassName="bg-[#2A7A4B]"
+                indicatorClassName="bg-[#10B981]"
+                className="h-1.5 rounded-full bg-surface-soft"
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between text-[12px] text-[#6B6760]">
+              <div className="flex justify-between text-[12px] text-muted-foreground">
                 <span>Limit Kasbon Terpakai</span>
-                <span className="font-mono">
+                <span className="font-mono text-foreground font-semibold">
                   {selectedItem.user.kasbon_limit > 0 ? Math.round((selectedItem.kasbonDeduction / selectedItem.user.kasbon_limit) * 100) : 0}%
                 </span>
               </div>
@@ -141,8 +142,9 @@ export function PayrollDetailPanel({
                   100
                 )} 
                 indicatorClassName={(selectedItem.user.kasbon_limit > 0 ? (selectedItem.kasbonDeduction / selectedItem.user.kasbon_limit) : 0) > 0.8 
-                  ? 'bg-[#C84B2F]' 
-                  : 'bg-[#B87333]'}
+                  ? 'bg-[#EF4444]' 
+                  : 'bg-[#F59E0B]'}
+                className="h-1.5 rounded-full bg-surface-soft"
               />
             </div>
           </div>
@@ -150,11 +152,11 @@ export function PayrollDetailPanel({
       </div>
 
       {/* DETAIL ACTIONS */}
-      <div className="p-4 bg-[#EDEAE4] border-t border-[#E0DDD7] flex gap-2">
+      <div className="p-4 bg-surface-soft border-t border-border flex gap-2">
         <Button 
           onClick={() => openIncentiveModal(selectedItem)}
           variant="outline" 
-          className="flex-1 bg-white border-[#E0DDD7] hover:border-[#CBC8C2] text-[#6B6760] hover:text-[#1A1814] h-[36px] text-[12.5px] rounded-[10px]"
+          className="flex-1 bg-card border-border hover:border-[#C8C2B8] text-muted-foreground hover:text-foreground h-[36px] text-[12.5px] rounded-lg font-semibold cursor-pointer shadow-xs"
         >
           Edit Insentif
         </Button>
@@ -162,9 +164,9 @@ export function PayrollDetailPanel({
         {selectedItem.status !== 'not_generated' && (
           <Button 
             onClick={() => handlePrint(selectedItem)}
-            className="flex-1 bg-[#1A1814] hover:bg-[#2a2620] text-white border-none h-[36px] text-[12.5px] rounded-[10px]"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[36px] text-[12.5px] rounded-lg font-semibold cursor-pointer shadow-xs"
           >
-            <Printer className="w-4.5 h-4.5 mr-1" />
+            <Printer className="w-4 h-4 mr-1.5" />
             Cetak Slip Gaji
           </Button>
         )}

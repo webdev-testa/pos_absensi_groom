@@ -17,22 +17,17 @@ export default function LoginPage() {
   // if already logged in, redirect immediately
   useEffect(() => {
     if (!authLoading && user) {
-      redirectByRole(user.role)
+      redirect()
     }
   }, [user, authLoading])
 
-  const redirectByRole = (role: string) => {
+  const redirect = () => {
     const from = location.state?.from?.pathname
     if (from) {
       navigate(from, { replace: true })
       return
     }
-
-    if (role === 'admin' || role === 'superadmin') {
-      navigate('/admin/dashboard', { replace: true })
-    } else {
-      navigate('/employee/home', { replace: true })
-    }
+    navigate('/admin/dashboard', { replace: true })
   }
 
   const handleLogin = async (e?: React.FormEvent) => {
@@ -72,20 +67,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0FAFF] flex items-center justify-center p-6 font-sans selection:bg-[#4DC8F5]/30">
-      <div className="w-full max-w-[420px] bg-white rounded-[16px] shadow-sm border border-[#C8E8F5] p-8 lg:p-10">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6 font-sans">
+      <div className="w-full max-w-[420px] bg-card rounded-2xl shadow-sm border border-border p-8 lg:p-10">
         
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0D2D3D] text-white font-['Syne'] font-bold text-xl mb-4 tracking-tight">
-            HR
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground font-heading font-bold text-xl mb-4 tracking-tight shadow-xs">
+            🐾
           </div>
-          <h1 className="font-['Syne'] text-[24px] font-bold tracking-tight text-[#1A3A4A]">HadiR Login</h1>
-          <p className="text-sm text-[#4A7A8A] mt-1.5">Sign in to your account</p>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">Absen Dr. Meow</h1>
+          <p className="text-sm text-muted-foreground mt-1.5">Masuk ke portal klinik & operasional</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="login-email" className="text-xs text-[#4A7A8A] font-medium block">
+            <label htmlFor="login-email" className="text-xs text-muted-foreground font-medium block">
               Email address
             </label>
             <input 
@@ -95,29 +90,29 @@ export default function LoginPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full h-10 px-3.5 rounded-[10px] border border-[#C8E8F5] text-sm text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5] focus:border-[#1A3A4A] transition-colors"
+              className="w-full h-11 px-3.5 rounded-xl border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary transition-all"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="login-password" className="text-xs text-[#4A7A8A] font-medium block">
+            <label htmlFor="login-password" className="text-xs text-muted-foreground font-medium block">
               Password
             </label>
             <div className="relative">
               <input 
                 id="login-password"
                 type={showPassword ? "text" : "password"} 
-                placeholder="Enter your password"
+                placeholder="Masukkan kata sandi"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full h-10 pl-3.5 pr-10 rounded-[10px] border border-[#C8E8F5] text-sm text-[#1A3A4A] placeholder:text-[#8ABAC8] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4DC8F5] focus:border-[#1A3A4A] transition-colors"
+                className="w-full h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary transition-all"
               />
               <button 
                 type="button"
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8ABAC8] hover:text-[#4A7A8A] focus-visible:ring-2 focus-visible:ring-[#4DC8F5] rounded p-1 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary rounded p-1 transition-colors"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -125,7 +120,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 rounded-[8px] bg-[#F5E8E4] border border-[#e8b4aa] text-xs text-[#F5A940]">
+            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-xs text-[#991B1B]">
               {error}
             </div>
           )}
@@ -133,9 +128,9 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading || !email || !password}
-            className="w-full h-10 mt-2 bg-[#F5A940] hover:bg-[#b03d24] text-white rounded-[10px] text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full h-11 mt-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer shadow-xs"
           >
-            {loading ? <Loader2 size={16} className="animate-spin" /> : 'Log in'}
+            {loading ? <Loader2 size={16} className="animate-spin" /> : 'Masuk'}
           </button>
         </form>
 

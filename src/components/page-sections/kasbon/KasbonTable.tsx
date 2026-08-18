@@ -36,10 +36,10 @@ export function KasbonTable({
   onAddClick,
 }: KasbonTableProps) {
   return (
-    <Card className="rounded-[16px] border-[#C8E8F5] shadow-sm overflow-hidden bg-white">
-      <div className="p-4 px-5 border-b border-[#C8E8F5] flex items-center justify-between flex-wrap gap-4">
+    <Card className="rounded-xl border border-border shadow-xs overflow-hidden bg-card">
+      <div className="p-4 px-5 border-b border-border flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h3 className="font-['Syne'] text-[15px] font-semibold text-[#1A3A4A]">Kasbon Karyawan</h3>
+          <h3 className="font-heading text-[15px] font-bold text-foreground">Daftar Kasbon Staf</h3>
         </div>
         <div className="flex gap-2.5 items-center">
           <Button 
@@ -47,20 +47,20 @@ export function KasbonTable({
             size="icon" 
             onClick={onRefetch}
             disabled={loadingKasbon}
-            className="border-[#C8E8F5] text-[#4A7A8A] hover:bg-[#F0FAFF] h-[38px] w-[38px]"
+            className="border-border text-muted-foreground hover:bg-surface-soft h-[38px] w-[38px] cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loadingKasbon ? 'animate-spin' : ''}`} />
           </Button>
           <Button 
             variant="outline" 
-            className="border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A] hover:bg-[#F0FAFF] h-[38px]" 
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-[38px] cursor-pointer" 
             onClick={onExportClick}
           >
             <Download className="w-4 h-4 mr-2" />
             Export Excel
           </Button>
           <Button 
-            className="bg-[#F5A940] hover:bg-[#e09833] text-white border-none h-[38px] font-medium" 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[38px] font-semibold cursor-pointer shadow-xs" 
             onClick={onAddClick}
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2.5} />
@@ -70,52 +70,52 @@ export function KasbonTable({
       </div>
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-[#E4F4FD]">
+          <TableHeader className="bg-surface-soft">
             <TableRow className="border-none hover:bg-transparent">
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Karyawan</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Tanggal</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Jumlah</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Alasan</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Status</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap">Saldo kasbon</TableHead>
-              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-[#8ABAC8] font-medium tracking-[0.8px] uppercase whitespace-nowrap"></TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Staf</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Tanggal</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Jumlah</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Keperluan</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Status</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap">Saldo Belum Lunas</TableHead>
+              <TableHead className="h-auto py-3 px-[18px] font-mono text-[11px] text-muted-foreground font-semibold tracking-wider uppercase whitespace-nowrap"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredKasbon.map((row, i) => {
               const c = AV_COLORS[i % AV_COLORS.length]
               return (
-                <TableRow key={row.id} className="border-b border-[#C8E8F5] last:border-none hover:bg-[#FAFAF8]">
+                <TableRow key={row.id} className="border-b border-border/60 last:border-none hover:bg-surface-soft/60 transition-colors">
                   <TableCell className="py-3.5 px-[18px]">
                     <div className="flex items-center gap-2.5">
                       <Avatar 
-                        className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-['Syne'] text-[12px] font-bold" 
+                        className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center font-heading text-[12px] font-bold" 
                         style={{ backgroundColor: c.bg, color: c.fg }}
                       >
                         <AvatarFallback className="bg-transparent">{getInitials(row.name)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-[13.5px] text-[#1A3A4A]">{row.name}</div>
-                        <div className="text-[11.5px] text-[#8ABAC8] font-mono">{row.empId}</div>
+                        <div className="font-medium text-[13.5px] text-foreground">{row.name}</div>
+                        <div className="text-[11.5px] text-muted-foreground font-mono">{row.empId}</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className="font-mono text-[12.5px] text-[#4A7A8A]">{row.date}</span>
+                    <span className="font-mono text-[12.5px] text-muted-foreground">{row.date}</span>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className="font-mono font-medium text-[13.5px] text-[#F5A940]">− {fmtCurrency(row.amount)}</span>
+                    <span className="font-mono font-semibold text-[13.5px] text-[#FF5600]">− {fmtCurrency(row.amount)}</span>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className="text-[12.5px] text-[#4A7A8A] max-w-[160px] block truncate" title={row.note}>
-                      {row.note || <em className="text-[#8ABAC8] font-light">Tidak ada catatan</em>}
+                    <span className="text-[12.5px] text-muted-foreground max-w-[160px] block truncate" title={row.note}>
+                      {row.note || <em className="text-muted-foreground/50 font-light">Tidak ada catatan</em>}
                     </span>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
                     <KasbonStatusBadge status={row.status} />
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className={`font-mono font-medium text-[13.5px] ${row.balance > 0 ? 'text-[#F5A940]' : 'text-[#8ABAC8]'}`}>
+                    <span className={`font-mono font-medium text-[13.5px] ${row.balance > 0 ? 'text-[#FF5600]' : 'text-muted-foreground'}`}>
                       {row.balance > 0 ? fmtCurrency(row.balance) : '—'}
                     </span>
                   </TableCell>
@@ -125,7 +125,7 @@ export function KasbonTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-[7px] bg-[#E2F0E8] border-[#b8dfc8] text-[#3AAD7A] hover:bg-[#d0ead9] hover:text-[#3AAD7A] disabled:opacity-50"
+                          className="h-[28px] text-[12px] px-3 rounded-md bg-[#E6F7F0] border-[#A7F3D0] text-[#065F46] hover:bg-[#A7F3D0] hover:text-[#065F46] font-semibold cursor-pointer disabled:opacity-50"
                           onClick={() => onApprove(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -134,7 +134,7 @@ export function KasbonTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A] hover:bg-[#F0FAFF] disabled:opacity-50"
+                          className="h-[28px] text-[12px] px-3 rounded-md bg-[#FEE2E2] border-[#FECACA] text-[#991B1B] hover:bg-[#FECACA] hover:text-[#991B1B] font-semibold cursor-pointer disabled:opacity-50"
                           onClick={() => onReject(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -145,14 +145,14 @@ export function KasbonTable({
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="h-[28px] text-[12px] px-3 rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A] hover:bg-[#F0FAFF] whitespace-nowrap disabled:opacity-50"
+                        className="h-[28px] text-[12px] px-3 rounded-md border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft whitespace-nowrap cursor-pointer disabled:opacity-50"
                         onClick={() => onMarkDeducted(row.id)}
                         disabled={deductPending}
                       >
                         Tandai dipotong
                       </Button>
                     ) : (
-                      <span className="text-[12px] text-[#8ABAC8] font-mono">—</span>
+                      <span className="text-[12px] text-muted-foreground font-mono">—</span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -160,7 +160,7 @@ export function KasbonTable({
             })}
             {filteredKasbon.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="p-10 text-center text-[#8ABAC8]">
+                <TableCell colSpan={7} className="p-10 text-center text-muted-foreground">
                   Tidak ada data transaksi kasbon
                 </TableCell>
               </TableRow>
@@ -168,16 +168,16 @@ export function KasbonTable({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-[14px_18px] border-t border-[#C8E8F5] text-[12.5px] text-[#8ABAC8]">
+      <div className="flex items-center justify-between p-[14px_18px] border-t border-border text-[12.5px] text-muted-foreground">
         <span>Menampilkan {filteredKasbon.length} transaksi</span>
         <div className="flex gap-1">
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A]">
+          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer">
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-[7px] border-[#1A3A4A] bg-[#1A3A4A] text-white hover:bg-[#1A3A4A] hover:text-white">
+          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground font-semibold">
             1
           </Button>
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-[7px] border-[#C8E8F5] text-[#4A7A8A] hover:text-[#1A3A4A]">
+          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer">
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>

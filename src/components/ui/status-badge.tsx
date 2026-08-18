@@ -9,13 +9,13 @@ export function AttendanceStatusBadge({ status, className }: AttendanceStatusBad
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "ontime":
-        return "bg-[#E2F0E8] text-[#2A7A4B] border-transparent"
+        return "bg-[#E6F7F0] text-[#065F46] border-[#A7F3D0]"
       case "late":
-        return "bg-[#F5EDE0] text-[#B87333] border-transparent"
+        return "bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]"
       case "absent":
-        return "bg-[#F5E8E4] text-[#C84B2F] border-transparent"
+        return "bg-[#FEE2E2] text-[#991B1B] border-[#FECACA]"
       default:
-        return "bg-[#EDEAE4] text-[#A8A49E] border-transparent"
+        return "bg-[#F3EFE9] text-[#5C6B73] border-[#E2DDD5]"
     }
   }
 
@@ -35,7 +35,7 @@ export function AttendanceStatusBadge({ status, className }: AttendanceStatusBad
   return (
     <Badge
       variant="outline"
-      className={`${getStatusStyle(status)} ${className || ""}`}
+      className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold tracking-tight transition-colors ${getStatusStyle(status)} ${className || ""}`}
     >
       {getStatusLabel(status)}
     </Badge>
@@ -51,15 +51,15 @@ export function KasbonStatusBadge({ status, className }: KasbonStatusBadgeProps)
   const getStyle = (status: string) => {
     switch (status) {
       case 'pending':
-        return "bg-[#FAF0E1] text-[#E89E3A] hover:bg-[#FAF0E1] shadow-none border-transparent font-medium"
+        return "bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]"
       case 'approved':
-        return "bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none border-transparent font-medium"
+        return "bg-[#E6F7F0] text-[#065F46] border-[#A7F3D0]"
       case 'deducted':
-        return "bg-[#F0FAFF] text-[#4A7A8A] hover:bg-[#F0FAFF] shadow-none border-[#C8E8F5] font-medium"
+        return "bg-[#EFF6FF] text-[#1E40AF] border-[#BFDBFE]"
       case 'rejected':
-        return "bg-[#F87171]/10 text-[#F87171] hover:bg-[#F87171]/10 shadow-none border-transparent font-medium"
+        return "bg-[#FEE2E2] text-[#991B1B] border-[#FECACA]"
       default:
-        return "bg-[#EDEAE4] text-[#A8A49E] border-transparent font-medium"
+        return "bg-[#F3EFE9] text-[#5C6B73] border-[#E2DDD5]"
     }
   }
 
@@ -81,7 +81,7 @@ export function KasbonStatusBadge({ status, className }: KasbonStatusBadgeProps)
   return (
     <Badge
       variant="outline"
-      className={`${getStyle(status)} ${className || ""}`}
+      className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold tracking-tight transition-colors ${getStyle(status)} ${className || ""}`}
     >
       {getLabel(status)}
     </Badge>
@@ -97,13 +97,13 @@ export function LeaveStatusBadge({ status, className }: LeaveStatusBadgeProps) {
   const getStyle = (status: string) => {
     switch (status) {
       case 'pending':
-        return "bg-[#FAF0E1] text-[#E89E3A] border-transparent font-medium"
+        return "bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]"
       case 'approved':
-        return "bg-[#E2F0E8] text-[#2A7A4B] border-transparent font-medium"
+        return "bg-[#E6F7F0] text-[#065F46] border-[#A7F3D0]"
       case 'rejected':
-        return "bg-[#F5E8E4] text-[#C84B2F] border-transparent font-medium"
+        return "bg-[#FEE2E2] text-[#991B1B] border-[#FECACA]"
       default:
-        return "bg-[#EDEAE4] text-[#A8A49E] border-transparent font-medium"
+        return "bg-[#F3EFE9] text-[#5C6B73] border-[#E2DDD5]"
     }
   }
 
@@ -123,10 +123,9 @@ export function LeaveStatusBadge({ status, className }: LeaveStatusBadgeProps) {
   return (
     <Badge
       variant="outline"
-      className={`${getStyle(status)} ${className || ""}`}
+      className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold tracking-tight transition-colors ${getStyle(status)} ${className || ""}`}
     >
       {getLabel(status)}
     </Badge>
   )
 }
-

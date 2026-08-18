@@ -39,10 +39,6 @@ export function useEmployee() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [confirmData, setConfirmData] = useState<{ id: string; name: string; newStatus: 'active' | 'inactive' } | null>(null)
 
-  const showToast = useCallback((msg: string) => {
-    toast.success(msg)
-  }, [])
-
   /* ── fetch employees (React Query) ── */
   const { data: employees = [], isLoading: loading } = useQuery<Employee[]>({
     queryKey: ['employees'],
@@ -60,7 +56,7 @@ export function useEmployee() {
 
       if (userError) {
         console.error('Fetch employees error:', userError)
-        showToast('Gagal memuat data karyawan')
+        toast.error('Gagal memuat data karyawan')
         throw userError
       }
 
@@ -249,12 +245,12 @@ export function useEmployee() {
       }
     },
     onSuccess: (res) => {
-      showToast(res.action === 'add' ? `${res.name} berhasil ditambahkan` : `Data ${res.name} berhasil diperbarui`)
+      toast.success(res.action === 'add' ? `${res.name} berhasil ditambahkan` : `Data ${res.name} berhasil diperbarui`)
       setShowFormModal(false)
       queryClient.invalidateQueries({ queryKey: ['employees'] })
     },
     onError: (err: Error) => {
-      showToast(`Gagal: ${err.message}`)
+      toast.error(`Gagal: ${err.message}`)
     }
   })
 
@@ -285,13 +281,13 @@ export function useEmployee() {
       return data
     },
     onSuccess: (data) => {
-      showToast(`${data.name} berhasil ${data.newStatus === 'inactive' ? 'dinonaktifkan' : 'diaktifkan'}`)
+      toast.success(`${data.name} berhasil ${data.newStatus === 'inactive' ? 'dinonaktifkan' : 'diaktifkan'}`)
       setShowConfirm(false)
       setConfirmData(null)
       queryClient.invalidateQueries({ queryKey: ['employees'] })
     },
     onError: (err: Error) => {
-      showToast(`Gagal: ${err.message}`)
+      toast.error(`Gagal: ${err.message}`)
     }
   })
 
@@ -300,49 +296,25 @@ export function useEmployee() {
     toggleStatusMutation.mutate(confirmData)
   }, [confirmData, toggleStatusMutation])
 
+  /* ── export excel ── */
   const exportExcel = useCallback(() => {
-    const dataToExport = filtered
-    if (dataToExport.length === 0) {
-      toast.error('Tidak ada data untuk diexport')
-      return
-    }
+    const wsData = filtered.map(e => ({
+      'Nama': e.name,
+      'ID Karyawan': e.emp_id,
+      'Divisi / Dept': e.dept,
+      'Jabatan': e.jabatan,
+      'Gaji Pokok': e.salary,
+      'Shift': e.shift,
+      'Status': e.status === 'active' ? 'Aktif' : 'Nonaktif',
+      'No. HP': e.phone || '-',
+      'Alamat': e.address || '-',
+      'Tanggal Bergabung': e.joined || '-',
+    }))
 
-    const headers = [
-      'Nama Karyawan',
-      'ID Karyawan',
-      'Email',
-      'Divisi',
-      'Jabatan/Role',
-      'No. Telepon',
-      'Gaji Pokok',
-      'Limit Kasbon',
-      'Shift',
-      'Alamat',
-      'Tanggal Bergabung',
-      'Status'
-    ]
-
-    const rows = dataToExport.map(emp => [
-      emp.name || '',
-      emp.emp_id || '',
-      emp.email || '',
-      emp.dept || '',
-      emp.jabatan || (emp.role === 'admin' ? 'Admin' : 'Staff'),
-      emp.phone || '',
-      emp.salary || 0,
-      emp.kasbon_limit || 0,
-      emp.shift || '',
-      emp.address || '',
-      emp.joined ? new Date(emp.joined).toLocaleDateString('id-ID') : '',
-      emp.status === 'active' ? 'Aktif' : 'Nonaktif'
-    ])
-
-    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...rows])
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Daftar Karyawan')
-
-    XLSX.writeFile(workbook, 'Daftar_Karyawan.xlsx')
-    toast.success('Daftar karyawan berhasil diexport')
+    const ws = XLSX.utils.json_to_sheet(wsData)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Karyawan')
+    XLSX.writeFile(wb, `Data_Karyawan_${new Date().toISOString().slice(0, 10)}.xlsx`)
   }, [filtered])
 
   return {
@@ -381,7 +353,6 @@ export function useEmployee() {
     openToggleConfirm,
     doToggleStatus,
     toggleStatusMutation,
-    showToast,
     exportExcel,
   }
 }

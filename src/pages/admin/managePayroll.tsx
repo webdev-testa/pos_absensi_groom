@@ -1,6 +1,5 @@
 import { usePayroll } from "@/hooks/usePayroll";
 import { AdminLayout } from "@/components/layout/AdminLayout";
-import { PayrollHeader } from "@/components/page-sections/payroll/PayrollHeader";
 import { PayrollStats } from "@/components/page-sections/payroll/PayrollStats";
 import { PayrollFilters } from "@/components/page-sections/payroll/PayrollFilters";
 import { PayrollTable } from "@/components/page-sections/payroll/PayrollTable";
@@ -54,7 +53,7 @@ export default function Payroll() {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px] w-full">
-          <Loader2 className="w-8 h-8 animate-spin text-[#C84B2F]" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </AdminLayout>
     );
@@ -88,9 +87,16 @@ export default function Payroll() {
         }}
       />
 
-      <div className="text-[#1A1814] w-full font-sans flex flex-col gap-6 select-none">
+      <div className="text-foreground w-full font-sans flex flex-col gap-6">
         {/* HEADER */}
-        <PayrollHeader />
+        <div className="mb-6">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            Kelola Payroll & Gaji
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Perhitungan gaji bersih, insentif performa, dan pemotongan kasbon staf
+          </p>
+        </div>
 
         {/* STATS COUNTER */}
         <PayrollStats stats={stats} />
@@ -109,7 +115,7 @@ export default function Payroll() {
         />
 
         {/* MAIN LAYOUT */}
-        <div className="grid grid-cols-[1fr_360px] gap-5 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5 items-start">
           <PayrollTable
             filteredData={filteredData}
             selectedUserId={selectedUserId}

@@ -1,13 +1,14 @@
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { useEmployee } from '@/hooks/useEmployee'
 import { useNavigate } from 'react-router-dom'
-import { EmployeeHeader } from '@/components/page-sections/employee/EmployeeHeader'
 import { EmployeeStats } from '@/components/page-sections/employee/EmployeeStats'
 import { EmployeeFilters } from '@/components/page-sections/employee/EmployeeFilters'
 import { EmployeeTable } from '@/components/page-sections/employee/EmployeeTable'
 import { EmployeeDetailPanel } from '@/components/page-sections/employee/EmployeeDetailPanel'
 import { EmployeeFormDialog } from '@/components/page-sections/employee/EmployeeFormDialog'
 import { ConfirmToggleDialog } from '@/components/page-sections/employee/ConfirmToggleDialog'
+
+import { toast } from 'sonner'
 
 export default function ManageEmployee() {
   const navigate = useNavigate()
@@ -46,13 +47,15 @@ export default function ManageEmployee() {
     openToggleConfirm,
     doToggleStatus,
     toggleStatusMutation,
-    showToast,
     exportExcel,
   } = useEmployee()
 
   return (
     <AdminLayout>
-      <EmployeeHeader />
+      <div className="mb-6">
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">Kelola Staf Klinik</h1>
+        <p className="text-sm text-muted-foreground mt-1">Data master staf · gaji pokok · posisi & jadwal</p>
+      </div>
 
       <EmployeeStats 
         totalAktif={totalAktif} 
@@ -90,7 +93,7 @@ export default function ManageEmployee() {
           selectedEmployee={selectedEmployee}
           selectedIdx={selectedIdx}
           onEdit={openEditModal}
-          onShowAttendance={name => showToast(`Riwayat absensi ${name}`)}
+          onShowAttendance={name => toast.info(`Riwayat absensi ${name}`)}
           onShowKasbon={name => navigate(`/admin/kasbon?search=${encodeURIComponent(name)}`)}
         />
       </div>

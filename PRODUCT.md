@@ -38,7 +38,7 @@ A tailored, high-reliability clinic attendance & HR management system built spec
 ## Brand Commitments
 
 - **Name:** Absen Dr. Meow
-- **Identity & Aesthetics:** Clean, warm, approachable yet professional veterinary clinic vibe, incorporating Figma-inspired editorial typography, structured color-block accents, pill-shaped CTAs, and clear contrast.
+- **Identity & Aesthetics:** Warm, approachable yet authoritative veterinary clinic identity. Blends Cal.com's high-speed scheduling scannability and semantic status discipline with Intercom's warm daylight cream canvas (`#FAF8F5`), charcoal typography (`#1D262C`), delicate warm hairlines (`#E2DDD5`), and high-energy operational action accents.
 
 ## Evidence on Hand
 

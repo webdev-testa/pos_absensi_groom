@@ -34,72 +34,72 @@ export function StatCards({
 }: StatCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
-      <Link to="/admin/absensi" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
-        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
+      <Link to="/admin/absensi" className="bg-card border border-border rounded-xl p-5 hover:border-[#C8C2B8] hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Hadir hari ini</div>
-        <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">
+        <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#10B981]">
           {attendanceTodayStats.countPresent}
         </div>
-        <div className="text-[12.5px] text-[#A8A49E] mt-2">dari {activeEmployeesCount} karyawan</div>
+        <div className="text-[12.5px] text-muted-foreground mt-2">dari {activeEmployeesCount} staf klinik</div>
         {attendanceTodayStats.countAbsent > 0 ? (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#F5EDE0] text-[#B87333]">
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
             {attendanceTodayStats.countAbsent} belum absen
           </div>
         ) : (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#E2F0E8] text-[#2A7A4B]">
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0]">
             Semua hadir
           </div>
         )}
       </Link>
 
-      <Link to="/admin/kasbon" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
-        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
+      <Link to="/admin/kasbon" className="bg-card border border-border rounded-xl p-5 hover:border-[#C8C2B8] hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Kasbon bulan ini</div>
-        <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#C84B2F]">
+        <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#FF5600]">
           {fmtCurrency(kasbonStats.totalKasbonAmt)}
         </div>
-        <div className="text-[12.5px] text-[#A8A49E] mt-2">{kasbonStats.countTransactions} transaksi</div>
+        <div className="text-[12.5px] text-muted-foreground mt-2">{kasbonStats.countTransactions} pengajuan</div>
         {kasbonStats.unpaidKasbonAmt > 0 ? (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#F5EDE0] text-[#B87333]">
-            {fmtCurrency(kasbonStats.unpaidKasbonAmt)} belum dipotong
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+            {fmtCurrency(kasbonStats.unpaidKasbonAmt)} belum potong
           </div>
         ) : (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#E2F0E8] text-[#2A7A4B]">
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0]">
             Semua terpotong
           </div>
         )}
       </Link>
 
-      <Link to="/admin/payroll" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
-        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
+      <Link to="/admin/payroll" className="bg-card border border-border rounded-xl p-5 hover:border-[#C8C2B8] hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Gaji dibayarkan</div>
-        <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
+        <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-foreground">
           {payrollStats.isGenerated ? fmtCurrency(payrollStats.totalPayrollPaid) : fmtCurrency(payrollStats.estimatedSalary)}
         </div>
-        <div className="text-[12.5px] text-[#A8A49E] mt-2">estimasi bulan ini</div>
+        <div className="text-[12.5px] text-muted-foreground mt-2">estimasi bulan ini</div>
         {!payrollStats.isGenerated ? (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#F5EDE0] text-[#B87333]">
-            Payroll belum digenerate
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+            Payroll belum dibuat
           </div>
         ) : payrollStats.allPaid ? (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#E2F0E8] text-[#2A7A4B]">
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0]">
             Payroll selesai (Paid)
           </div>
         ) : (
-          <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#F5EDE0] text-[#B87333]">
+          <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]">
             Payroll Draft
           </div>
         )}
       </Link>
 
-      <Link to="/admin/karyawan" className="bg-white border border-[#E0DDD7] rounded-[16px] p-5 hover:border-[#CBC8C2] hover:-translate-y-[2px] hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all relative group overflow-hidden block">
-        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC8C2] w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
+      <Link to="/admin/karyawan" className="bg-card border border-border rounded-xl p-5 hover:border-[#C8C2B8] hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+        <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Total karyawan</div>
-        <div className="font-['Syne'] text-[34px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
+        <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-foreground">
           {activeEmployeesCount}
         </div>
-        <div className="text-[12.5px] text-[#A8A49E] mt-2">aktif bulan ini</div>
-        <div className="inline-flex items-center gap-1 text-[11px] px-2 py-[3px] rounded-full mt-2.5 font-medium bg-[#E2F0E8] text-[#2A7A4B]">
+        <div className="text-[12.5px] text-muted-foreground mt-2">staf aktif</div>
+        <div className="inline-flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full mt-2.5 font-semibold bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0]">
           Semua terdaftar
         </div>
       </Link>

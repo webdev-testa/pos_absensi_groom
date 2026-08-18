@@ -29,30 +29,30 @@ export function KasbonFilters({
   return (
     <div className="flex items-center gap-3 mb-5 flex-wrap">
       <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8ABAC8]" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
         <Input 
-          className="pl-9 bg-white border-[#C8E8F5] rounded-[10px] text-[13px] h-[38px] placeholder:text-[#8ABAC8]" 
-          placeholder="Cari karyawan..." 
+          className="pl-9 bg-card border-border rounded-lg text-[13px] h-[38px] text-foreground placeholder:text-muted-foreground/50 shadow-xs" 
+          placeholder="Cari nama atau ID staf..." 
           value={searchQ} 
           onChange={e => onSearchChange(e.target.value)} 
         />
       </div>
 
       <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-        <SelectTrigger className="w-[160px] bg-white border-[#C8E8F5] rounded-[10px] h-[38px] text-[13px]">
+        <SelectTrigger className="w-[160px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground shadow-xs">
           <SelectValue placeholder="Semua status" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Semua status</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="approved">Approved</SelectItem>
-          <SelectItem value="deducted">Sudah dipotong</SelectItem>
-          <SelectItem value="rejected">Ditolak</SelectItem>
+          <SelectItem value="pending">⏳ Pending</SelectItem>
+          <SelectItem value="approved">✓ Approved</SelectItem>
+          <SelectItem value="deducted">Dipotong</SelectItem>
+          <SelectItem value="rejected">✕ Ditolak</SelectItem>
         </SelectContent>
       </Select>
 
       <Select value={monthFilter} onValueChange={onMonthFilterChange}>
-        <SelectTrigger className="w-[180px] bg-white border-[#C8E8F5] rounded-[10px] h-[38px] text-[13px]">
+        <SelectTrigger className="w-[180px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground shadow-xs">
           <SelectValue placeholder="Pilih bulan" />
         </SelectTrigger>
         <SelectContent>
@@ -63,21 +63,40 @@ export function KasbonFilters({
         </SelectContent>
       </Select>
 
-      <div className="flex gap-1 bg-[#F0FAFF] border border-[#C8E8F5] rounded-[10px] p-1 ml-auto">
-        {(['all', 'minggu', 'hari'] as const).map(t => (
-          <button
-            key={t}
-            type="button"
-            className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] transition-all font-sans border-none bg-none cursor-pointer ${
-              tabFilter === t 
-                ? 'bg-white text-[#1A3A4A] font-medium shadow-[0_1px_3px_rgba(0,0,0,0.08)]' 
-                : 'text-[#4A7A8A] hover:bg-[#E4F4FD]'
-            }`}
-            onClick={() => onTabFilterChange(t)}
-          >
-            {t === 'all' ? 'Semua' : t === 'minggu' ? 'Minggu ini' : 'Hari ini'}
-          </button>
-        ))}
+      <div className="flex gap-[3px] bg-card border border-border rounded-lg p-[3px] shadow-xs">
+        <button
+          type="button"
+          className={`px-3.5 py-1.5 rounded-md text-[12.5px] transition-all font-sans border-none cursor-pointer ${
+            tabFilter === 'all' 
+              ? 'bg-primary text-primary-foreground font-semibold shadow-xs' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft'
+          }`}
+          onClick={() => onTabFilterChange('all')}
+        >
+          Semua
+        </button>
+        <button
+          type="button"
+          className={`px-3.5 py-1.5 rounded-md text-[12.5px] transition-all font-sans border-none cursor-pointer ${
+            tabFilter === 'minggu' 
+              ? 'bg-primary text-primary-foreground font-semibold shadow-xs' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft'
+          }`}
+          onClick={() => onTabFilterChange('minggu')}
+        >
+          Minggu ini
+        </button>
+        <button
+          type="button"
+          className={`px-3.5 py-1.5 rounded-md text-[12.5px] transition-all font-sans border-none cursor-pointer ${
+            tabFilter === 'hari' 
+              ? 'bg-primary text-primary-foreground font-semibold shadow-xs' 
+              : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft'
+          }`}
+          onClick={() => onTabFilterChange('hari')}
+        >
+          Hari ini
+        </button>
       </div>
     </div>
   )

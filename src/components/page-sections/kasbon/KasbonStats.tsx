@@ -17,52 +17,52 @@ interface KasbonStatsProps {
 
 export function KasbonStats({ monthlyStats }: KasbonStatsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+      <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Total kasbon</div>
-          <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#F5A940]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#FF5600]">
             {fmtCurrency(monthlyStats.total)}
           </div>
-          <div className="text-[12px] text-[#8ABAC8] mt-1.5">dari {monthlyStats.uniqueEmps} karyawan</div>
-          <Badge className="bg-[#FAF0E1] text-[#F5A940] hover:bg-[#FAF0E1] shadow-none mt-2 font-medium px-2 py-0.5 rounded-full text-[11px]">
+          <div className="text-[12px] text-muted-foreground mt-1.5">dari {monthlyStats.uniqueEmps} staf</div>
+          <Badge className="bg-surface-soft text-muted-foreground border border-border hover:bg-surface-soft shadow-none mt-2.5 font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
             Bulan Terpilih
           </Badge>
         </CardContent>
       </Card>
-      <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
+      <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Belum dipotong</div>
-          <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#E89E3A]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#F59E0B]">
             {fmtCurrency(monthlyStats.unpaid)}
           </div>
-          <div className="text-[12px] text-[#8ABAC8] mt-1.5">{monthlyStats.pendingCount} transaksi pending</div>
-          <Badge className="bg-[#FAF0E1] text-[#E89E3A] hover:bg-[#FAF0E1] shadow-none mt-2 font-medium px-2 py-0.5 rounded-full text-[11px]">
+          <div className="text-[12px] text-muted-foreground mt-1.5">{monthlyStats.pendingCount} transaksi pending</div>
+          <Badge className="bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] hover:bg-[#FEF3C7] shadow-none mt-2.5 font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
             Akan dipotong gaji
           </Badge>
         </CardContent>
       </Card>
-      <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
+      <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Sudah dipotong</div>
-          <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#3AAD7A]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#10B981]">
             {fmtCurrency(monthlyStats.settled)}
           </div>
-          <div className="text-[12px] text-[#8ABAC8] mt-1.5">{monthlyStats.settledCount} transaksi settled</div>
-          <Badge className="bg-[#E2F0E8] text-[#3AAD7A] hover:bg-[#E2F0E8] shadow-none mt-2 font-medium px-2 py-0.5 rounded-full text-[11px]">
-            Selesai
+          <div className="text-[12px] text-muted-foreground mt-1.5">{monthlyStats.settledCount} transaksi settled</div>
+          <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] hover:bg-[#E6F7F0] shadow-none mt-2.5 font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
+            Lunas
           </Badge>
         </CardContent>
       </Card>
-      <Card className="rounded-[16px] shadow-sm border-[#C8E8F5]">
+      <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Rata-rata per orang</div>
-          <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.5px] leading-none text-[#1A3A4A]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-foreground">
             {fmtCurrency(monthlyStats.average)}
           </div>
-          <div className="text-[12px] text-[#8ABAC8] mt-1.5">{monthlyStats.trxCount}x pengambilan</div>
-          <Badge className="bg-[#F0FAFF] text-[#4A7A8A] hover:bg-[#F0FAFF] shadow-none mt-2 font-medium px-2 py-0.5 rounded-full text-[11px]">
-            Rata-rata
+          <div className="text-[12px] text-muted-foreground mt-1.5">per staf aktif</div>
+          <Badge className="bg-surface-soft text-muted-foreground border border-border hover:bg-surface-soft shadow-none mt-2.5 font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
+            Statistik
           </Badge>
         </CardContent>
       </Card>

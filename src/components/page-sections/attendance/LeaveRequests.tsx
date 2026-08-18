@@ -1,8 +1,8 @@
 import { CalendarDays, Check, X } from "lucide-react";
 import type { CutiGroup } from "@/types/attendance";
 import {
-  avColors,
-  ini,
+  AV_COLORS,
+  getInitials,
   getCutiTypeColor,
   getCutiTypeLabel,
   formatDateRange,
@@ -145,7 +145,7 @@ export function LeaveRequests({
                 {pendingGroups.map((group) => {
                   const typeColor = getCutiTypeColor(group.type);
                   const c =
-                    avColors[group.userName.charCodeAt(0) % avColors.length];
+                    AV_COLORS[group.userName.charCodeAt(0) % AV_COLORS.length];
                   const isActioning = actionLoading?.includes(
                     group.userId + "_" + group.status,
                   );
@@ -161,7 +161,7 @@ export function LeaveRequests({
                           className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold font-['Syne'] shrink-0"
                           style={{ backgroundColor: c.bg, color: c.fg }}
                         >
-                          {ini(group.userName)}
+                          {getInitials(group.userName)}
                         </div>
 
                         {/* Info */}
@@ -259,7 +259,7 @@ export function LeaveRequests({
                   {rejectedGroups.map((group) => {
                     const typeColor = getCutiTypeColor(group.type);
                     const c =
-                      avColors[group.userName.charCodeAt(0) % avColors.length];
+                      AV_COLORS[group.userName.charCodeAt(0) % AV_COLORS.length];
                     return (
                       <div
                         key={`rej_${group.userId}_${group.status}`}
@@ -270,7 +270,7 @@ export function LeaveRequests({
                             className="w-8 h-8 rounded-full flex items-center justify-center text-[10.5px] font-bold font-['Syne'] shrink-0"
                             style={{ backgroundColor: c.bg, color: c.fg }}
                           >
-                            {ini(group.userName)}
+                            {getInitials(group.userName)}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">

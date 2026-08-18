@@ -5,18 +5,18 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ todayLabel, liveTime }: DashboardHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-8">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
       <div>
-        <div className="font-['Syne'] text-[26px] font-bold tracking-[-0.4px]">
-          Selamat pagi, <span className="text-[#C84B2F]">Fara</span> 👋
-        </div>
-        <div className="text-[13.5px] text-[#6B6760] mt-1.5">
-          Ini ringkasan bisnis kamu hari ini — {todayLabel}
-        </div>
+        <h1 className="font-heading text-2xl sm:text-[26px] font-bold tracking-tight text-foreground">
+          Selamat datang di <span className="text-[#FF5600]">Dr. Meow</span> 🐾
+        </h1>
+        <p className="text-[13.5px] text-muted-foreground mt-1">
+          Ringkasan absensi klinik & operasional hari ini — {todayLabel}
+        </p>
       </div>
-      <div className="flex items-center gap-2 bg-white border border-[#E0DDD7] rounded-[10px] px-3.5 py-2 text-[13px] text-[#6B6760]">
-        <div className="w-2 h-2 rounded-full bg-[#2A7A4B] shrink-0 animate-pulse"></div>
-        <span>Live update · <strong className="text-[#1A1814] font-semibold">{liveTime}</strong></span>
+      <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-3.5 py-2 text-[13px] text-muted-foreground shadow-xs self-start sm:self-auto">
+        <div className="w-2 h-2 rounded-full bg-[#10B981] shrink-0 animate-pulse"></div>
+        <span>Live update · <strong className="text-foreground font-semibold font-mono">{liveTime}</strong></span>
       </div>
     </div>
   );

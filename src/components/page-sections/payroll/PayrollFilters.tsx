@@ -39,17 +39,17 @@ export function PayrollFilters({
   return (
     <div className="flex items-center gap-[10px] flex-wrap">
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <Search className="absolute left-[11px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A8A49E]" />
+        <Search className="absolute left-[11px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
         <Input 
-          className="pl-[34px] bg-white border-[#E0DDD7] rounded-[10px] text-[13px] h-[38px] placeholder:text-[#A8A49E] focus-visible:ring-0 focus-visible:border-[#CBC8C2]" 
-          placeholder="Cari nama atau ID..." 
+          className="pl-[34px] bg-card border-border rounded-lg text-[13px] h-[38px] text-foreground placeholder:text-muted-foreground/50 shadow-xs" 
+          placeholder="Cari nama atau ID staf..." 
           value={searchQ}
           onChange={e => setSearchQ(e.target.value)}
         />
       </div>
 
       <Select value={deptFilter} onValueChange={setDeptFilter}>
-        <SelectTrigger className="w-[160px] bg-white border-[#E0DDD7] rounded-[10px] h-[38px] text-[13px]">
+        <SelectTrigger className="w-[160px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground shadow-xs">
           <SelectValue placeholder="Semua Divisi" />
         </SelectTrigger>
         <SelectContent>
@@ -60,39 +60,28 @@ export function PayrollFilters({
         </SelectContent>
       </Select>
 
-      <div className="flex gap-[3px] bg-white border border-[#E0DDD7] rounded-[10px] p-[3px]">
-        <button 
-          onClick={() => setStatusFilter('all')} 
-          className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] font-medium border-none cursor-pointer transition-all ${statusFilter === 'all' ? 'bg-[#1A1814] text-white' : 'bg-transparent text-[#6B6760] hover:text-[#1A1814]'}`}
-        >
-          Semua
-        </button>
-        <button 
-          onClick={() => setStatusFilter('draft')} 
-          className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] font-medium border-none cursor-pointer transition-all ${statusFilter === 'draft' ? 'bg-[#1A1814] text-white' : 'bg-transparent text-[#6B6760] hover:text-[#1A1814]'}`}
-        >
-          Draft
-        </button>
-        <button 
-          onClick={() => setStatusFilter('paid')} 
-          className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] font-medium border-none cursor-pointer transition-all ${statusFilter === 'paid' ? 'bg-[#1A1814] text-white' : 'bg-transparent text-[#6B6760] hover:text-[#1A1814]'}`}
-        >
-          Terbayar
-        </button>
-        <button 
-          onClick={() => setStatusFilter('not_generated')} 
-          className={`px-3.5 py-1.5 rounded-[7px] text-[12.5px] font-medium border-none cursor-pointer transition-all ${statusFilter === 'not_generated' ? 'bg-[#1A1814] text-white' : 'bg-transparent text-[#6B6760] hover:text-[#1A1814]'}`}
-        >
-          Belum Dibuat
-        </button>
+      <div className="flex gap-[3px] bg-card border border-border rounded-lg p-[3px] shadow-xs">
+        {(['all', 'draft', 'paid', 'not_generated'] as const).map(s => (
+          <button
+            key={s}
+            type="button"
+            className={`px-3 py-1.5 rounded-md text-[12px] transition-all font-sans border-none cursor-pointer ${
+              statusFilter === s 
+                ? 'bg-primary text-primary-foreground font-semibold shadow-xs' 
+                : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft'
+            }`}
+            onClick={() => setStatusFilter(s)}
+          >
+            {s === 'all' ? 'Semua' : s === 'draft' ? 'Draft' : s === 'paid' ? 'Terbayar' : 'Belum Dibuat'}
+          </button>
+        ))}
       </div>
 
-      {/* Finalize Mass Action */}
-      {mappedPayrollData.some(item => item.status === 'draft') && (
+      {mappedPayrollData.some(d => d.status === 'draft') && (
         <Button 
-          onClick={() => markAllPaidMutation.mutate()} 
+          onClick={() => markAllPaidMutation.mutate()}
           disabled={markAllPaidMutation.isPending}
-          className="ml-auto bg-[#2A7A4B] hover:bg-[#1f5d37] text-white border-none rounded-[10px] h-[38px] text-[13px] font-medium"
+          className="ml-auto bg-[#10B981] hover:bg-[#059669] text-white border-none rounded-lg h-[38px] text-[13px] font-semibold cursor-pointer shadow-xs"
         >
           {markAllPaidMutation.isPending ? (
             <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />

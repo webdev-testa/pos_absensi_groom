@@ -13,44 +13,44 @@ interface PayrollStatsProps {
 
 export function PayrollStats({ stats }: PayrollStatsProps) {
   return (
-    <div className="grid grid-cols-4 gap-[14px]">
-      <Card className="bg-white border-[#E0DDD7] rounded-[16px] shadow-none">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[14px]">
+      <Card className="bg-card border border-border rounded-xl shadow-xs">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Total Gaji Bersih</div>
-          <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-foreground">
             {fmtCurrency(stats.totalGajiBersih)}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">{stats.countTotal} slip gaji digenerate</div>
+          <div className="text-[12px] text-muted-foreground mt-1.5">{stats.countTotal} slip gaji digenerate</div>
         </CardContent>
       </Card>
 
-      <Card className="bg-white border-[#E0DDD7] rounded-[16px] shadow-none">
+      <Card className="bg-card border border-border rounded-xl shadow-xs">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Terbayar</div>
-          <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#10B981]">
             {stats.countPaid}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">dari {stats.countTotal} karyawan</div>
+          <div className="text-[12px] text-muted-foreground mt-1.5">dari {stats.countTotal} staf klinik</div>
         </CardContent>
       </Card>
 
-      <Card className="bg-white border-[#E0DDD7] rounded-[16px] shadow-none">
+      <Card className="bg-card border border-border rounded-xl shadow-xs">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Total Insentif</div>
-          <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#C84B2F]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#3B82F6]">
             {fmtCurrency(stats.totalInsentif)}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">bonus bulan ini</div>
+          <div className="text-[12px] text-muted-foreground mt-1.5">bonus bulan ini</div>
         </CardContent>
       </Card>
 
-      <Card className="bg-white border-[#E0DDD7] rounded-[16px] shadow-none">
+      <Card className="bg-card border border-border rounded-xl shadow-xs">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Kasbon Dipotong</div>
-          <div className="font-['Syne'] text-[30px] font-bold tracking-[-1px] leading-none text-[#B87333]">
+          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#FF5600]">
             {fmtCurrency(stats.totalKasbonDipotong)}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">potongan kasbon langsung</div>
+          <div className="text-[12px] text-muted-foreground mt-1.5">potongan kasbon langsung</div>
         </CardContent>
       </Card>
     </div>

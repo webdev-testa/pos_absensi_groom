@@ -7,15 +7,6 @@ export const AV_COLORS = [
   { bg: '#EBF5E8', fg: '#2A6B4B' }, { bg: '#F5E8F0', fg: '#8B3A6A' },
 ];
 
-export const AV_COLORS_SHORT = [
-  { bg: "#F5E8E4", fg: "#C84B2F" },
-  { bg: "#E2F0E8", fg: "#2A7A4B" },
-  { bg: "#F5EDE0", fg: "#B87333" },
-  { bg: "#EDE8F5", fg: "#6B4F9E" },
-  { bg: "#E0EDF5", fg: "#1A6FAA" },
-  { bg: "#F5E8ED", fg: "#A0374F" },
-];
-
 export function getInitials(name: string | undefined): string {
   if (!name) return "??";
   return name
@@ -25,12 +16,6 @@ export function getInitials(name: string | undefined): string {
     .slice(0, 2)
     .join("")
     .toUpperCase();
-}
-
-export const avColors = AV_COLORS_SHORT;
-
-export function ini(name: string | undefined): string {
-  return getInitials(name);
 }
 
 export function calcDur(inTime: string | null, outTime: string | null) {
