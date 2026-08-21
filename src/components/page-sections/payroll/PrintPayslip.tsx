@@ -13,7 +13,7 @@ export function PrintPayslip({ printItem, selectedPeriodLabel }: PrintPayslipPro
         {/* Slip Header */}
         <div className="border-b-2 border-[#1A1814] pb-4 flex justify-between items-end">
           <div>
-            <h2 className="font-['Syne'] text-[24px] font-bold tracking-tight text-[#1A1814]">SLIP GAJI KARYAWAN</h2>
+            <h2 className="font-heading text-[24px] font-bold tracking-tight text-[#1A1814]">SLIP GAJI KARYAWAN</h2>
             <p className="text-[12.5px] text-[#6B6760] mt-1">Klinik Hewan Dr. Meow / HadiR System</p>
           </div>
           <div className="text-right text-[12px] font-mono">
@@ -68,7 +68,7 @@ export function PrintPayslip({ printItem, selectedPeriodLabel }: PrintPayslipPro
         {/* Total Calculation */}
         <div className="border-t-2 border-[#1A1814] pt-4 flex justify-between items-center bg-[#F5EDE0] -mx-8 px-8 py-4">
           <span className="font-bold text-[14.5px]">GAJI BERSIH DITERIMA (NET SALARY)</span>
-          <span className="font-['Syne'] text-[22px] font-bold text-[#C84B2F] font-mono">
+          <span className="font-heading text-[22px] font-bold text-[#C84B2F] font-mono">
             {fmtCurrency(printItem.netSalary)}
           </span>
         </div>

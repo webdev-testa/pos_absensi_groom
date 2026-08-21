@@ -45,19 +45,19 @@ export function KasbonFormDialog({
 }: KasbonFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px] p-0 border-[#C8E8F5] rounded-[16px] overflow-hidden gap-0">
+      <DialogContent className="sm:max-w-[460px] p-0 border-border bg-card rounded-2xl overflow-hidden gap-0 shadow-xl">
         <form onSubmit={onSubmit}>
-          <DialogHeader className="p-8 pb-6 bg-white">
-            <DialogTitle className="font-['Syne'] text-[20px] font-bold text-[#1A3A4A] mb-1">Tambah Kasbon</DialogTitle>
-            <DialogDescription className="text-[13px] text-[#4A7A8A]">
+          <DialogHeader className="p-6 pb-4 border-b border-border bg-card">
+            <DialogTitle className="font-heading text-lg font-bold text-foreground mb-0.5">Tambah Kasbon</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
               Catat pengambilan gaji di muka karyawan secara manual
             </DialogDescription>
           </DialogHeader>
-          <div className="p-8 pt-0 space-y-4">
+          <div className="p-6 space-y-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Karyawan</label>
+              <label className="text-xs text-muted-foreground font-medium">Karyawan *</label>
               <Select value={selectedUserId} onValueChange={onSelectedUserIdChange}>
-                <SelectTrigger className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px]">
+                <SelectTrigger className="rounded-xl border-border h-10 text-xs sm:text-sm">
                   <SelectValue placeholder="Pilih karyawan..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -67,25 +67,25 @@ export function KasbonFormDialog({
                     </SelectItem>
                   ))}
                   {employees.length === 0 && (
-                    <div className="p-2 text-center text-xs text-[#8ABAC8]">Tidak ada karyawan aktif</div>
+                    <div className="p-2 text-center text-xs text-muted-foreground">Tidak ada karyawan aktif</div>
                   )}
                 </SelectContent>
               </Select>
             </div>
 
             {selectedEmpLimitInfo && (
-              <div className="p-3 bg-[#F0FAFF] border border-[#C8E8F5] rounded-[10px] text-[12.5px] space-y-1.5 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-[#4A7A8A]">Limit Kasbon:</span>
-                  <span className="font-semibold text-[#1A3A4A] font-mono">Rp {selectedEmpLimitInfo.limit.toLocaleString('id-ID')}</span>
+              <div className="p-3.5 bg-surface-soft border border-border rounded-xl text-xs space-y-1.5">
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>Limit Kasbon:</span>
+                  <span className="font-semibold text-foreground font-mono">Rp {selectedEmpLimitInfo.limit.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[#4A7A8A]">Terpakai Bulan Ini:</span>
-                  <span className="font-semibold text-[#1A3A4A] font-mono">Rp {selectedEmpLimitInfo.used.toLocaleString('id-ID')}</span>
+                <div className="flex justify-between items-center text-muted-foreground">
+                  <span>Terpakai Bulan Ini:</span>
+                  <span className="font-semibold text-foreground font-mono">Rp {selectedEmpLimitInfo.used.toLocaleString('id-ID')}</span>
                 </div>
-                <div className="flex justify-between items-center border-t border-[#C8E8F5] pt-1.5 mt-1">
-                  <span className="text-[#4A7A8A] font-medium">Sisa Limit:</span>
-                  <span className={`font-bold font-mono ${selectedEmpLimitInfo.remaining <= 0 ? 'text-[#C84B2F]' : 'text-[#3AAD7A]'}`}>
+                <div className="flex justify-between items-center border-t border-border pt-1.5 mt-1">
+                  <span className="text-muted-foreground font-medium">Sisa Limit:</span>
+                  <span className={`font-bold font-mono ${selectedEmpLimitInfo.remaining <= 0 ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'}`}>
                     Rp {selectedEmpLimitInfo.remaining.toLocaleString('id-ID')}
                   </span>
                 </div>
@@ -94,8 +94,9 @@ export function KasbonFormDialog({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Jumlah (Rp)</label>
+                <label htmlFor="kasbon-amount" className="text-xs text-muted-foreground font-medium">Jumlah (Rp) *</label>
                 <Input 
+                  id="kasbon-amount"
                   type="text" 
                   inputMode="numeric"
                   placeholder="200.000" 
@@ -106,25 +107,26 @@ export function KasbonFormDialog({
                     const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                     onAmountInputChange(formatted);
                   }}
-                  className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px] font-mono" 
+                  className="rounded-xl border-border h-10 text-xs sm:text-sm font-mono" 
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Tanggal</label>
+                <label htmlFor="kasbon-date" className="text-xs text-muted-foreground font-medium">Tanggal *</label>
                 <Input 
+                  id="kasbon-date"
                   type="date" 
                   required 
                   value={dateInput}
                   onChange={e => onDateInputChange(e.target.value)}
-                  className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px]" 
+                  className="rounded-xl border-border h-10 text-xs sm:text-sm font-mono" 
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Kategori</label>
+              <label className="text-xs text-muted-foreground font-medium">Kategori *</label>
               <Select value={categoryInput} onValueChange={onCategoryInputChange}>
-                <SelectTrigger className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px]">
+                <SelectTrigger className="rounded-xl border-border h-10 text-xs sm:text-sm">
                   <SelectValue placeholder="Pilih kategori..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,21 +140,22 @@ export function KasbonFormDialog({
             </div>
 
             <div className="flex flex-col gap-1.5 pt-1">
-              <label className="text-[12px] text-[#4A7A8A] font-medium tracking-[0.2px]">Alasan / catatan</label>
+              <label htmlFor="kasbon-reason" className="text-xs text-muted-foreground font-medium">Alasan / catatan</label>
               <Input 
+                id="kasbon-reason"
                 type="text" 
                 placeholder="Keperluan darurat, biaya sekolah, dll..." 
                 value={reasonInput}
                 onChange={e => onReasonInputChange(e.target.value)}
-                className="rounded-[10px] border-[#C8E8F5] h-[42px] text-[13.5px]" 
+                className="rounded-xl border-border h-10 text-xs sm:text-sm" 
               />
             </div>
           </div>
-          <DialogFooter className="p-6 pt-0 bg-white gap-2.5 sm:justify-end">
+          <DialogFooter className="p-6 pt-3 bg-card border-t border-border gap-2 sm:justify-end">
             <Button 
               type="button" 
               variant="ghost" 
-              className="rounded-[10px] text-[#4A7A8A] hover:text-[#1A3A4A] h-[42px] px-6" 
+              className="rounded-xl text-muted-foreground hover:text-foreground h-10 px-5" 
               onClick={() => onOpenChange(false)}
             >
               Batal
@@ -160,11 +163,11 @@ export function KasbonFormDialog({
             <Button 
               type="submit" 
               disabled={isPending}
-              className="rounded-[10px] bg-[#F5A940] hover:bg-[#e09833] text-white h-[42px] px-6"
+              className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-10 px-5"
             >
               {isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin motion-reduce:animate-none" />
                   Menyimpan...
                 </>
               ) : (

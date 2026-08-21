@@ -11,6 +11,12 @@ import Kasbon from "@/pages/admin/manageKasbon";
 import Payroll from "@/pages/admin/managePayroll";
 import AbsenEmployee from "@/pages/admin/absenEmployee";
 import LoginPage from "@/pages/login/loginPage";
+import PosDashboard from "@/pages/pos/PosDashboard";
+import CheckIn from "@/pages/pos/CheckIn";
+import LaporanHarian from "@/pages/pos/LaporanHarian";
+import CheckOut from "@/pages/pos/CheckOut";
+import KucingDetail from "@/pages/pos/KucingDetail";
+import Pengaturan from "@/pages/pos/Pengaturan";
 
 // Auth
 
@@ -46,7 +52,7 @@ function RoleGuard({ allowedRoles }: { allowedRoles: string[] }) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center font-mono text-sm text-[#8ABAC8]">
+      <div className="flex h-screen items-center justify-center font-mono text-sm text-muted-foreground bg-background">
         Checking permissions...
       </div>
     );
@@ -61,25 +67,25 @@ function RoleGuard({ allowedRoles }: { allowedRoles: string[] }) {
       return <Navigate to="/admin/dashboard" replace />;
     } else if (user.role === "employee") {
       return (
-        <div className="flex flex-col h-screen items-center justify-center font-mono text-sm bg-[#F5F2ED] text-[#1A1814] p-6 text-center">
-          <div className="text-[#C84B2F] mb-4 text-base font-bold font-['Syne']">
+        <div className="flex flex-col h-screen items-center justify-center font-mono text-sm bg-background text-foreground p-6 text-center">
+          <div className="text-destructive mb-4 text-base font-bold font-heading">
             Akses Terbatas
           </div>
-          <div className="text-[#6B6760] mb-6 max-w-xs leading-relaxed">
+          <div className="text-muted-foreground mb-6 max-w-xs leading-relaxed font-sans text-xs">
             Akun karyawan hanya dapat digunakan untuk melakukan absensi melalui aplikasi mobile native (Capacitor).
           </div>
-          <button onClick={() => logout()} className="px-5 py-2.5 bg-[#1A1814] hover:bg-[#33302C] text-white rounded-[10px] font-sans font-medium transition-colors cursor-pointer">
+          <button onClick={() => logout()} className="min-h-[44px] px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-sans text-xs font-semibold transition-all cursor-pointer shadow-xs">
             Log out
           </button>
         </div>
       );
     } else {
       return (
-        <div className="flex flex-col h-screen items-center justify-center font-mono text-sm">
-          <div className="text-[#F5A940] mb-2">
+        <div className="flex flex-col h-screen items-center justify-center font-mono text-sm bg-background text-foreground p-6">
+          <div className="text-amber-600 dark:text-amber-400 mb-2 font-semibold">
             Error: Invalid or missing user role ({user.role || "none"}).
           </div>
-          <button onClick={() => logout()} className="text-blue-500 underline">
+          <button onClick={() => logout()} className="text-primary underline font-sans text-xs mt-2 cursor-pointer">
             Log out
           </button>
         </div>
@@ -129,6 +135,30 @@ export const router = createBrowserRouter([
               {
                 path: "/admin/karyawan",
                 element: <ManageEmployee />,
+              },
+              {
+                path: "/admin/pos",
+                element: <PosDashboard />,
+              },
+              {
+                path: "/admin/pos/check-in",
+                element: <CheckIn />,
+              },
+              {
+                path: "/admin/pos/laporan",
+                element: <LaporanHarian />,
+              },
+              {
+                path: "/admin/pos/check-out",
+                element: <CheckOut />,
+              },
+              {
+                path: "/admin/pos/kucing/:bookingId",
+                element: <KucingDetail />,
+              },
+              {
+                path: "/admin/pos/pengaturan",
+                element: <Pengaturan />,
               },
             ],
           },

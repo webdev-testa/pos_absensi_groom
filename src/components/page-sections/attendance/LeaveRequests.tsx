@@ -37,35 +37,35 @@ export function LeaveRequests({
     <>
       {/* CUTI STAT CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-7">
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
+        <div className="bg-card border border-border rounded-2xl p-4.5 transition-all hover:-translate-y-[1px] shadow-xs">
           <div className="stat-title mb-2.5">
             Total Menunggu
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#B87333]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400">
             {statTotalPending}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">
+          <div className="text-[12px] text-muted-foreground mt-1.5">
             perlu ditinjau
           </div>
-          <div className="h-[3px] rounded-[2px] mt-3 bg-[#EDEAE4] overflow-hidden">
+          <div className="h-[3px] rounded-full mt-3 bg-surface-soft overflow-hidden">
             <div
-              className="h-full bg-[#B87333] rounded-[2px]"
+              className="h-full bg-amber-500 rounded-full"
               style={{ width: statTotalPending > 0 ? "100%" : "0%" }}
             ></div>
           </div>
         </div>
 
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
+        <div className="bg-card border border-border rounded-2xl p-4.5 transition-all hover:-translate-y-[1px] shadow-xs">
           <div className="stat-title mb-2.5">
             Cuti
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#6B4F9E]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-purple-600 dark:text-purple-400">
             {statPendingCuti}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">hari pending</div>
-          <div className="h-[3px] rounded-[2px] mt-3 bg-[#EDEAE4] overflow-hidden">
+          <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>
+          <div className="h-[3px] rounded-full mt-3 bg-surface-soft overflow-hidden">
             <div
-              className="h-full bg-[#6B4F9E] rounded-[2px]"
+              className="h-full bg-purple-500 rounded-full"
               style={{
                 width: `${Math.min(100, (statPendingCuti / Math.max(1, statTotalPending)) * 100)}%`,
               }}
@@ -73,17 +73,17 @@ export function LeaveRequests({
           </div>
         </div>
 
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
+        <div className="bg-card border border-border rounded-2xl p-4.5 transition-all hover:-translate-y-[1px] shadow-xs">
           <div className="stat-title mb-2.5">
             Izin
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#B87333]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400">
             {statPendingIzin}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">hari pending</div>
-          <div className="h-[3px] rounded-[2px] mt-3 bg-[#EDEAE4] overflow-hidden">
+          <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>
+          <div className="h-[3px] rounded-full mt-3 bg-surface-soft overflow-hidden">
             <div
-              className="h-full bg-[#B87333] rounded-[2px]"
+              className="h-full bg-amber-500 rounded-full"
               style={{
                 width: `${Math.min(100, (statPendingIzin / Math.max(1, statTotalPending)) * 100)}%`,
               }}
@@ -91,17 +91,17 @@ export function LeaveRequests({
           </div>
         </div>
 
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5 transition-all hover:-translate-y-[1px]">
+        <div className="bg-card border border-border rounded-2xl p-4.5 transition-all hover:-translate-y-[1px] shadow-xs">
           <div className="stat-title mb-2.5">
             Sakit
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#C84B2F]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-destructive">
             {statPendingSakit}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">hari pending</div>
-          <div className="h-[3px] rounded-[2px] mt-3 bg-[#EDEAE4] overflow-hidden">
+          <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>
+          <div className="h-[3px] rounded-full mt-3 bg-surface-soft overflow-hidden">
             <div
-              className="h-full bg-[#C84B2F] rounded-[2px]"
+              className="h-full bg-destructive rounded-full"
               style={{
                 width: `${Math.min(100, (statPendingSakit / Math.max(1, statTotalPending)) * 100)}%`,
               }}
@@ -113,35 +113,35 @@ export function LeaveRequests({
       <div className="flex flex-col xl:flex-row gap-5 items-start">
         {/* PENDING REQUESTS */}
         <div className="flex-1 w-full">
-          <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden">
-            <div className="p-4 px-5 border-b border-[#E0DDD7] flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
+            <div className="p-4 px-5 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="font-['Syne'] text-[15px] font-semibold text-[#1A1814]">
+                <h2 className="font-heading text-base font-bold text-foreground">
                   Pengajuan Menunggu Persetujuan
                 </h2>
-                <p className="text-[12px] text-[#A8A49E] mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {pendingGroups.length} pengajuan dari karyawan
                 </p>
               </div>
             </div>
 
             {cutiLoading ? (
-              <div className="p-12 text-center text-[#A8A49E] text-[13px]">
-                <div className="inline-block w-5 h-5 border-2 border-[#E0DDD7] border-t-[#1A1814] rounded-full animate-spin mb-2"></div>
+              <div className="p-12 text-center text-muted-foreground text-xs font-medium">
+                <div className="inline-block w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin mb-2 motion-reduce:animate-none"></div>
                 <div>Memuat data cuti...</div>
               </div>
             ) : pendingGroups.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="text-[40px] mb-3">✓</div>
-                <div className="text-[14px] font-medium text-[#1A1814] mb-1">
+                <div className="text-sm font-semibold text-foreground mb-1">
                   Semua pengajuan sudah diproses
                 </div>
-                <div className="text-[13px] text-[#A8A49E]">
+                <div className="text-xs text-muted-foreground">
                   Tidak ada pengajuan cuti yang menunggu persetujuan.
                 </div>
               </div>
             ) : (
-              <div className="divide-y divide-[#E0DDD7]">
+              <div className="divide-y divide-border">
                 {pendingGroups.map((group) => {
                   const typeColor = getCutiTypeColor(group.type);
                   const c =
@@ -153,79 +153,85 @@ export function LeaveRequests({
                   return (
                     <div
                       key={`${group.userId}_${group.status}`}
-                      className="p-5 hover:bg-[#FAFAF8] transition-colors"
+                      className="p-5 hover:bg-surface-soft/60 transition-colors"
                     >
-                      <div className="flex items-start gap-3.5">
-                        {/* Avatar */}
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold font-['Syne'] shrink-0"
-                          style={{ backgroundColor: c.bg, color: c.fg }}
-                        >
-                          {getInitials(group.userName)}
-                        </div>
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                        <div className="flex items-start gap-3.5 min-w-0">
+                          {/* Avatar */}
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold font-heading shrink-0"
+                            style={{ backgroundColor: c.bg, color: c.fg }}
+                          >
+                            {getInitials(group.userName)}
+                          </div>
 
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[14px] font-semibold text-[#1A1814]">
-                              {group.userName}
-                            </span>
-                            <span className="text-[11px] font-mono text-[#A8A49E]">
-                              {group.empId}
-                            </span>
-                            <span
-                              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-semibold"
-                              style={{
-                                backgroundColor: typeColor.bg,
-                                color: typeColor.fg,
-                              }}
-                            >
-                              {getCutiTypeLabel(group.type)}
-                            </span>
-                          </div>
-                          <div className="text-[12.5px] text-[#6B6760] mb-2">
-                            Divisi:{" "}
-                            <span className="font-medium">{group.dept}</span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <div className="flex items-center gap-1.5 text-[12.5px] text-[#1A1814]">
-                              <CalendarDays className="w-3.5 h-3.5 text-[#A8A49E]" />
-                              <span className="font-medium">
-                                {formatDateRange(group.dates)}
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <span className="text-sm font-bold text-foreground">
+                                {group.userName}
+                              </span>
+                              <span className="text-xs font-mono text-muted-foreground">
+                                {group.empId}
+                              </span>
+                              <span
+                                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10.5px] font-semibold"
+                                style={{
+                                  backgroundColor: typeColor.bg,
+                                  color: typeColor.fg,
+                                }}
+                              >
+                                {getCutiTypeLabel(group.type)}
                               </span>
                             </div>
-                            <span className="inline-flex items-center px-2 py-0.5 bg-[#F5F2ED] rounded text-[11px] font-mono text-[#6B6760]">
-                              {group.dates.length} hari kerja
-                            </span>
-                            {group.dates.some(d => d.clock_in_photo_url) && (
-                              <a
-                                href={group.dates.find(d => d.clock_in_photo_url)?.clock_in_photo_url || "#"}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#FAF0E1] border border-[#E89E3A]/30 text-[#E89E3A] hover:bg-[#FAF0E1]/80 text-[11px] font-medium rounded transition-colors"
-                              >
-                                📄 Lihat Lampiran
-                              </a>
-                            )}
+                            <div className="text-xs text-muted-foreground mb-2">
+                              Divisi:{" "}
+                              <span className="font-medium text-foreground">{group.dept}</span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
+                                <CalendarDays className="w-3.5 h-3.5 text-muted-foreground" />
+                                <span>
+                                  {formatDateRange(group.dates)}
+                                </span>
+                              </div>
+                              <span className="inline-flex items-center px-2 py-0.5 bg-surface-soft rounded-md text-[11px] font-mono text-muted-foreground">
+                                {group.dates.length} hari kerja
+                              </span>
+                              {group.dates.some(d => d.clock_in_photo_url) && (
+                                <a
+                                  href={group.dates.find(d => d.clock_in_photo_url)?.clock_in_photo_url || "#"}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100 text-xs font-semibold rounded-lg transition-colors"
+                                >
+                                  📄 Lihat Lampiran
+                                </a>
+                              )}
+                            </div>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-start">
                           <button
+                            type="button"
+                            aria-label={`Setujui pengajuan cuti ${group.userName}`}
                             onClick={() => handleApproveCuti(group)}
                             disabled={!!isActioning}
-                            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#2A7A4B] hover:bg-[#237340] text-white text-[12.5px] font-medium rounded-[10px] transition-colors disabled:opacity-50"
+                            className="min-h-[40px] flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            <Check className="w-3.5 h-3.5" />
+                            <Check className="w-4 h-4" />
                             Setujui
                           </button>
                           <button
+                            type="button"
+                            aria-label={`Tolak pengajuan cuti ${group.userName}`}
                             onClick={() => handleRejectCuti(group)}
                             disabled={!!isActioning}
-                            className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E0DDD7] hover:bg-[#F5E8E4] hover:border-[#e8b4aa] hover:text-[#C84B2F] text-[#6B6760] text-[12.5px] font-medium rounded-[10px] transition-colors disabled:opacity-50"
+                            className="min-h-[40px] flex items-center gap-1.5 px-4 py-2 bg-card border border-border hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive text-muted-foreground text-xs font-semibold rounded-xl transition-all disabled:opacity-50 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           >
-                            <X className="w-3.5 h-3.5" />
+                            <X className="w-4 h-4" />
                             Tolak
                           </button>
                         </div>
@@ -240,22 +246,22 @@ export function LeaveRequests({
 
         {/* SIDE PANEL — Rejected History */}
         <div className="w-full xl:w-[340px] shrink-0">
-          <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden">
-            <div className="p-3.5 px-4.5 border-b border-[#E0DDD7]">
-              <h3 className="font-['Syne'] text-[14px] font-semibold text-[#1A1814]">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
+            <div className="p-3.5 px-4.5 border-b border-border">
+              <h3 className="font-heading text-sm font-bold text-foreground">
                 Riwayat Ditolak
               </h3>
-              <p className="text-[12px] text-[#A8A49E] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {rejectedGroups.length} pengajuan ditolak
               </p>
             </div>
             <div className="max-h-[480px] overflow-y-auto">
               {rejectedGroups.length === 0 ? (
-                <div className="p-8 text-center text-[#A8A49E] text-[13px]">
+                <div className="p-8 text-center text-muted-foreground text-xs">
                   Belum ada pengajuan yang ditolak.
                 </div>
               ) : (
-                <div className="divide-y divide-[#E0DDD7]">
+                <div className="divide-y divide-border">
                   {rejectedGroups.map((group) => {
                     const typeColor = getCutiTypeColor(group.type);
                     const c =
@@ -263,18 +269,18 @@ export function LeaveRequests({
                     return (
                       <div
                         key={`rej_${group.userId}_${group.status}`}
-                        className="p-3.5 px-4.5 hover:bg-[#FAFAF8] transition-colors"
+                        className="p-3.5 px-4.5 hover:bg-surface-soft/60 transition-colors"
                       >
                         <div className="flex items-center gap-2.5">
                           <div
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10.5px] font-bold font-['Syne'] shrink-0"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold font-heading shrink-0"
                             style={{ backgroundColor: c.bg, color: c.fg }}
                           >
                             {getInitials(group.userName)}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 mb-0.5">
-                              <span className="text-[13px] font-medium text-[#1A1814] truncate">
+                              <span className="text-xs font-semibold text-foreground truncate">
                                 {group.userName}
                               </span>
                               <span
@@ -287,7 +293,7 @@ export function LeaveRequests({
                                 {getCutiTypeLabel(group.type)}
                               </span>
                             </div>
-                            <div className="text-[11.5px] text-[#A8A49E] flex items-center gap-2">
+                            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
                               <span>
                                 {formatDateRange(group.dates)} · {group.dates.length} hari
                               </span>
@@ -296,14 +302,14 @@ export function LeaveRequests({
                                   href={group.dates.find(d => d.clock_in_photo_url)?.clock_in_photo_url || "#"}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="text-[11px] text-[#E89E3A] hover:underline"
+                                  className="text-[11px] text-amber-700 dark:text-amber-400 hover:underline font-medium"
                                 >
                                   (Lampiran)
                                 </a>
                               )}
                             </div>
                           </div>
-                          <span className="inline-flex items-center px-2 py-0.5 bg-[#F5E8E4] text-[#C84B2F] rounded-full text-[10.5px] font-semibold shrink-0">
+                          <span className="inline-flex items-center px-2 py-0.5 bg-destructive/10 text-destructive rounded-full text-[10.5px] font-semibold shrink-0">
                             ✕ Ditolak
                           </span>
                         </div>

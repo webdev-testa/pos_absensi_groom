@@ -28,110 +28,119 @@ export function EmployeeFormDialog({
 }: EmployeeFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] p-0 border-[#C8E8F5] rounded-[16px] overflow-hidden gap-0">
+      <DialogContent className="sm:max-w-[520px] p-0 border-border bg-card rounded-2xl overflow-hidden gap-0 shadow-xl">
         <form onSubmit={onSubmit}>
-          <DialogHeader className="p-6 pb-4 border-b border-[#C8E8F5] bg-white sticky top-0 z-10">
-            <DialogTitle className="font-['Syne'] text-[18px] font-bold text-[#1A3A4A]">
+          <DialogHeader className="p-6 pb-4 border-b border-border bg-card sticky top-0 z-10">
+            <DialogTitle className="font-heading text-lg font-bold text-foreground">
               {isEdit ? 'Edit Karyawan' : 'Tambah Karyawan'}
             </DialogTitle>
-            <DialogDescription className="hidden">Employee form details</DialogDescription>
+            <DialogDescription className="text-xs text-muted-foreground">
+              {isEdit ? 'Perbarui data master karyawan klinik' : 'Masukkan informasi karyawan baru'}
+            </DialogDescription>
           </DialogHeader>
-          <div className="p-6 max-h-[70vh] overflow-y-auto">
-            {/* Account section — email always, password only for new employees */}
-            <div className="mb-5 last:mb-0">
-              <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Akun login</div>
+          <div className="p-6 max-h-[70vh] overflow-y-auto space-y-5">
+            {/* Account section */}
+            <div>
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-3">Akun login</div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Email *</label>
+                  <label htmlFor="emp-email" className="text-xs text-muted-foreground font-medium">Email *</label>
                   <Input 
+                    id="emp-email"
                     type="email" 
                     placeholder="nama@drmeow.com" 
                     value={form.email} 
                     onChange={onChange('email')} 
                     required 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border" 
                   />
                 </div>
                 {!isEdit && (
                   <div className="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
-                    <label className="text-[12px] text-[#4A7A8A] font-medium">Password *</label>
+                    <label htmlFor="emp-password" className="text-xs text-muted-foreground font-medium">Password *</label>
                     <Input 
+                      id="emp-password"
                       type="password" 
                       placeholder="Min. 6 karakter" 
                       value={form.password} 
                       onChange={onChange('password')} 
                       required 
                       minLength={6} 
-                      className="rounded-[10px] border-[#C8E8F5]" 
+                      className="rounded-xl border-border" 
                     />
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="mb-5 last:mb-0">
-              <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Data pribadi</div>
+            <div>
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-3">Data pribadi</div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Nama lengkap</label>
+                  <label htmlFor="emp-name" className="text-xs text-muted-foreground font-medium">Nama lengkap *</label>
                   <Input 
+                    id="emp-name"
                     type="text" 
                     placeholder="Nama karyawan" 
                     value={form.name} 
                     onChange={onChange('name')} 
                     required 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">ID Karyawan</label>
+                  <label htmlFor="emp-id-field" className="text-xs text-muted-foreground font-medium">ID Karyawan</label>
                   <Input 
+                    id="emp-id-field"
                     type="text" 
                     placeholder="EMP-001" 
                     value={form.emp_id} 
                     onChange={onChange('emp_id')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">No. HP / WhatsApp</label>
+                  <label htmlFor="emp-phone" className="text-xs text-muted-foreground font-medium">No. HP / WhatsApp</label>
                   <Input 
+                    id="emp-phone"
                     type="text" 
                     placeholder="08xx-xxxx-xxxx" 
                     value={form.phone} 
                     onChange={onChange('phone')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Tanggal bergabung</label>
+                  <label htmlFor="emp-joined" className="text-xs text-muted-foreground font-medium">Tanggal bergabung</label>
                   <Input 
+                    id="emp-joined"
                     type="date" 
                     value={form.joined} 
                     onChange={onChange('joined')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-2">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Alamat</label>
+                  <label htmlFor="emp-address" className="text-xs text-muted-foreground font-medium">Alamat</label>
                   <Input 
+                    id="emp-address"
                     type="text" 
                     placeholder="Alamat lengkap" 
                     value={form.address} 
                     onChange={onChange('address')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border" 
                   />
                 </div>
               </div>
             </div>
 
-            <div className="mb-5 last:mb-0">
-              <div className="text-[11px] text-[#8ABAC8] uppercase tracking-[0.8px] font-mono mb-3">Pekerjaan & gaji</div>
+            <div>
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-3">Pekerjaan & gaji</div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Divisi (dept)</label>
+                  <label className="text-xs text-muted-foreground font-medium">Divisi (dept)</label>
                   <Select value={form.dept} onValueChange={v => onSelectChange('dept', v)}>
-                    <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
+                    <SelectTrigger className="rounded-xl border-border">
                       <SelectValue placeholder="Pilih divisi" />
                     </SelectTrigger>
                     <SelectContent>
@@ -143,9 +152,9 @@ export function EmployeeFormDialog({
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Hak Akses (Role)</label>
+                  <label className="text-xs text-muted-foreground font-medium">Hak Akses (Role)</label>
                   <Select value={form.role} onValueChange={v => onSelectChange('role', v)}>
-                    <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
+                    <SelectTrigger className="rounded-xl border-border">
                       <SelectValue placeholder="Pilih hak akses" />
                     </SelectTrigger>
                     <SelectContent>
@@ -155,18 +164,20 @@ export function EmployeeFormDialog({
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Jabatan</label>
+                  <label htmlFor="emp-position" className="text-xs text-muted-foreground font-medium">Jabatan</label>
                   <Input 
+                    id="emp-position"
                     type="text" 
                     placeholder="Staff, Senior, dll" 
                     value={form.jabatan} 
                     onChange={onChange('jabatan')} 
-                    className="rounded-[10px] border-[#C8E8F5]" 
+                    className="rounded-xl border-border" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Gaji pokok (Rp)</label>
+                  <label htmlFor="emp-salary" className="text-xs text-muted-foreground font-medium">Gaji pokok (Rp)</label>
                   <Input 
+                    id="emp-salary"
                     type="text" 
                     inputMode="numeric"
                     placeholder="3.000.000" 
@@ -177,13 +188,13 @@ export function EmployeeFormDialog({
                       e.target.value = formatted;
                       onChange('salary')(e);
                     }}
-                    className="rounded-[10px] border-[#C8E8F5] font-mono" 
+                    className="rounded-xl border-border font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Jam kerja</label>
+                  <label className="text-xs text-muted-foreground font-medium">Jam kerja</label>
                   <Select value={form.shift} onValueChange={v => onSelectChange('shift', v)}>
-                    <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
+                    <SelectTrigger className="rounded-xl border-border">
                       <SelectValue placeholder="Pilih jam kerja" />
                     </SelectTrigger>
                     <SelectContent>
@@ -194,8 +205,9 @@ export function EmployeeFormDialog({
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Batas kasbon / bulan (Rp)</label>
+                  <label htmlFor="emp-kasbon-limit" className="text-xs text-muted-foreground font-medium">Batas kasbon / bulan (Rp)</label>
                   <Input 
+                    id="emp-kasbon-limit"
                     type="text" 
                     inputMode="numeric"
                     placeholder="1.000.000" 
@@ -206,13 +218,13 @@ export function EmployeeFormDialog({
                       e.target.value = formatted;
                       onChange('kasbon_limit')(e);
                     }}
-                    className="rounded-[10px] border-[#C8E8F5] font-mono" 
+                    className="rounded-xl border-border font-mono" 
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[12px] text-[#4A7A8A] font-medium">Status</label>
+                  <label className="text-xs text-muted-foreground font-medium">Status</label>
                   <Select value={form.status} onValueChange={v => onSelectChange('status', v)}>
-                    <SelectTrigger className="rounded-[10px] border-[#C8E8F5]">
+                    <SelectTrigger className="rounded-xl border-border">
                       <SelectValue placeholder="Pilih status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -224,18 +236,18 @@ export function EmployeeFormDialog({
               </div>
             </div>
           </div>
-          <DialogFooter className="p-6 pt-4 border-t border-[#C8E8F5] bg-white">
+          <DialogFooter className="p-6 pt-4 border-t border-border bg-card">
             <Button 
               type="button" 
               variant="ghost" 
-              className="rounded-[10px] text-[#4A7A8A] hover:text-[#1A3A4A]" 
+              className="rounded-xl text-muted-foreground hover:text-foreground" 
               onClick={() => onOpenChange(false)}
             >
               Batal
             </Button>
             <Button 
               type="submit" 
-              className="rounded-[10px] bg-[#F5A940] hover:bg-[#b03d24] text-white" 
+              className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" 
               disabled={isPending}
             >
               {isPending ? 'Menyimpan...' : 'Simpan Karyawan'}

@@ -41,90 +41,92 @@ export function HolidayManagement({
     <>
       {/* HOLIDAY STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 mb-7">
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
+        <div className="bg-card border border-border rounded-2xl p-4.5 shadow-xs">
           <div className="stat-title mb-2.5">
             Total Hari Libur
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#1A1814]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-foreground">
             {holidays.length}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">
+          <div className="text-[12px] text-muted-foreground mt-1.5">
             sudah dikonfigurasi
           </div>
         </div>
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
+        <div className="bg-card border border-border rounded-2xl p-4.5 shadow-xs">
           <div className="stat-title mb-2.5">
             Akan Datang
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#2A7A4B]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-emerald-600 dark:text-emerald-400">
             {upcomingHolidays.length}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">
+          <div className="text-[12px] text-muted-foreground mt-1.5">
             sisa tahun ini
           </div>
         </div>
-        <div className="bg-white border border-[#E0DDD7] rounded-[16px] p-4.5">
+        <div className="bg-card border border-border rounded-2xl p-4.5 shadow-xs">
           <div className="stat-title mb-2.5">
             Sudah Lewat
           </div>
-          <div className="font-['Syne'] text-[32px] font-bold tracking-[-1px] leading-none text-[#A8A49E]">
+          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-muted-foreground">
             {pastHolidays.length}
           </div>
-          <div className="text-[12px] text-[#A8A49E] mt-1.5">tahun ini</div>
+          <div className="text-[12px] text-muted-foreground mt-1.5">tahun ini</div>
         </div>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-5 items-start">
         {/* HOLIDAY LIST */}
         <div className="flex-1 w-full">
-          <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden">
-            <div className="p-4 px-5 border-b border-[#E0DDD7] flex items-center justify-between">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
+            <div className="p-4 px-5 border-b border-border flex items-center justify-between">
               <div>
-                <h2 className="font-['Syne'] text-[15px] font-semibold text-[#1A1814]">
+                <h2 className="font-heading text-base font-bold text-foreground">
                   Daftar Hari Libur
                 </h2>
-                <p className="text-[12px] text-[#A8A49E] mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Karyawan otomatis tidak perlu absen pada hari-hari ini
                 </p>
               </div>
             </div>
 
             {holidayLoading ? (
-              <div className="p-12 text-center text-[#A8A49E] text-[13px]">
-                <div className="inline-block w-5 h-5 border-2 border-[#E0DDD7] border-t-[#1A1814] rounded-full animate-spin mb-2"></div>
+              <div className="p-12 text-center text-muted-foreground text-xs font-medium">
+                <div className="inline-block w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin mb-2 motion-reduce:animate-none"></div>
                 <div>Memuat data libur...</div>
               </div>
             ) : holidays.length === 0 ? (
               <div className="p-12 text-center">
                 <div className="text-[40px] mb-3">📅</div>
-                <div className="text-[14px] font-medium text-[#1A1814] mb-1">
+                <div className="text-sm font-semibold text-foreground mb-1">
                   Belum ada hari libur
                 </div>
-                <div className="text-[13px] text-[#A8A49E]">
-                  Klik "Tambah Hari Libur" untuk mulai mengatur jadwal libur.
+                <div className="text-xs text-muted-foreground">
+                  Klik &quot;Tambah Hari Libur&quot; untuk mulai mengatur jadwal libur.
                 </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-[#EDEAE4]">
+                  <thead className="bg-surface-soft border-b border-border">
                     <tr>
-                      <th className="px-5 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal">
+                      <th className="px-5 py-3 text-[11px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
                         Tanggal
                       </th>
-                      <th className="px-5 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal">
+                      <th className="px-5 py-3 text-[11px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
                         Nama
                       </th>
-                      <th className="px-5 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal">
+                      <th className="px-5 py-3 text-[11px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
                         Tipe
                       </th>
-                      <th className="px-5 py-3 text-[10.5px] font-mono tracking-[0.8px] text-[#A8A49E] uppercase font-normal">
+                      <th className="px-5 py-3 text-[11px] font-mono tracking-wider text-muted-foreground uppercase font-semibold">
                         Status
                       </th>
-                      <th className="px-5 py-3"></th>
+                      <th className="px-5 py-3 text-right">
+                        <span className="sr-only">Aksi</span>
+                      </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border">
                     {holidays.map((holiday) => {
                       const typeColor = getHolidayTypeColor(holiday.type);
                       const today = new Date().toISOString().split("T")[0];
@@ -134,15 +136,21 @@ export function HolidayManagement({
                       return (
                         <tr
                           key={holiday.id}
-                          className={`border-b border-[#E0DDD7] last:border-b-0 hover:bg-[#FAFAF8] transition-colors ${isPast ? "opacity-50" : ""}`}
+                          className={`hover:bg-surface-soft/60 transition-colors ${isPast ? "opacity-60" : ""}`}
                         >
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-2.5">
                               <div
-                                className={`w-10 h-10 rounded-[10px] flex flex-col items-center justify-center text-center shrink-0 border ${isToday ? "border-[#2A7A4B] bg-[#E2F0E8]" : "border-[#E0DDD7] bg-[#F5F2ED]"}`}
+                                className={`w-10 h-10 rounded-xl flex flex-col items-center justify-center text-center shrink-0 border ${
+                                  isToday
+                                    ? "border-emerald-500/50 bg-emerald-50 dark:bg-emerald-950/40"
+                                    : "border-border bg-surface-soft"
+                                }`}
                               >
                                 <div
-                                  className={`text-[8px] font-mono uppercase leading-none ${isToday ? "text-[#2A7A4B]" : "text-[#A8A49E]"}`}
+                                  className={`text-[9px] font-mono uppercase leading-none font-semibold ${
+                                    isToday ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground"
+                                  }`}
                                 >
                                   {new Date(
                                     holiday.date + "T00:00:00",
@@ -151,7 +159,9 @@ export function HolidayManagement({
                                   })}
                                 </div>
                                 <div
-                                  className={`text-[15px] font-bold font-['Syne'] leading-none mt-0.5 ${isToday ? "text-[#2A7A4B]" : "text-[#1A1814]"}`}
+                                  className={`text-[15px] font-bold font-heading leading-none mt-0.5 ${
+                                    isToday ? "text-emerald-700 dark:text-emerald-300" : "text-foreground"
+                                  }`}
                                 >
                                   {new Date(
                                     holiday.date + "T00:00:00",
@@ -159,7 +169,7 @@ export function HolidayManagement({
                                 </div>
                               </div>
                               <div>
-                                <div className="font-mono text-[12.5px] text-[#1A1814] font-medium">
+                                <div className="font-mono text-xs text-foreground font-medium">
                                   {new Date(
                                     holiday.date + "T00:00:00",
                                   ).toLocaleDateString("id-ID", {
@@ -172,13 +182,13 @@ export function HolidayManagement({
                               </div>
                             </div>
                           </td>
-                          <td className="px-5 py-3.5 text-[13px] font-medium text-[#1A1814]">
+                          <td className="px-5 py-3.5 text-xs font-semibold text-foreground">
                             {holiday.name}
                           </td>
                           <td className="px-5 py-3.5">
                             <Badge
                               variant="outline"
-                              className="px-2.5 py-1 rounded-full text-[11px] font-semibold border-transparent"
+                              className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border-transparent"
                               style={{
                                 backgroundColor: typeColor.bg,
                                 color: typeColor.fg,
@@ -191,16 +201,16 @@ export function HolidayManagement({
                             {isToday ? (
                               <Badge
                                 variant="outline"
-                                className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#E2F0E8] text-[#2A7A4B] border-transparent"
+                                className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                               >
                                 ● Hari ini
                               </Badge>
                             ) : isPast ? (
-                              <span className="text-[12px] text-[#A8A49E]">
+                              <span className="text-xs text-muted-foreground">
                                 Sudah lewat
                               </span>
                             ) : (
-                              <span className="text-[12px] text-[#2A7A4B] font-medium">
+                              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
                                 Akan datang
                               </span>
                             )}
@@ -210,7 +220,8 @@ export function HolidayManagement({
                               type="button"
                               onClick={() => handleDeleteHoliday(holiday.id)}
                               disabled={actionLoading === `del_${holiday.id}`}
-                              className="p-2 rounded-[8px] text-[#A8A49E] hover:text-[#C84B2F] hover:bg-[#F5E8E4] transition-colors disabled:opacity-50"
+                              aria-label={`Hapus hari libur ${holiday.name}`}
+                              className="min-h-[36px] min-w-[36px] p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50 inline-flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -227,66 +238,71 @@ export function HolidayManagement({
 
         {/* ADD HOLIDAY FORM — Side Panel */}
         <div id="holiday-form" className="w-full xl:w-[360px] shrink-0">
-          <div className="bg-white border border-[#E0DDD7] rounded-[16px] overflow-hidden">
-            <div className="p-4 px-5 border-b border-[#E0DDD7]">
-              <h3 className="font-['Syne'] text-[15px] font-semibold text-[#1A1814]">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
+            <div className="p-4 px-5 border-b border-border">
+              <h3 className="font-heading text-base font-bold text-foreground">
                 Tambah Hari Libur
               </h3>
-              <p className="text-[12px] text-[#A8A49E] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Tentukan tanggal libur atau cuti bersama
               </p>
             </div>
             <form onSubmit={handleAddHoliday} className="p-5 space-y-4">
               {/* Date */}
               <div>
-                <label className="block text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">
-                  Tanggal
+                <label htmlFor="holiday-date" className="block text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-1.5">
+                  Tanggal *
                 </label>
                 <input
+                  id="holiday-date"
                   type="date"
                   value={newHolidayDate}
                   onChange={(e) => setNewHolidayDate(e.target.value)}
                   required
-                  className="w-full px-3.5 py-2.5 bg-white border border-[#E0DDD7] rounded-[10px] text-[13px] text-[#1A1814] outline-none focus:border-[#CBC8C2] focus:ring-1 focus:ring-[#E0DDD7] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-xs sm:text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono"
                 />
               </div>
 
               {/* Name */}
               <div>
-                <label className="block text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">
-                  Nama Hari Libur
+                <label htmlFor="holiday-name" className="block text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-1.5">
+                  Nama Hari Libur *
                 </label>
                 <input
+                  id="holiday-name"
                   type="text"
                   value={newHolidayName}
                   onChange={(e) => setNewHolidayName(e.target.value)}
                   placeholder="cth: Idul Fitri, Natal, Cuti Bersama..."
                   required
-                  className="w-full px-3.5 py-2.5 bg-white border border-[#E0DDD7] rounded-[10px] text-[13px] text-[#1A1814] outline-none focus:border-[#CBC8C2] focus:ring-1 focus:ring-[#E0DDD7] placeholder-[#A8A49E] transition-colors"
+                  className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-xs sm:text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground/60 transition-all"
                 />
               </div>
 
               {/* Type */}
               <div>
-                <label className="block text-[11px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-2">
-                  Tipe
-                </label>
-                <div className="grid grid-cols-3 gap-2">
+                <span className="block text-[11px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-1.5">
+                  Tipe *
+                </span>
+                <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Tipe hari libur">
                   {(["holiday", "cuti_bersama", "closed"] as const).map(
                     (type) => {
                       const tc = getHolidayTypeColor(type);
+                      const isSelected = newHolidayType === type;
                       return (
                         <button
                           key={type}
                           type="button"
+                          role="radio"
+                          aria-checked={isSelected}
                           onClick={() => setNewHolidayType(type)}
-                          className={`px-3 py-2.5 rounded-[10px] text-[12px] font-medium border transition-all text-center ${
-                            newHolidayType === type
-                              ? "ring-1 ring-[#1A1814] border-[#1A1814]"
-                              : "border-[#E0DDD7] hover:border-[#CBC8C2]"
+                          className={`min-h-[40px] px-2 py-2 rounded-xl text-xs font-semibold border transition-all text-center cursor-pointer ${
+                            isSelected
+                              ? "ring-2 ring-primary border-primary shadow-xs"
+                              : "border-border bg-surface-soft hover:bg-card text-foreground"
                           }`}
                           style={
-                            newHolidayType === type
+                            isSelected
                               ? { backgroundColor: tc.bg, color: tc.fg }
                               : {}
                           }
@@ -301,26 +317,26 @@ export function HolidayManagement({
 
               {/* Preview */}
               {newHolidayDate && newHolidayName && (
-                <div className="bg-[#F5F2ED] border border-[#E0DDD7] rounded-[10px] p-3.5">
-                  <div className="text-[10.5px] text-[#A8A49E] uppercase tracking-[0.8px] font-mono mb-1.5">
+                <div className="bg-surface-soft border border-border rounded-xl p-3.5">
+                  <div className="text-[10.5px] text-muted-foreground uppercase tracking-wider font-mono font-semibold mb-1.5">
                     Preview
                   </div>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-[8px] bg-white border border-[#E0DDD7] flex flex-col items-center justify-center">
-                      <div className="text-[7px] font-mono text-[#A8A49E] uppercase leading-none">
+                    <div className="w-9 h-9 rounded-lg bg-card border border-border flex flex-col items-center justify-center">
+                      <div className="text-[8px] font-mono text-muted-foreground uppercase leading-none font-semibold">
                         {new Date(
                           newHolidayDate + "T00:00:00",
                         ).toLocaleDateString("id-ID", { month: "short" })}
                       </div>
-                      <div className="text-[14px] font-bold font-['Syne'] text-[#1A1814] leading-none mt-0.5">
+                      <div className="text-sm font-bold font-heading text-foreground leading-none mt-0.5">
                         {new Date(newHolidayDate + "T00:00:00").getDate()}
                       </div>
                     </div>
-                    <div>
-                      <div className="text-[13px] font-medium text-[#1A1814]">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-bold text-foreground truncate">
                         {newHolidayName}
                       </div>
-                      <div className="text-[11.5px] text-[#A8A49E]">
+                      <div className="text-[11px] text-muted-foreground">
                         {new Date(
                           newHolidayDate + "T00:00:00",
                         ).toLocaleDateString("id-ID", {
@@ -339,7 +355,7 @@ export function HolidayManagement({
               <button
                 type="submit"
                 disabled={!newHolidayName || !newHolidayDate || holidayLoading}
-                className="w-full py-2.5 bg-[#1A1814] text-white text-[13px] font-medium rounded-[10px] hover:bg-[#2A2824] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full min-h-[44px] py-2.5 bg-primary text-primary-foreground text-xs font-semibold rounded-xl hover:bg-primary/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Plus className="w-4 h-4" />
                 Simpan Hari Libur

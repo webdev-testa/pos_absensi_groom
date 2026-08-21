@@ -56,10 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data } = await supabase.auth.getSession()
         if (data?.session?.user) {
-          // Check for cached profile first to avoid UI blocking if network is slow
-          const cached = localStorage.getItem(`profile_${data.session.user.id}`)
+          const cached = getCachedProfile(data.session.user.id)
           if (cached) {
-            setUser(JSON.parse(cached))
+            setUser(cached)
           }
           await fetchProfile(data.session.user.id)
         } else {
@@ -75,16 +74,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     init()
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         if (event === 'INITIAL_SESSION') return
-        try {
-          if (session?.user) {
-            await fetchProfile(session.user.id)
-          } else {
-            if (mounted) setUser(null)
-          }
-        } catch (err) {
-          console.error('onAuthStateChange exception:', err)
+        if (session?.user) {
+          fetchProfile(session.user.id).catch((err) => {
+            console.error('onAuthStateChange profile fetch failed:', err)
+          })
+        } else {
           if (mounted) setUser(null)
         }
       }

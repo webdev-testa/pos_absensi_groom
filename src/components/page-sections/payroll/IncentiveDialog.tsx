@@ -26,18 +26,19 @@ export function IncentiveDialog({
 }: IncentiveDialogProps) {
   return (
     <Dialog open={showIncentiveModal} onOpenChange={setShowIncentiveModal}>
-      <DialogContent className="max-w-[400px] bg-white border border-[#E0DDD7] rounded-[16px] p-6 text-[#1A1814]">
+      <DialogContent className="max-w-[400px] bg-card border border-border rounded-2xl p-6 text-foreground shadow-xl">
         <DialogHeader>
-          <DialogTitle className="font-['Syne'] text-[17px] font-bold text-[#1A1814]">Input Insentif Manual</DialogTitle>
-          <DialogDescription className="text-[12.5px] text-[#6B6760] mt-1.5">
+          <DialogTitle className="font-heading text-base font-bold text-foreground">Input Insentif Manual</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground mt-1">
             Masukkan nominal bonus atau insentif tambahan untuk karyawan di bulan {selectedPeriodLabel}.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <label className="text-[12.5px] text-[#6B6760] font-medium block mb-1.5">Nominal Insentif (Rp)</label>
+          <label htmlFor="incentive-amount" className="text-xs text-muted-foreground font-medium block mb-1.5">Nominal Insentif (Rp) *</label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] font-mono text-[#6B6760]">Rp</div>
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-muted-foreground font-semibold">Rp</div>
             <Input 
+              id="incentive-amount"
               type="text"
               inputMode="numeric"
               placeholder="Contoh: 500.000" 
@@ -47,25 +48,25 @@ export function IncentiveDialog({
                 const formatted = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
                 setIncentiveAmount(formatted);
               }}
-              className="pl-9 bg-white border-[#E0DDD7] rounded-[10px] text-[13.5px] h-[40px] focus-visible:ring-0 focus-visible:border-[#CBC8C2] font-mono"
+              className="pl-9 bg-background border-border rounded-xl text-xs sm:text-sm h-10 font-mono"
             />
           </div>
         </div>
-        <DialogFooter className="flex gap-2 justify-end mt-4">
+        <DialogFooter className="flex gap-2 justify-end mt-2 bg-transparent border-none">
           <Button 
             onClick={() => setShowIncentiveModal(false)} 
-            variant="outline" 
-            className="bg-white border-[#E0DDD7] hover:border-[#CBC8C2] text-[#6B6760] hover:text-[#1A1814] h-[36px] text-[12.5px] rounded-[10px]"
+            variant="ghost" 
+            className="text-muted-foreground hover:text-foreground h-9 text-xs rounded-xl"
           >
             Batal
           </Button>
           <Button 
             onClick={handleSaveIncentive} 
             disabled={updateIncentiveMutation.isPending}
-            className="bg-[#C84B2F] hover:bg-[#b03d24] text-white border-none h-[36px] text-[12.5px] rounded-[10px]"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-9 text-xs rounded-xl"
           >
-            {updateIncentiveMutation.isPending && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
-            Simpan
+            {updateIncentiveMutation.isPending && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin motion-reduce:animate-none" />}
+            Simpan Insentif
           </Button>
         </DialogFooter>
       </DialogContent>
