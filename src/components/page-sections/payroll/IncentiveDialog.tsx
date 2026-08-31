@@ -26,7 +26,7 @@ export function IncentiveDialog({
 }: IncentiveDialogProps) {
   return (
     <Dialog open={showIncentiveModal} onOpenChange={setShowIncentiveModal}>
-      <DialogContent className="max-w-[400px] bg-card border border-border rounded-2xl p-6 text-foreground shadow-xl">
+      <DialogContent className="sm:max-w-[400px] max-w-[calc(100%-2rem)] bg-card border border-border rounded-2xl p-6 text-foreground shadow-xl">
         <DialogHeader>
           <DialogTitle className="font-heading text-base font-bold text-foreground">Input Insentif Manual</DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground mt-1">

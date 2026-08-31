@@ -47,6 +47,8 @@ export function KasbonTable({
             size="icon" 
             onClick={onRefetch}
             disabled={loadingKasbon}
+            aria-label="Refresh data kasbon"
+            title="Refresh data kasbon"
             className="border-border text-muted-foreground hover:bg-surface-soft h-[38px] w-[38px] cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loadingKasbon ? 'animate-spin' : ''}`} />
@@ -171,13 +173,30 @@ export function KasbonTable({
       <div className="flex items-center justify-between p-[14px_18px] border-t border-border text-[12.5px] text-muted-foreground">
         <span>Menampilkan {filteredKasbon.length} transaksi</span>
         <div className="flex gap-1">
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            aria-label="Halaman Sebelumnya"
+            title="Halaman Sebelumnya"
+            className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer"
+          >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground font-semibold">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            aria-label="Halaman 1"
+            className="w-[30px] h-[30px] rounded-md border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground font-semibold"
+          >
             1
           </Button>
-          <Button variant="outline" size="icon" className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            aria-label="Halaman Berikutnya"
+            title="Halaman Berikutnya"
+            className="w-[30px] h-[30px] rounded-md border-border text-muted-foreground hover:text-foreground cursor-pointer"
+          >
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>

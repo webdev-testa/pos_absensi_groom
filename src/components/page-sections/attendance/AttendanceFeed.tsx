@@ -70,12 +70,19 @@ export function AttendanceFeed({ feedEvents }: AttendanceFeedProps) {
             </h3>
             <p className="text-xs text-muted-foreground">Radius klinik Dr. Meow</p>
           </div>
-          <button className="text-xs text-muted-foreground font-semibold hover:text-foreground px-2.5 py-1 rounded-lg hover:bg-surface-soft transition-colors cursor-pointer border border-transparent">
+          <button 
+            type="button"
+            onClick={() => window.open('https://maps.google.com/?q=Klinik+Hewan+Dr.+Meow', '_blank')}
+            className="text-xs text-muted-foreground font-semibold hover:text-foreground px-2.5 py-1 rounded-lg hover:bg-surface-soft transition-colors cursor-pointer border border-transparent"
+          >
             Buka peta
           </button>
         </div>
 
-        <div className="h-[200px] bg-surface-soft relative overflow-hidden cursor-pointer group">
+        <div 
+          onClick={() => window.open('https://maps.google.com/?q=Klinik+Hewan+Dr.+Meow', '_blank')}
+          className="h-[200px] bg-surface-soft relative overflow-hidden cursor-pointer group"
+        >
           <div className="absolute inset-0">
             <div className="absolute bg-border h-[2px] top-[35%] left-0 right-0"></div>
             <div className="absolute bg-border h-[2px] top-[65%] left-0 right-0"></div>

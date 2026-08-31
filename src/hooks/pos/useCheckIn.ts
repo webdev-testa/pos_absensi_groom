@@ -185,7 +185,12 @@ export function useCheckIn() {
   }
 
   // Submit Check-In
-  const submitCheckIn = (): Booking => {
+  const submitCheckIn = (paymentDetails?: {
+    method: 'QRIS' | 'Tunai' | 'Transfer'
+    cashTendered?: number
+    change?: number
+    referenceNote?: string
+  }): Booking => {
     const nowIso = new Date().toISOString()
 
     // 1. Resolve Owner
@@ -261,7 +266,12 @@ export function useCheckIn() {
         booking_id: bookingId,
         tipe: 'dp',
         jumlah: Number(bookingData.dp),
-        keterangan: 'DP Penitipan saat Check-In',
+        metode_bayar: paymentDetails?.method || 'QRIS',
+        uang_diterima: paymentDetails?.cashTendered,
+        kembalian: paymentDetails?.change,
+        keterangan: paymentDetails?.referenceNote
+          ? `DP Penitipan via ${paymentDetails.method} (${paymentDetails.referenceNote})`
+          : `DP Penitipan via ${paymentDetails?.method || 'QRIS'}`,
         created_at: nowIso,
       }
       store.addTransaction(tx)
@@ -269,7 +279,6 @@ export function useCheckIn() {
     }
 
     setCreatedBooking(newBooking)
-    setIsModalOpen(true)
     return newBooking
   }
 

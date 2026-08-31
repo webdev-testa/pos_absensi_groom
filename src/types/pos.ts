@@ -46,6 +46,9 @@ export interface Transaction {
   booking_id: string
   tipe: 'dp' | 'pelunasan' | 'biaya_tambahan'
   jumlah: number
+  metode_bayar?: 'QRIS' | 'Tunai' | 'Transfer' | string
+  uang_diterima?: number
+  kembalian?: number
   keterangan?: string
   created_at: string
 }
@@ -78,6 +81,10 @@ export interface Pengaturan {
   nama_usaha: string
   no_wa_usaha?: string
   alamat_usaha?: string
+  nama_bank?: string
+  no_rekening?: string
+  atas_nama_rekening?: string
+  qris_nmid?: string
 }
 
 export interface BillingCalculation {

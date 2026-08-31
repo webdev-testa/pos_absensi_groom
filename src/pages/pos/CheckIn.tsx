@@ -1,15 +1,54 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Button } from '@/components/ui/button'
 import { useCheckIn } from '@/hooks/pos/useCheckIn'
 import { CheckInForm } from '@/components/pos/CheckInForm'
+import { PosPaymentModal } from '@/components/pos/PosPaymentModal'
 import { WaTemplateModal } from '@/components/pos/WaTemplateModal'
+import { StrukPdf } from '@/components/pos/StrukPdf'
 import { ArrowLeft, Sparkles, RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
+import type { PaymentSuccessResult } from '@/components/pos/PosPaymentModal'
 
 export default function CheckIn() {
   const checkIn = useCheckIn()
-  const { createdBooking, isModalOpen, setIsModalOpen, resetForm, pengaturan } =
-    checkIn
+  const {
+    createdBooking,
+    resetForm,
+    pengaturan,
+    bookingData,
+    selectedOwner,
+    newOwnerData,
+    selectedCat,
+    newCatData,
+    submitCheckIn,
+  } = checkIn
+
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [isWaModalOpen, setIsWaModalOpen] = useState(false)
+  const [isStrukOpen, setIsStrukOpen] = useState(false)
+
+  const customerName = selectedOwner?.nama || newOwnerData.nama || 'Pelanggan'
+  const catName = selectedCat?.nama || newCatData.nama || 'Kucing'
+
+  // Triggered when clicking submit button in CheckInForm Step 3
+  const handleInitiateCheckIn = () => {
+    if (bookingData.dp > 0) {
+      setIsPaymentModalOpen(true)
+    } else {
+      submitCheckIn()
+      toast.success(`Check-In untuk ${catName} berhasil disimpan!`, {
+        description: 'Tamu anabul siap menginap.',
+      })
+      setIsStrukOpen(true)
+    }
+  }
+
+  // Triggered when payment is confirmed in PosPaymentModal
+  const handlePaymentSuccess = (result: PaymentSuccessResult) => {
+    submitCheckIn(result)
+  }
 
   return (
     <AdminLayout>
@@ -21,6 +60,8 @@ export default function CheckIn() {
               <Button
                 variant="outline"
                 size="sm"
+                aria-label="Kembali ke Dashboard Kucing"
+                title="Kembali ke Dashboard Kucing"
                 className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-ink" />
@@ -49,18 +90,49 @@ export default function CheckIn() {
         </div>
 
         {/* MULTI-STEP FORM */}
-        <CheckInForm checkIn={checkIn} />
+        <CheckInForm
+          checkIn={checkIn}
+          onInitiateCheckIn={handleInitiateCheckIn}
+        />
+
+        {/* POS PAYMENT MODAL (QRIS, Tunai, Transfer) FOR DP */}
+        <PosPaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => {
+            setIsPaymentModalOpen(false)
+            if (createdBooking) {
+              resetForm()
+            }
+          }}
+          totalAmount={bookingData.dp}
+          title="Pembayaran DP Check-In"
+          customerName={customerName}
+          catName={catName}
+          itemSummary={`DP Paket ${bookingData.paket}`}
+          pengaturan={pengaturan}
+          initialMethod="QRIS"
+          onPaymentSuccess={handlePaymentSuccess}
+          onPrintReceipt={() => setIsStrukOpen(true)}
+          onOpenWaTemplate={() => setIsWaModalOpen(true)}
+        />
+
+        {/* PRINTABLE RECEIPT / STRUK PDF */}
+        <StrukPdf
+          isOpen={isStrukOpen}
+          onClose={() => setIsStrukOpen(false)}
+          booking={createdBooking}
+          pengaturan={pengaturan}
+        />
 
         {/* SUCCESS WA TEMPLATE MODAL */}
         <WaTemplateModal
-          isOpen={isModalOpen}
+          isOpen={isWaModalOpen}
           onClose={() => {
-            setIsModalOpen(false)
-            resetForm()
+            setIsWaModalOpen(false)
           }}
           type="checkin"
           data={createdBooking}
-          dp={createdBooking?.transactions?.[0]?.jumlah || 0}
+          dp={createdBooking?.transactions?.[0]?.jumlah || bookingData.dp || 0}
           namaUsaha={pengaturan.nama_usaha}
         />
       </div>

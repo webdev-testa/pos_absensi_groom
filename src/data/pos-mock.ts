@@ -13,6 +13,10 @@ export const initialPengaturan: Pengaturan = {
   nama_usaha: 'Dr. Meow Cat Hotel & Care',
   no_wa_usaha: '081234567890',
   alamat_usaha: 'Jl. Ahmad Yani No. 45, Jakarta Selatan',
+  nama_bank: 'BCA (Bank Central Asia)',
+  no_rekening: '8735091234',
+  atas_nama_rekening: 'Dr. Meow Cat Clinic',
+  qris_nmid: 'ID1020304050607',
 }
 
 export const initialPaketHarga: PaketHarga[] = [

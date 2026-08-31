@@ -22,9 +22,23 @@ interface AdminLayoutProps {
   children: ReactNode
 }
 
-function NavItem({ to, icon: Icon, label, onClick }: { to: string; icon: React.ElementType; label: string; onClick?: () => void }) {
+function NavItem({ 
+  to, 
+  icon: Icon, 
+  label, 
+  onClick, 
+  activeMatcher 
+}: { 
+  to: string; 
+  icon: React.ElementType; 
+  label: string; 
+  onClick?: () => void;
+  activeMatcher?: (pathname: string) => boolean;
+}) {
   const location = useLocation()
-  const isActive = location.pathname.startsWith(to)
+  const isActive = activeMatcher
+    ? activeMatcher(location.pathname)
+    : location.pathname === to || location.pathname.startsWith(to + '/')
   
   return (
     <Link
@@ -121,7 +135,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-amber-400 font-semibold shrink-0">
           Penitipan Kucing
         </div>
-        <NavItem to="/admin/pos" icon={Cat} label="Dashboard Kucing" onClick={() => setMobileOpen(false)} />
+        <NavItem 
+          to="/admin/pos" 
+          icon={Cat} 
+          label="Dashboard Kucing" 
+          activeMatcher={pathname => pathname === '/admin/pos' || pathname.startsWith('/admin/pos/kucing')} 
+          onClick={() => setMobileOpen(false)} 
+        />
         <NavItem to="/admin/pos/check-in" icon={PlusCircle} label="Check-In Kucing" onClick={() => setMobileOpen(false)} />
         <NavItem to="/admin/pos/laporan" icon={ClipboardList} label="Laporan Harian" onClick={() => setMobileOpen(false)} />
         <NavItem to="/admin/pos/check-out" icon={LogOut} label="Check-Out" onClick={() => setMobileOpen(false)} />

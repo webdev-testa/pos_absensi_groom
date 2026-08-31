@@ -75,8 +75,8 @@ export default function PosDashboard() {
             </Link>
             <Link to="/admin/pos/check-in">
               <Button className="h-10 text-xs sm:text-sm bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-xs cursor-pointer">
-                <PlusCircle className="w-4 h-4 mr-1.5" />
-                + Check-In Kucing Baru
+                <PlusCircle className="w-4 h-4 mr-1.5"/>
+                Check-In Kucing Baru
               </Button>
             </Link>
           </div>

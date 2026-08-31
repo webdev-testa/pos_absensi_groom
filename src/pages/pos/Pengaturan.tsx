@@ -111,6 +111,8 @@ export default function Pengaturan() {
               <Button
                 variant="outline"
                 size="sm"
+                aria-label="Kembali ke Dashboard Kucing"
+                title="Kembali ke Dashboard Kucing"
                 className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-ink" />
@@ -212,13 +214,93 @@ export default function Pengaturan() {
               />
             </div>
 
+            {/* Rekening & QRIS Section */}
+            <div className="pt-3 border-t border-hairline space-y-3">
+              <div className="text-xs font-heading font-bold text-ink flex items-center gap-1.5">
+                <span>💳 Rekening Bank & QRIS Kasir POS</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                    Nama Bank
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="BCA (Bank Central Asia)"
+                    value={settingsForm.nama_bank || ''}
+                    onChange={e =>
+                      setSettingsForm(prev => ({
+                        ...prev,
+                        nama_bank: e.target.value,
+                      }))
+                    }
+                    className="h-9 text-xs"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                    Nomor Rekening
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="8735091234"
+                    value={settingsForm.no_rekening || ''}
+                    onChange={e =>
+                      setSettingsForm(prev => ({
+                        ...prev,
+                        no_rekening: e.target.value,
+                      }))
+                    }
+                    className="h-9 text-xs font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                    Atas Nama Rekening
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Dr. Meow Cat Clinic"
+                    value={settingsForm.atas_nama_rekening || ''}
+                    onChange={e =>
+                      setSettingsForm(prev => ({
+                        ...prev,
+                        atas_nama_rekening: e.target.value,
+                      }))
+                    }
+                    className="h-9 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-ink mb-1">
+                  NMID QRIS (National Merchant ID)
+                </label>
+                <Input
+                  type="text"
+                  placeholder="ID1020304050607"
+                  value={settingsForm.qris_nmid || ''}
+                  onChange={e =>
+                    setSettingsForm(prev => ({
+                      ...prev,
+                      qris_nmid: e.target.value,
+                    }))
+                  }
+                  className="h-9 text-xs font-mono max-w-sm"
+                />
+              </div>
+            </div>
+
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
                 className="text-xs h-9 px-4 bg-primary hover:bg-primary-hover text-white font-medium cursor-pointer gap-1.5"
               >
                 <Save className="w-3.5 h-3.5" />
-                Simpan Info Usaha
+                Simpan Info Usaha & Rekening
               </Button>
             </div>
           </form>
@@ -322,7 +404,7 @@ export default function Pengaturan() {
 
         {/* MODAL ADD / EDIT PAKET */}
         <Dialog open={isPaketModalOpen} onOpenChange={setIsPaketModalOpen}>
-          <DialogContent className="max-w-md bg-white border border-border shadow-2xl p-6 rounded-2xl">
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 rounded-2xl">
             <DialogHeader className="text-left pb-2 border-b border-border/80">
               <DialogTitle className="text-base font-heading font-bold text-ink">
                 {editingPaket ? 'Edit Paket Penitipan' : 'Tambah Paket Baru'}

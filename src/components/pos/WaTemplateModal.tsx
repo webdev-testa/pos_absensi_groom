@@ -103,7 +103,7 @@ export function WaTemplateModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="max-w-xl bg-white border border-border shadow-2xl p-6 sm:p-7 rounded-2xl">
+      <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 sm:p-7 rounded-2xl">
         <DialogHeader className="space-y-1 text-left pb-2 border-b border-border/60">
           <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase text-brand-orange">
             <Sparkles className="w-3.5 h-3.5" />

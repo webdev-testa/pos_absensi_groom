@@ -49,6 +49,8 @@ export default function LaporanHarian() {
               <Button
                 variant="outline"
                 size="sm"
+                aria-label="Kembali ke Dashboard Kucing"
+                title="Kembali ke Dashboard Kucing"
                 className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-ink" />

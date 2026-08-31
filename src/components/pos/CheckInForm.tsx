@@ -20,9 +20,10 @@ type CheckInHookReturn = ReturnType<typeof useCheckIn>
 
 interface CheckInFormProps {
   checkIn: CheckInHookReturn
+  onInitiateCheckIn?: () => void
 }
 
-export function CheckInForm({ checkIn }: CheckInFormProps) {
+export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
   const {
     step,
     setStep,
@@ -786,7 +787,13 @@ export function CheckInForm({ checkIn }: CheckInFormProps) {
               </Button>
               <Button
                 type="button"
-                onClick={submitCheckIn}
+                onClick={() => {
+                  if (onInitiateCheckIn) {
+                    onInitiateCheckIn()
+                  } else {
+                    submitCheckIn()
+                  }
+                }}
                 className="text-xs h-10 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer"
               >
                 <CheckCircle2 className="w-4 h-4 mr-1.5" /> Konfirmasi & Simpan Check-In

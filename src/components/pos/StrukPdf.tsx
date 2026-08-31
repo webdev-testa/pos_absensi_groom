@@ -40,7 +40,7 @@ export function StrukPdf({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="max-w-md bg-white border border-border shadow-2xl p-6 rounded-2xl">
+      <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 rounded-2xl">
         <DialogHeader className="text-center pb-2 border-b border-border/60">
           <DialogTitle className="text-base font-heading font-bold text-ink">
             Pratinjau Struk Penitipan

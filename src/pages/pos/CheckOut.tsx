@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { usePosStore } from '@/data/pos-store'
 import { CheckOutForm } from '@/components/pos/CheckOutForm'
+import { PosPaymentModal } from '@/components/pos/PosPaymentModal'
 import { WaTemplateModal } from '@/components/pos/WaTemplateModal'
 import { StrukPdf } from '@/components/pos/StrukPdf'
 import { formatTanggalPendek, formatRupiah, calculateBilling } from '@/utils/pos.utils'
 import type { Booking, Transaction, BillingCalculation } from '@/types/pos'
+import type { PaymentSuccessResult } from '@/components/pos/PosPaymentModal'
 import {
   Search,
   ArrowLeft,
@@ -26,10 +28,18 @@ export default function CheckOut() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
 
-  // Success Modal state
+  // Payment & Modal states
+  const [pendingCheckoutData, setPendingCheckoutData] = useState<{
+    checkoutDate: string
+    extraCharges: { keterangan: string; jumlah: number }[]
+    pelunasanAmount: number
+    metodeBayar: string
+  } | null>(null)
+
   const [completedBooking, setCompletedBooking] = useState<
     (Booking & { billing?: BillingCalculation }) | null
   >(null)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [isWaModalOpen, setIsWaModalOpen] = useState(false)
   const [isStrukOpen, setIsStrukOpen] = useState(false)
 
@@ -49,20 +59,14 @@ export default function CheckOut() {
     )
   }, [activeBookings, searchQuery])
 
-  // Handle Checkout Confirmation
-  const handleConfirmCheckout = ({
-    checkoutDate,
-    extraCharges,
-    pelunasanAmount,
-    metodeBayar,
-  }: {
-    checkoutDate: string
-    extraCharges: { keterangan: string; jumlah: number }[]
-    pelunasanAmount: number
-    metodeBayar: string
-  }) => {
-    if (!selectedBooking) return
-
+  // Execute actual database changes
+  const executeCheckout = (
+    bookingToCheckout: Booking,
+    checkoutDate: string,
+    extraCharges: { keterangan: string; jumlah: number }[],
+    pelunasanAmount: number,
+    paymentDetails?: PaymentSuccessResult
+  ) => {
     const nowIso = new Date().toISOString()
     const newTxList: Transaction[] = []
 
@@ -70,7 +74,7 @@ export default function CheckOut() {
     for (const item of extraCharges) {
       const tx: Transaction = {
         id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
-        booking_id: selectedBooking.id,
+        booking_id: bookingToCheckout.id,
         tipe: 'biaya_tambahan',
         jumlah: item.jumlah,
         keterangan: item.keterangan,
@@ -82,12 +86,18 @@ export default function CheckOut() {
 
     // 2. Insert Pelunasan Transaction if > 0
     if (pelunasanAmount > 0) {
+      const method = paymentDetails?.method || 'QRIS'
       const pelunasanTx: Transaction = {
         id: `tx-${Date.now()}-pelunasan`,
-        booking_id: selectedBooking.id,
+        booking_id: bookingToCheckout.id,
         tipe: 'pelunasan',
         jumlah: pelunasanAmount,
-        keterangan: `Pelunasan saat Checkout via ${metodeBayar}`,
+        metode_bayar: method,
+        uang_diterima: paymentDetails?.cashTendered,
+        kembalian: paymentDetails?.change,
+        keterangan: paymentDetails?.referenceNote
+          ? `Pelunasan Checkout via ${method} (${paymentDetails.referenceNote})`
+          : `Pelunasan Checkout via ${method}`,
         created_at: nowIso,
       }
       store.addTransaction(pelunasanTx)
@@ -95,33 +105,70 @@ export default function CheckOut() {
     }
 
     // 3. Update Booking to 'selesai'
-    store.updateBooking(selectedBooking.id, {
+    store.updateBooking(bookingToCheckout.id, {
       status: 'selesai',
       tanggal_keluar_aktual: checkoutDate,
     })
 
-    // Calculate final billing for modal
+    // Calculate final billing for modal and receipt
     const updatedBooking: Booking = {
-      ...selectedBooking,
+      ...bookingToCheckout,
       status: 'selesai',
       tanggal_keluar_aktual: checkoutDate,
       transactions: [
-        ...(selectedBooking.transactions || []),
+        ...(bookingToCheckout.transactions || []),
         ...newTxList,
       ],
     }
     const finalBilling = calculateBilling(updatedBooking, checkoutDate)
 
-    toast.success(`Check-Out untuk ${selectedBooking.cat?.nama} berhasil!`, {
-      description: 'Status penitipan telah ditutup.',
-    })
-
     setCompletedBooking({
       ...updatedBooking,
       billing: finalBilling,
     })
-    setSelectedBooking(null)
-    setIsWaModalOpen(true)
+
+    return updatedBooking
+  }
+
+  // Handle Checkout Confirmation from Form
+  const handleConfirmCheckout = (data: {
+    checkoutDate: string
+    extraCharges: { keterangan: string; jumlah: number }[]
+    pelunasanAmount: number
+    metodeBayar: string
+  }) => {
+    if (!selectedBooking) return
+
+    setPendingCheckoutData(data)
+
+    if (data.pelunasanAmount > 0) {
+      setIsPaymentModalOpen(true)
+    } else {
+      executeCheckout(
+        selectedBooking,
+        data.checkoutDate,
+        data.extraCharges,
+        data.pelunasanAmount
+      )
+      toast.success(`Check-Out untuk ${selectedBooking.cat?.nama} berhasil!`, {
+        description: 'Status penitipan telah ditutup.',
+      })
+      setSelectedBooking(null)
+      setIsStrukOpen(true)
+    }
+  }
+
+  // Handle Payment Modal Success
+  const handlePaymentSuccess = (result: PaymentSuccessResult) => {
+    if (!selectedBooking || !pendingCheckoutData) return
+
+    executeCheckout(
+      selectedBooking,
+      pendingCheckoutData.checkoutDate,
+      pendingCheckoutData.extraCharges,
+      pendingCheckoutData.pelunasanAmount,
+      result
+    )
   }
 
   return (
@@ -134,6 +181,8 @@ export default function CheckOut() {
               <Button
                 variant="outline"
                 size="sm"
+                aria-label="Kembali ke Dashboard Kucing"
+                title="Kembali ke Dashboard Kucing"
                 className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-ink" />
@@ -282,6 +331,28 @@ export default function CheckOut() {
               </div>
             )}
           </div>
+        )}
+
+        {/* POS PAYMENT MODAL FOR CHECKOUT PELUNASAN */}
+        {selectedBooking && pendingCheckoutData && (
+          <PosPaymentModal
+            isOpen={isPaymentModalOpen}
+            onClose={() => {
+              setIsPaymentModalOpen(false)
+              setPendingCheckoutData(null)
+              setSelectedBooking(null)
+            }}
+            totalAmount={pendingCheckoutData.pelunasanAmount}
+            title="Pelunasan Tagihan Check-Out"
+            customerName={selectedBooking.owner?.nama || 'Pelanggan'}
+            catName={selectedBooking.cat?.nama || 'Kucing'}
+            itemSummary={`Pelunasan ${selectedBooking.paket} (${selectedBooking.cat?.nama})`}
+            pengaturan={store.pengaturan}
+            initialMethod={(pendingCheckoutData.metodeBayar as any) || 'QRIS'}
+            onPaymentSuccess={handlePaymentSuccess}
+            onPrintReceipt={() => setIsStrukOpen(true)}
+            onOpenWaTemplate={() => setIsWaModalOpen(true)}
+          />
         )}
 
         {/* WA TEMPLATE MODAL */}
