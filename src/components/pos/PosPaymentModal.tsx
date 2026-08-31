@@ -186,7 +186,7 @@ export function PosPaymentModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 sm:p-7 rounded-2xl max-h-[92vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] bg-card text-foreground border border-border shadow-2xl p-6 sm:p-7 rounded-2xl max-h-[92vh] overflow-y-auto">
         {!isSuccess ? (
           <div className="space-y-5">
             {/* Header */}
@@ -200,13 +200,13 @@ export function PosPaymentModal({
                   {title}
                 </span>
               </div>
-              <DialogTitle className="text-lg font-heading font-bold text-ink flex items-center justify-between pt-1">
+              <DialogTitle className="text-lg font-heading font-bold text-foreground flex items-center justify-between pt-1">
                 <span>Rincian Tagihan Kasir</span>
-                <span className="text-xl font-mono text-emerald-600 font-extrabold">
+                <span className="text-xl font-mono text-emerald-600 dark:text-emerald-400 font-extrabold tabular-nums">
                   Rp {formatRupiah(totalAmount)}
                 </span>
               </DialogTitle>
-              <DialogDescription className="text-xs text-ink-muted flex items-center gap-2 pt-0.5">
+              <DialogDescription className="text-xs text-muted-foreground flex items-center gap-2 pt-0.5">
                 <span>Owner: <strong>{customerName}</strong></span>
                 <span>•</span>
                 <span>Anabul: <strong>{catName}</strong></span>
@@ -217,7 +217,7 @@ export function PosPaymentModal({
 
             {/* Payment Method Selector Tabs */}
             <div>
-              <label className="block text-xs font-semibold text-ink mb-2">
+              <label className="block text-xs font-semibold text-foreground mb-2">
                 Pilih Metode Pembayaran:
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -226,17 +226,17 @@ export function PosPaymentModal({
                   onClick={() => setSelectedMethod('QRIS')}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer ${
                     selectedMethod === 'QRIS'
-                      ? 'border-brand-orange bg-amber-50/60 shadow-xs'
-                      : 'border-hairline bg-surface-soft hover:bg-white'
+                      ? 'border-brand-orange bg-amber-50/60 dark:bg-amber-950/40 shadow-xs'
+                      : 'border-border bg-surface-soft hover:bg-card'
                   }`}
                 >
                   <QrCode
                     className={`w-5 h-5 mb-1 ${
-                      selectedMethod === 'QRIS' ? 'text-brand-orange' : 'text-ink-muted'
+                      selectedMethod === 'QRIS' ? 'text-brand-orange' : 'text-muted-foreground'
                     }`}
                   />
-                  <span className="text-xs font-bold text-ink">QRIS</span>
-                  <span className="text-[10px] text-ink-muted">Scan e-Wallet/Bank</span>
+                  <span className="text-xs font-bold text-foreground">QRIS</span>
+                  <span className="text-[10px] text-muted-foreground">Scan e-Wallet/Bank</span>
                 </button>
 
                 <button
@@ -247,17 +247,17 @@ export function PosPaymentModal({
                   }}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer ${
                     selectedMethod === 'Tunai'
-                      ? 'border-brand-orange bg-amber-50/60 shadow-xs'
-                      : 'border-hairline bg-surface-soft hover:bg-white'
+                      ? 'border-brand-orange bg-amber-50/60 dark:bg-amber-950/40 shadow-xs'
+                      : 'border-border bg-surface-soft hover:bg-card'
                   }`}
                 >
                   <Banknote
                     className={`w-5 h-5 mb-1 ${
-                      selectedMethod === 'Tunai' ? 'text-emerald-600' : 'text-ink-muted'
+                      selectedMethod === 'Tunai' ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'
                     }`}
                   />
-                  <span className="text-xs font-bold text-ink">Tunai / Cash</span>
-                  <span className="text-[10px] text-ink-muted">Hitung Kembalian</span>
+                  <span className="text-xs font-bold text-foreground">Tunai / Cash</span>
+                  <span className="text-[10px] text-muted-foreground">Hitung Kembalian</span>
                 </button>
 
                 <button
@@ -265,17 +265,17 @@ export function PosPaymentModal({
                   onClick={() => setSelectedMethod('Transfer')}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all cursor-pointer ${
                     selectedMethod === 'Transfer'
-                      ? 'border-brand-orange bg-amber-50/60 shadow-xs'
-                      : 'border-hairline bg-surface-soft hover:bg-white'
+                      ? 'border-brand-orange bg-amber-50/60 dark:bg-amber-950/40 shadow-xs'
+                      : 'border-border bg-surface-soft hover:bg-card'
                   }`}
                 >
                   <Building
                     className={`w-5 h-5 mb-1 ${
-                      selectedMethod === 'Transfer' ? 'text-blue-600' : 'text-ink-muted'
+                      selectedMethod === 'Transfer' ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground'
                     }`}
                   />
-                  <span className="text-xs font-bold text-ink">Transfer Bank</span>
-                  <span className="text-[10px] text-ink-muted">BCA / Mandiri / BRI</span>
+                  <span className="text-xs font-bold text-foreground">Transfer Bank</span>
+                  <span className="text-[10px] text-muted-foreground">BCA / Mandiri / BRI</span>
                 </button>
               </div>
             </div>
@@ -283,7 +283,7 @@ export function PosPaymentModal({
             {/* TAB 1: QRIS SCREEN */}
             {selectedMethod === 'QRIS' && (
               <div className="space-y-4 pt-1 animate-in fade-in-50 duration-200">
-                <div className="p-5 bg-[#FAF8F5] border border-border rounded-2xl flex flex-col items-center text-center shadow-inner">
+                <div className="p-5 bg-surface-soft border border-border rounded-2xl flex flex-col items-center text-center shadow-inner">
                   {/* QRIS Header Banner */}
                   <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-dashed border-border/80">
                     <div className="flex items-center gap-1.5 font-heading font-extrabold text-sm text-red-600 tracking-wider">
@@ -293,50 +293,60 @@ export function PosPaymentModal({
                       </span>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-bold text-ink">
+                      <div className="text-xs font-bold text-foreground">
                         {pengaturan.nama_usaha || 'Dr. Meow Cat Hotel'}
                       </div>
-                      <div className="text-[10px] font-mono text-ink-muted">
+                      <div className="text-[10px] font-mono text-muted-foreground">
                         NMID: {pengaturan.qris_nmid || 'ID1020304050607'}
                       </div>
                     </div>
                   </div>
 
                   {/* QR Code Container */}
-                  <div className="p-4 bg-white rounded-2xl border-2 border-hairline shadow-md inline-block relative group">
-                    <QRCodeSVG
-                      value={qrisPayload}
-                      size={190}
-                      level="H"
-                      includeMargin={false}
-                      imageSettings={{
-                        src: '/favicon.svg',
-                        x: undefined,
-                        y: undefined,
-                        height: 32,
-                        width: 32,
-                        excavate: true,
-                      }}
-                    />
+                  <div className="p-4 bg-white rounded-2xl border-2 border-border shadow-md inline-block relative group">
+                    {pengaturan.qris_image_url ? (
+                      <div className="w-[190px] h-[190px] flex items-center justify-center overflow-hidden rounded-lg">
+                        <img
+                          src={pengaturan.qris_image_url}
+                          alt="QRIS Code"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <QRCodeSVG
+                        value={qrisPayload}
+                        size={190}
+                        level="H"
+                        includeMargin={false}
+                        imageSettings={{
+                          src: '/favicon.svg',
+                          x: undefined,
+                          y: undefined,
+                          height: 32,
+                          width: 32,
+                          excavate: true,
+                        }}
+                      />
+                    )}
                   </div>
 
                   {/* Amount Pill */}
                   <div className="mt-3.5 mb-1">
-                    <div className="text-[11px] uppercase tracking-wider font-mono text-ink-muted font-semibold">
+                    <div className="text-[11px] uppercase tracking-wider font-mono text-muted-foreground font-semibold">
                       Total Nominal Pembayaran
                     </div>
-                    <div className="text-2xl font-mono font-extrabold text-primary">
+                    <div className="text-2xl font-mono font-extrabold text-foreground tabular-nums">
                       Rp {formatRupiah(totalAmount)}
                     </div>
                   </div>
 
                   {/* Countdown Timer */}
-                  <div className="flex items-center gap-1.5 text-xs text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 mt-2 font-mono">
-                    <Clock className="w-3.5 h-3.5 text-amber-600" />
+                  <div className="flex items-center gap-1.5 text-xs text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/60 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800/60 mt-2 font-mono">
+                    <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                     <span>QR Berlaku: {formatTimer(qrisTimer)}</span>
                   </div>
 
-                  <p className="text-[11px] text-ink-muted max-w-sm mt-3 leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground max-w-sm mt-3 leading-relaxed">
                     Scan menggunakan aplikasi <strong>BCA Mobile, Livin Mandiri, GoPay, OVO, ShopeePay, Dana</strong>, atau m-Banking lainnya.
                   </p>
                 </div>
@@ -348,7 +358,7 @@ export function PosPaymentModal({
                     variant="outline"
                     onClick={handleSimulateQrisCheck}
                     disabled={isSimulatingQris}
-                    className="flex-1 text-xs h-10 border-hairline hover:bg-surface-soft cursor-pointer gap-1.5"
+                    className="flex-1 text-xs h-10 border-border hover:bg-surface-soft cursor-pointer gap-1.5 rounded-xl"
                   >
                     <RefreshCw
                       className={`w-3.5 h-3.5 ${isSimulatingQris ? 'animate-spin' : ''}`}
@@ -358,7 +368,7 @@ export function PosPaymentModal({
                   <Button
                     type="button"
                     onClick={() => handleConfirmPayment('QRIS')}
-                    className="flex-1 text-xs h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-1.5"
+                    className="flex-1 text-xs h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-1.5 rounded-xl"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Konfirmasi Lunas (QRIS)
@@ -370,13 +380,13 @@ export function PosPaymentModal({
             {/* TAB 2: TUNAI / CASH CALCULATOR */}
             {selectedMethod === 'Tunai' && (
               <div className="space-y-4 pt-1 animate-in fade-in-50 duration-200">
-                <div className="p-5 bg-[#FAF8F5] border border-border rounded-2xl space-y-4">
+                <div className="p-5 bg-surface-soft border border-border rounded-2xl space-y-4">
                   {/* Total Bill Row */}
-                  <div className="flex items-center justify-between pb-3 border-b border-hairline">
-                    <span className="text-xs font-semibold text-ink-muted">
+                  <div className="flex items-center justify-between pb-3 border-b border-border">
+                    <span className="text-xs font-semibold text-muted-foreground">
                       Total Tagihan:
                     </span>
-                    <span className="text-xl font-mono font-bold text-primary">
+                    <span className="text-xl font-mono font-bold text-foreground tabular-nums">
                       Rp {formatRupiah(totalAmount)}
                     </span>
                   </div>
@@ -385,7 +395,7 @@ export function PosPaymentModal({
                   <div>
                     <label
                       htmlFor="cash-tendered-input"
-                      className="block text-xs font-semibold text-ink mb-1.5"
+                      className="block text-xs font-semibold text-foreground mb-1.5"
                     >
                       Uang Tunai Diterima (Rp) *
                     </label>
@@ -398,14 +408,14 @@ export function PosPaymentModal({
                           e.target.value === '' ? '' : Number(e.target.value)
                         )
                       }
-                      className="h-12 text-base font-mono font-bold text-primary pl-4 bg-white border-2 border-hairline focus-visible:border-primary rounded-xl"
+                      className="h-12 text-base font-mono font-bold text-foreground pl-4 bg-card border border-input focus-visible:ring-ring/40 rounded-xl tabular-nums"
                       autoFocus
                     />
                   </div>
 
                   {/* Quick Preset Buttons */}
                   <div>
-                    <span className="block text-[11px] text-ink-muted mb-1.5 font-medium">
+                    <span className="block text-[11px] text-muted-foreground mb-1.5 font-medium">
                       Pilihan Uang Cepat:
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -414,7 +424,7 @@ export function PosPaymentModal({
                         variant="outline"
                         size="sm"
                         onClick={() => setCashTendered(totalAmount)}
-                        className="text-xs h-8 bg-white border-hairline hover:bg-amber-50 hover:border-brand-orange cursor-pointer font-mono font-semibold text-brand-orange"
+                        className="text-xs h-8 bg-card border-border hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:border-brand-orange cursor-pointer font-mono font-semibold text-brand-orange rounded-lg tabular-nums"
                       >
                         Uang Pas (Rp {formatRupiah(totalAmount)})
                       </Button>
@@ -425,7 +435,7 @@ export function PosPaymentModal({
                           variant="outline"
                           size="sm"
                           onClick={() => setCashTendered(amt)}
-                          className="text-xs h-8 bg-white border-hairline hover:bg-surface-soft cursor-pointer font-mono"
+                          className="text-xs h-8 bg-card border-border hover:bg-surface-soft cursor-pointer font-mono rounded-lg tabular-nums"
                         >
                           Rp {formatRupiah(amt)}
                         </Button>
@@ -437,7 +447,7 @@ export function PosPaymentModal({
                         onClick={() =>
                           setCashTendered(prev => (Number(prev) || 0) + 50000)
                         }
-                        className="text-xs h-8 bg-white border-hairline hover:bg-surface-soft cursor-pointer font-mono text-emerald-700"
+                        className="text-xs h-8 bg-card border-border hover:bg-surface-soft cursor-pointer font-mono text-emerald-600 dark:text-emerald-400 rounded-lg tabular-nums"
                       >
                         +50.000
                       </Button>
@@ -448,7 +458,7 @@ export function PosPaymentModal({
                         onClick={() =>
                           setCashTendered(prev => (Number(prev) || 0) + 100000)
                         }
-                        className="text-xs h-8 bg-white border-hairline hover:bg-surface-soft cursor-pointer font-mono text-emerald-700"
+                        className="text-xs h-8 bg-card border-border hover:bg-surface-soft cursor-pointer font-mono text-emerald-600 dark:text-emerald-400 rounded-lg tabular-nums"
                       >
                         +100.000
                       </Button>
@@ -459,15 +469,15 @@ export function PosPaymentModal({
                   <div
                     className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
                       isCashSufficient
-                        ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900'
-                        : 'bg-rose-50 border-rose-200 text-rose-900'
+                        ? 'bg-emerald-50/70 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200'
+                        : 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/60 text-rose-900 dark:text-rose-200'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       {isCashSufficient ? (
-                        <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                        <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       ) : (
-                        <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                        <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" />
                       )}
                       <div>
                         <div className="text-xs font-bold">
@@ -484,7 +494,7 @@ export function PosPaymentModal({
                         </div>
                       </div>
                     </div>
-                    <div className="text-right font-mono text-lg font-extrabold">
+                    <div className="text-right font-mono text-lg font-extrabold tabular-nums">
                       {isCashSufficient
                         ? `Rp ${formatRupiah(Math.max(0, cashChange))}`
                         : `- Rp ${formatRupiah(Math.abs(cashChange))}`}
@@ -497,7 +507,7 @@ export function PosPaymentModal({
                   type="button"
                   disabled={!isCashSufficient}
                   onClick={() => handleConfirmPayment('Tunai')}
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold shadow-xs cursor-pointer gap-2"
+                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold shadow-xs cursor-pointer gap-2 rounded-xl"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Konfirmasi Pembayaran Tunai & Selesai
@@ -508,36 +518,36 @@ export function PosPaymentModal({
             {/* TAB 3: TRANSFER BANK SCREEN */}
             {selectedMethod === 'Transfer' && (
               <div className="space-y-4 pt-1 animate-in fade-in-50 duration-200">
-                <div className="p-5 bg-[#FAF8F5] border border-border rounded-2xl space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-hairline">
-                    <span className="text-xs font-semibold text-ink-muted">
+                <div className="p-5 bg-surface-soft border border-border rounded-2xl space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-border">
+                    <span className="text-xs font-semibold text-muted-foreground">
                       Total yang Harus Ditransfer:
                     </span>
-                    <span className="text-xl font-mono font-bold text-primary">
+                    <span className="text-xl font-mono font-bold text-foreground tabular-nums">
                       Rp {formatRupiah(totalAmount)}
                     </span>
                   </div>
 
                   {/* Bank Account Details Card */}
-                  <div className="p-4 bg-white rounded-xl border border-hairline shadow-xs space-y-3">
+                  <div className="p-4 bg-card rounded-xl border border-border shadow-xs space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Building className="w-4 h-4 text-blue-600" />
-                        <span className="font-heading font-bold text-sm text-ink">
+                        <Building className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <span className="font-heading font-bold text-sm text-foreground">
                           {pengaturan.nama_bank || 'Bank Central Asia (BCA)'}
                         </span>
                       </div>
-                      <span className="text-[10px] font-mono uppercase bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">
+                      <span className="text-[10px] font-mono uppercase bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded-full font-bold border border-blue-200 dark:border-blue-800/60">
                         Transfer Manual
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between p-2.5 bg-surface-soft rounded-lg border border-hairline">
+                    <div className="flex items-center justify-between p-2.5 bg-surface-soft rounded-lg border border-border">
                       <div>
-                        <div className="text-[10px] text-ink-muted uppercase font-mono">
+                        <div className="text-[10px] text-muted-foreground uppercase font-mono">
                           Nomor Rekening
                         </div>
-                        <div className="text-base font-mono font-bold text-primary tracking-wider">
+                        <div className="text-base font-mono font-bold text-foreground tracking-wider tabular-nums">
                           {pengaturan.no_rekening || '8735091234'}
                         </div>
                       </div>
@@ -546,24 +556,24 @@ export function PosPaymentModal({
                         variant="outline"
                         size="sm"
                         onClick={handleCopyBank}
-                        className="text-xs h-8 border-hairline bg-white hover:bg-blue-50 gap-1 cursor-pointer"
+                        className="text-xs h-8 border-border bg-card hover:bg-blue-50 dark:hover:bg-blue-950/40 gap-1 cursor-pointer rounded-lg"
                       >
                         {copiedBank ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-emerald-600" />
-                            <span className="text-emerald-600 font-semibold">Tersalin</span>
+                            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Tersalin</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3.5 h-3.5 text-ink-muted" />
+                            <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                             <span>Salin</span>
                           </>
                         )}
                       </Button>
                     </div>
 
-                    <div className="text-xs text-ink-muted">
-                      Atas Nama: <strong className="text-ink">{pengaturan.atas_nama_rekening || 'Dr. Meow Cat Clinic'}</strong>
+                    <div className="text-xs text-muted-foreground">
+                      Atas Nama: <strong className="text-foreground">{pengaturan.atas_nama_rekening || 'Dr. Meow Cat Clinic'}</strong>
                     </div>
                   </div>
 
@@ -571,7 +581,7 @@ export function PosPaymentModal({
                   <div>
                     <label
                       htmlFor="transfer-ref-input"
-                      className="block text-xs font-semibold text-ink mb-1"
+                      className="block text-xs font-semibold text-foreground mb-1"
                     >
                       Catatan / No. Referensi Transfer (Opsional)
                     </label>
@@ -581,7 +591,7 @@ export function PosPaymentModal({
                       placeholder="Contoh: TF BCA a/n Budi Santoso"
                       value={transferRef}
                       onChange={e => setTransferRef(e.target.value)}
-                      className="h-10 text-xs sm:text-sm bg-white"
+                      className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                     />
                   </div>
                 </div>
@@ -590,7 +600,7 @@ export function PosPaymentModal({
                 <Button
                   type="button"
                   onClick={() => handleConfirmPayment('Transfer')}
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-2"
+                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-2 rounded-xl"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Konfirmasi Transfer Diterima & Selesai
@@ -604,7 +614,7 @@ export function PosPaymentModal({
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="text-xs h-9 text-ink-muted hover:text-ink cursor-pointer"
+                className="text-xs h-9 text-muted-foreground hover:text-foreground cursor-pointer rounded-xl"
               >
                 Batal / Tutup Kasir
               </Button>
@@ -613,20 +623,20 @@ export function PosPaymentModal({
         ) : (
           /* PAYMENT SUCCESS SCREEN */
           <div className="space-y-6 text-center py-2 animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-xs text-2xl">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-xs text-2xl">
               <CheckCircle2 className="w-10 h-10" />
             </div>
 
             <div>
-              <span className="text-xs font-mono font-bold uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+              <span className="text-xs font-mono font-bold uppercase text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/60">
                 ✓ Transaksi Berhasil
               </span>
-              <h2 className="text-xl font-heading font-extrabold text-ink mt-2">
+              <h2 className="text-xl font-heading font-extrabold text-foreground mt-2">
                 Pembayaran Lunas!
               </h2>
-              <p className="text-xs text-ink-muted mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Uang telah berhasil diterima melalui metode{' '}
-                <strong className="text-primary font-bold">
+                <strong className="text-foreground font-bold">
                   {successDetails?.method}
                 </strong>
                 .
@@ -634,37 +644,37 @@ export function PosPaymentModal({
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="p-4 bg-[#FAF8F5] border border-hairline rounded-2xl text-left text-xs font-sans space-y-2 max-w-sm mx-auto shadow-inner">
-              <div className="flex justify-between text-ink-muted">
+            <div className="p-4 bg-surface-soft border border-border rounded-2xl text-left text-xs font-sans space-y-2 max-w-sm mx-auto shadow-inner">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Pelanggan / Anabul:</span>
-                <span className="font-semibold text-ink">
+                <span className="font-semibold text-foreground">
                   {customerName} ({catName})
                 </span>
               </div>
-              <div className="flex justify-between text-ink-muted">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Metode Bayar:</span>
-                <span className="font-mono font-bold text-primary">
+                <span className="font-mono font-bold text-foreground">
                   {successDetails?.method}
                 </span>
               </div>
-              <div className="flex justify-between text-ink font-bold pt-1.5 border-t border-hairline text-sm">
+              <div className="flex justify-between text-foreground font-bold pt-1.5 border-t border-border text-sm">
                 <span>Total Bayar:</span>
-                <span className="font-mono text-emerald-700">
+                <span className="font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
                   Rp {formatRupiah(totalAmount)}
                 </span>
               </div>
 
               {successDetails?.method === 'Tunai' && (
                 <>
-                  <div className="flex justify-between text-ink-muted pt-1 border-t border-dashed border-hairline">
+                  <div className="flex justify-between text-muted-foreground pt-1 border-t border-dashed border-border">
                     <span>Uang Diterima:</span>
-                    <span className="font-mono">
+                    <span className="font-mono tabular-nums">
                       Rp {formatRupiah(successDetails.cashTendered || totalAmount)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-emerald-800 font-semibold">
+                  <div className="flex justify-between text-emerald-800 dark:text-emerald-300 font-semibold">
                     <span>Kembalian:</span>
-                    <span className="font-mono">
+                    <span className="font-mono tabular-nums">
                       Rp {formatRupiah(successDetails.change || 0)}
                     </span>
                   </div>
@@ -680,7 +690,7 @@ export function PosPaymentModal({
                     type="button"
                     variant="outline"
                     onClick={onPrintReceipt}
-                    className="h-10 text-xs border-hairline font-medium hover:bg-surface-soft cursor-pointer gap-1.5"
+                    className="h-10 text-xs border-border font-medium hover:bg-surface-soft cursor-pointer gap-1.5 rounded-xl"
                   >
                     <Printer className="w-3.5 h-3.5 text-primary" />
                     Cetak Struk
@@ -692,9 +702,9 @@ export function PosPaymentModal({
                     type="button"
                     variant="outline"
                     onClick={onOpenWaTemplate}
-                    className="h-10 text-xs border-emerald-200 text-emerald-800 hover:bg-emerald-50 cursor-pointer gap-1.5 font-medium"
+                    className="h-10 text-xs border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer gap-1.5 font-medium rounded-xl"
                   >
-                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     Kirim WA
                   </Button>
                 )}
@@ -703,7 +713,7 @@ export function PosPaymentModal({
               <Button
                 type="button"
                 onClick={onClose}
-                className="w-full h-11 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl cursor-pointer gap-1.5"
+                className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer gap-1.5 shadow-xs"
               >
                 Selesai & Tutup Kasir <ArrowRight className="w-4 h-4" />
               </Button>

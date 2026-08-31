@@ -370,6 +370,7 @@ export function useDashboard() {
           isLate,
           name,
           time: timeStr,
+          variant: isLate ? 'amber' : 'emerald',
           color: isLate ? '#F5EDE0' : '#E2F0E8', // Amber vs Green
           rawTime: dateObj.getTime()
         });
@@ -383,6 +384,7 @@ export function useDashboard() {
           label: `${name} clock-out`,
           name,
           time: timeStr,
+          variant: 'muted',
           color: '#EDEAE4', // Gray
           rawTime: dateObj.getTime()
         });
@@ -400,6 +402,7 @@ export function useDashboard() {
           name: k.users?.name || 'Karyawan',
           amountStr: fmtCurrency(k.amount),
           time: timeStr,
+          variant: 'rose',
           color: '#F5E8E4', // Soft red
           rawTime: dateObj.getTime()
         });

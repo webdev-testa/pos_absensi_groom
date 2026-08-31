@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Card } from '@/components/ui/card'
@@ -12,6 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { usePengaturan } from '@/hooks/pos/usePengaturan'
+import { posService } from '@/services/posService'
 import { formatRupiah } from '@/utils/pos.utils'
 import type { PaketHarga } from '@/types/pos'
 import {
@@ -20,10 +21,12 @@ import {
   Plus,
   Edit2,
   Save,
-  RotateCcw,
   Sparkles,
   ArrowLeft,
   DollarSign,
+  QrCode,
+  UploadCloud,
+  Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -32,12 +35,15 @@ export default function Pengaturan() {
     settingsForm,
     setSettingsForm,
     handleSaveSettings,
+    isSavingSettings,
     paketList,
     handleAddPaket,
     handleUpdatePaket,
     handleToggleAktif,
-    handleResetData,
   } = usePengaturan()
+
+  const [isUploadingQris, setIsUploadingQris] = useState(false)
+  const qrisFileInputRef = useRef<HTMLInputElement>(null)
 
   // Modal State for Add / Edit Package
   const [isPaketModalOpen, setIsPaketModalOpen] = useState(false)
@@ -82,7 +88,6 @@ export default function Pengaturan() {
         deskripsi: paketFormData.deskripsi.trim() || undefined,
         aktif: paketFormData.aktif,
       })
-      toast.success('Paket berhasil diperbarui!')
     } else {
       handleAddPaket({
         nama: paketFormData.nama.trim(),
@@ -90,7 +95,6 @@ export default function Pengaturan() {
         deskripsi: paketFormData.deskripsi.trim() || undefined,
         aktif: paketFormData.aktif,
       })
-      toast.success('Paket baru berhasil ditambahkan!')
     }
     setIsPaketModalOpen(false)
   }
@@ -98,12 +102,33 @@ export default function Pengaturan() {
   const handleSaveInfo = (e: React.FormEvent) => {
     e.preventDefault()
     handleSaveSettings()
-    toast.success('Pengaturan Info Usaha berhasil disimpan!')
+  }
+
+  const handleQrisFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setIsUploadingQris(true)
+      const url = await posService.uploadPhoto(file, 'qris')
+      setSettingsForm(prev => ({
+        ...prev,
+        qris_image_url: url,
+      }))
+      toast.success('Foto QRIS berhasil diunggah!', {
+        description: 'Klik "Simpan Info Usaha & Rekening" untuk menyimpan perubahan.',
+      })
+    } catch (err: any) {
+      console.error('Error uploading QRIS image:', err)
+      toast.error(err.message || 'Gagal mengunggah foto QRIS')
+    } finally {
+      setIsUploadingQris(false)
+    }
   }
 
   return (
     <AdminLayout>
-      <div className="font-sans text-ink space-y-6 pb-12 max-w-4xl">
+      <div className="font-sans text-foreground space-y-6 pb-12 max-w-4xl">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
@@ -113,9 +138,9 @@ export default function Pengaturan() {
                 size="sm"
                 aria-label="Kembali ke Dashboard Kucing"
                 title="Kembali ke Dashboard Kucing"
-                className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
+                className="h-10 w-10 p-0 rounded-xl border-border hover:bg-surface-soft cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4 text-ink" />
+                <ArrowLeft className="w-4 h-4 text-foreground" />
               </Button>
             </Link>
             <div>
@@ -123,36 +148,22 @@ export default function Pengaturan() {
                 <Sparkles className="w-3.5 h-3.5" />
                 POS Configuration
               </div>
-              <h1 className="text-xl sm:text-2xl font-heading font-bold text-ink tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground tracking-tight">
                 Pengaturan Penitipan Kucing ⚙️
               </h1>
             </div>
           </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              handleResetData()
-              toast.info('Data mock telah direset ke data bawaan awal.')
-            }}
-            className="text-xs h-9 gap-1.5 border-rose-200 text-rose-700 hover:bg-rose-50 cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Reset Data Mock
-          </Button>
         </div>
 
         {/* SECTION A: INFO USAHA */}
-        <Card className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-border text-ink">
+        <Card className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-border text-foreground">
             <Building2 className="w-4 h-4 text-brand-orange" />
             <div>
               <h2 className="text-sm font-heading font-bold">
                 A. Informasi Tempat & Klinik
               </h2>
-              <p className="text-xs text-ink-muted">
+              <p className="text-xs text-muted-foreground">
                 Nama usaha dan kontak ini akan muncul di pesan WhatsApp dan struk pelanggan.
               </p>
             </div>
@@ -161,7 +172,7 @@ export default function Pengaturan() {
           <form onSubmit={handleSaveInfo} className="space-y-4 pt-1">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Nama Usaha / Klinik *
                 </label>
                 <Input
@@ -173,13 +184,13 @@ export default function Pengaturan() {
                       nama_usaha: e.target.value,
                     }))
                   }
-                  className="h-10 text-xs sm:text-sm"
+                  className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Nomor WhatsApp Usaha
                 </label>
                 <Input
@@ -192,13 +203,13 @@ export default function Pengaturan() {
                       no_wa_usaha: e.target.value,
                     }))
                   }
-                  className="h-10 text-xs sm:text-sm font-mono"
+                  className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-ink mb-1">
+              <label className="block text-xs font-semibold text-foreground mb-1">
                 Alamat Lengkap
               </label>
               <textarea
@@ -210,18 +221,18 @@ export default function Pengaturan() {
                   }))
                 }
                 rows={2}
-                className="w-full text-xs sm:text-sm bg-surface-card border border-border rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
               />
             </div>
 
             {/* Rekening & QRIS Section */}
-            <div className="pt-3 border-t border-hairline space-y-3">
-              <div className="text-xs font-heading font-bold text-ink flex items-center gap-1.5">
+            <div className="pt-3 border-t border-border space-y-4">
+              <div className="text-xs font-heading font-bold text-foreground flex items-center gap-1.5">
                 <span>💳 Rekening Bank & QRIS Kasir POS</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                  <label className="block text-[11px] font-semibold text-foreground mb-1">
                     Nama Bank
                   </label>
                   <Input
@@ -234,12 +245,12 @@ export default function Pengaturan() {
                         nama_bank: e.target.value,
                       }))
                     }
-                    className="h-9 text-xs"
+                    className="h-10 text-xs bg-card border-input rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                  <label className="block text-[11px] font-semibold text-foreground mb-1">
                     Nomor Rekening
                   </label>
                   <Input
@@ -252,12 +263,12 @@ export default function Pengaturan() {
                         no_rekening: e.target.value,
                       }))
                     }
-                    className="h-9 text-xs font-mono"
+                    className="h-10 text-xs font-mono bg-card border-input rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-ink mb-1">
+                  <label className="block text-[11px] font-semibold text-foreground mb-1">
                     Atas Nama Rekening
                   </label>
                   <Input
@@ -270,36 +281,97 @@ export default function Pengaturan() {
                         atas_nama_rekening: e.target.value,
                       }))
                     }
-                    className="h-9 text-xs"
+                    className="h-10 text-xs bg-card border-input rounded-xl"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-ink mb-1">
-                  NMID QRIS (National Merchant ID)
-                </label>
-                <Input
-                  type="text"
-                  placeholder="ID1020304050607"
-                  value={settingsForm.qris_nmid || ''}
-                  onChange={e =>
-                    setSettingsForm(prev => ({
-                      ...prev,
-                      qris_nmid: e.target.value,
-                    }))
-                  }
-                  className="h-9 text-xs font-mono max-w-sm"
-                />
+              {/* QRIS Config & Image Upload */}
+              <div className="p-4 bg-surface-soft border border-border rounded-xl space-y-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+                  <QrCode className="w-4 h-4 text-brand-orange" />
+                  <span>Pengaturan QRIS Statis</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-foreground mb-1">
+                      NMID QRIS (National Merchant ID)
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="ID1020304050607"
+                      value={settingsForm.qris_nmid || ''}
+                      onChange={e =>
+                        setSettingsForm(prev => ({
+                          ...prev,
+                          qris_nmid: e.target.value,
+                        }))
+                      }
+                      className="h-10 text-xs font-mono bg-card border-input rounded-xl"
+                    />
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      Nomor referensi merchant untuk rekonsiliasi pembayaran.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-semibold text-foreground mb-1">
+                      Foto / Gambar QRIS (BCA / Bank / E-Wallet)
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={qrisFileInputRef}
+                        onChange={handleQrisFileChange}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isUploadingQris}
+                        onClick={() => qrisFileInputRef.current?.click()}
+                        className="h-10 text-xs gap-1.5 border-border rounded-xl cursor-pointer"
+                      >
+                        {isUploadingQris ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <UploadCloud className="w-3.5 h-3.5 text-primary" />
+                        )}
+                        {settingsForm.qris_image_url ? 'Ganti Foto QRIS' : 'Unggah Foto QRIS'}
+                      </Button>
+
+                      {settingsForm.qris_image_url && (
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-border bg-card">
+                          <img
+                            src={settingsForm.qris_image_url}
+                            alt="QRIS Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      Gambar ini akan ditampilkan pada pop-up kasir QRIS agar pelanggan dapat langsung melakukan scan.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
-                className="text-xs h-9 px-4 bg-primary hover:bg-primary-hover text-white font-medium cursor-pointer gap-1.5"
+                disabled={isSavingSettings}
+                className="text-xs h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium cursor-pointer gap-1.5 rounded-xl shadow-xs"
               >
-                <Save className="w-3.5 h-3.5" />
+                {isSavingSettings ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Save className="w-3.5 h-3.5" />
+                )}
                 Simpan Info Usaha & Rekening
               </Button>
             </div>
@@ -307,15 +379,15 @@ export default function Pengaturan() {
         </Card>
 
         {/* SECTION B: KELOLA PAKET HARGA */}
-        <Card className="bg-white border border-border rounded-2xl p-6 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border text-ink">
+        <Card className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border text-foreground">
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-brand-orange" />
               <div>
                 <h2 className="text-sm font-heading font-bold">
                   B. Kelola Paket Penitipan
                 </h2>
-                <p className="text-xs text-ink-muted">
+                <p className="text-xs text-muted-foreground">
                   Daftar paket harga kamar per hari untuk dipilih saat Check-In.
                 </p>
               </div>
@@ -325,7 +397,7 @@ export default function Pengaturan() {
               type="button"
               onClick={openAddPaket}
               size="sm"
-              className="text-xs h-8.5 gap-1.5 bg-brand-orange hover:bg-brand-accent-hover text-white font-medium cursor-pointer"
+              className="text-xs h-9 gap-1.5 bg-brand-orange hover:bg-brand-accent-hover text-white font-medium cursor-pointer rounded-xl"
             >
               <Plus className="w-3.5 h-3.5" />
               Tambah Paket
@@ -338,36 +410,36 @@ export default function Pengaturan() {
                 key={pkg.id}
                 className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all ${
                   pkg.aktif
-                    ? 'bg-white border-border'
-                    : 'bg-surface-soft/60 border-hairline opacity-60'
+                    ? 'bg-card border-border'
+                    : 'bg-surface-soft/60 border-border opacity-60'
                 }`}
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-heading font-bold text-sm text-ink">
+                    <span className="font-heading font-bold text-sm text-foreground">
                       {pkg.nama}
                     </span>
                     <span
                       className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-full font-bold ${
                         pkg.aktif
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-neutral-200 text-neutral-600'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                          : 'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
                       {pkg.aktif ? 'Aktif' : 'Nonaktif'}
                     </span>
                   </div>
-                  <p className="text-xs text-ink-muted mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {pkg.deskripsi || '-'}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end">
                   <div className="text-right">
-                    <div className="text-[10px] text-ink-muted uppercase font-mono">
+                    <div className="text-[10px] text-muted-foreground uppercase font-mono">
                       Tarif per Malam
                     </div>
-                    <div className="font-mono font-bold text-sm text-primary">
+                    <div className="font-mono font-bold text-sm text-primary tabular-nums">
                       Rp {formatRupiah(pkg.harga_per_hari)}
                     </div>
                   </div>
@@ -378,19 +450,19 @@ export default function Pengaturan() {
                       variant="outline"
                       size="sm"
                       onClick={() => openEditPaket(pkg)}
-                      className="text-xs h-8 px-2.5 border-hairline hover:bg-surface-soft cursor-pointer"
+                      className="text-xs h-8 px-2.5 border-border hover:bg-surface-soft cursor-pointer rounded-lg"
                     >
-                      <Edit2 className="w-3 h-3 text-ink-muted mr-1" /> Edit
+                      <Edit2 className="w-3 h-3 text-muted-foreground mr-1" /> Edit
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => handleToggleAktif(pkg.id, pkg.aktif)}
-                      className={`text-xs h-8 px-2.5 cursor-pointer ${
+                      className={`text-xs h-8 px-2.5 cursor-pointer rounded-lg ${
                         pkg.aktif
-                          ? 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-                          : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
+                          ? 'border-border text-muted-foreground hover:bg-surface-soft'
+                          : 'border-emerald-200 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
                       }`}
                     >
                       {pkg.aktif ? 'Nonaktifkan' : 'Aktifkan'}
@@ -404,16 +476,16 @@ export default function Pengaturan() {
 
         {/* MODAL ADD / EDIT PAKET */}
         <Dialog open={isPaketModalOpen} onOpenChange={setIsPaketModalOpen}>
-          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 rounded-2xl">
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-card text-foreground border border-border shadow-2xl p-6 rounded-2xl">
             <DialogHeader className="text-left pb-2 border-b border-border/80">
-              <DialogTitle className="text-base font-heading font-bold text-ink">
+              <DialogTitle className="text-base font-heading font-bold text-foreground">
                 {editingPaket ? 'Edit Paket Penitipan' : 'Tambah Paket Baru'}
               </DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleSavePaketSubmit} className="space-y-4 pt-2">
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Nama Paket *
                 </label>
                 <Input
@@ -423,17 +495,17 @@ export default function Pengaturan() {
                   onChange={e =>
                     setPaketFormData(prev => ({ ...prev, nama: e.target.value }))
                   }
-                  className="h-10 text-xs sm:text-sm"
+                  className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Harga per Hari / Malam (Rp) *
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="number"
                     value={paketFormData.harga_per_hari}
@@ -443,14 +515,14 @@ export default function Pengaturan() {
                         harga_per_hari: Number(e.target.value),
                       }))
                     }
-                    className="pl-8 h-10 text-xs sm:text-sm font-mono"
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl tabular-nums"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Deskripsi & Fasilitas
                 </label>
                 <textarea
@@ -463,7 +535,7 @@ export default function Pengaturan() {
                     }))
                   }
                   rows={3}
-                  className="w-full text-xs sm:text-sm bg-surface-card border border-border rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
                 />
               </div>
 
@@ -482,7 +554,7 @@ export default function Pengaturan() {
                 />
                 <label
                   htmlFor="paket-aktif-checkbox"
-                  className="text-xs font-medium text-ink cursor-pointer"
+                  className="text-xs font-medium text-foreground cursor-pointer"
                 >
                   Paket aktif & dapat dipilih saat check-in
                 </label>
@@ -493,13 +565,13 @@ export default function Pengaturan() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsPaketModalOpen(false)}
-                  className="text-xs h-9 cursor-pointer"
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
                 >
                   Batal
                 </Button>
                 <Button
                   type="submit"
-                  className="text-xs h-9 px-4 bg-primary hover:bg-primary-hover text-white font-medium cursor-pointer"
+                  className="text-xs h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium cursor-pointer rounded-xl shadow-xs"
                 >
                   {editingPaket ? 'Simpan Perubahan' : 'Tambah Paket'}
                 </Button>

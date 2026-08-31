@@ -45,14 +45,14 @@ export function EmployeeTable({
         <div className="flex gap-2.5">
           <Button 
             variant="outline" 
-            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-[38px] cursor-pointer" 
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-10 cursor-pointer rounded-xl" 
             onClick={onExportClick}
           >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
           <Button 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[38px] font-semibold cursor-pointer shadow-xs" 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-10 font-semibold cursor-pointer shadow-xs rounded-xl" 
             onClick={onAddClick}
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2.5} />
@@ -86,7 +86,7 @@ export function EmployeeTable({
                 return (
                   <TableRow 
                     key={emp.id} 
-                    className={`cursor-pointer border-b border-border/60 last:border-none transition-colors ${isActive ? 'bg-[#E6F7F0]/40' : 'hover:bg-surface-soft/60'}`}
+                    className={`cursor-pointer border-b border-border/60 last:border-none transition-colors ${isActive ? 'bg-primary/5 dark:bg-primary/10' : 'hover:bg-surface-soft/60'}`}
                     onClick={() => onSelect(emp.id)}
                   >
                     <TableCell className="p-3 px-4">
@@ -111,14 +111,14 @@ export function EmployeeTable({
                       <span className="font-mono text-[12px] text-muted-foreground">{emp.email}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
-                      <span className="font-mono text-[12.5px] text-foreground font-semibold">{fmtCurrency(emp.salary)}</span>
+                      <span className="font-mono text-[12.5px] text-foreground font-semibold tabular-nums">{fmtCurrency(emp.salary)}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
                       <span className="text-[12.5px] text-muted-foreground">{fmtDate(emp.joined)}</span>
                     </TableCell>
                     <TableCell className="p-3 px-4">
                       {emp.status === 'active' ? (
-                        <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] hover:bg-[#E6F7F0] shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11.5px]">
+                        <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 hover:bg-emerald-50 shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11.5px]">
                           ● Aktif
                         </Badge>
                       ) : (
@@ -132,7 +132,7 @@ export function EmployeeTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-7 text-xs px-2.5 rounded-md border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft cursor-pointer shadow-xs" 
+                          className="h-7 text-xs px-2.5 rounded-lg border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft cursor-pointer shadow-xs" 
                           onClick={() => onEdit(emp)}
                         >
                           Edit
@@ -140,7 +140,7 @@ export function EmployeeTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-7 text-xs px-2.5 rounded-md border-border text-muted-foreground hover:bg-[#FEE2E2] hover:border-[#FECACA] hover:text-[#991B1B] cursor-pointer shadow-xs" 
+                          className="h-7 text-xs px-2.5 rounded-lg border-border text-muted-foreground hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive cursor-pointer shadow-xs" 
                           onClick={() => onToggleStatus(emp)}
                         >
                           {emp.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}

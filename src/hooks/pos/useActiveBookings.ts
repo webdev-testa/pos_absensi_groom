@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
-import { usePosStore } from '@/data/pos-store'
+import { useQuery } from '@tanstack/react-query'
+import { posService } from '@/services/posService'
+import type { Booking } from '@/types/pos'
 
 export function useActiveBookings() {
-  const store = usePosStore()
   const today = new Date().toISOString().split('T')[0]
 
   const tomorrow = useMemo(() => {
@@ -11,13 +12,21 @@ export function useActiveBookings() {
     return d.toISOString().split('T')[0]
   }, [])
 
-  const fullBookings = useMemo(() => {
-    return store.getFullBookings()
-  }, [store.bookings, store.cats, store.owners, store.transactions, store.dailyReports])
+  const {
+    data: allBookings = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery<Booking[]>({
+    queryKey: ['pos_bookings'],
+    queryFn: () => posService.fetchBookings(),
+    staleTime: 1000 * 30, // 30 seconds
+  })
 
   const activeBookings = useMemo(() => {
-    return fullBookings.filter(b => b.status === 'aktif')
-  }, [fullBookings])
+    return allBookings.filter(b => b.status === 'aktif')
+  }, [allBookings])
 
   const stats = useMemo(() => {
     const totalActive = activeBookings.length
@@ -39,10 +48,13 @@ export function useActiveBookings() {
 
   return {
     activeBookings,
-    allBookings: fullBookings,
+    allBookings,
     stats,
     today,
     tomorrow,
-    isLoading: false,
+    isLoading,
+    isError,
+    error,
+    refetch,
   }
 }

@@ -35,34 +35,34 @@ export function PayrollDetailPanel({
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col shadow-xs">
       {/* HERO DETAIL */}
-      <div className="bg-primary p-5 text-white flex flex-col gap-4">
+      <div className="bg-surface-dark dark:bg-surface-dark-elevated text-white p-5 border-b border-white/10 flex flex-col gap-4">
         <div className="flex items-center gap-3.5">
-          <Avatar className="w-[52px] h-[52px] rounded-full font-heading font-bold text-[18px] flex items-center justify-center shrink-0 bg-[#FEF3C7] text-[#92400E]">
-            <AvatarFallback className="bg-transparent text-primary font-bold">{getInitials(selectedItem.user.name)}</AvatarFallback>
+          <Avatar className="w-[52px] h-[52px] rounded-full font-heading font-bold text-[18px] flex items-center justify-center shrink-0 bg-amber-100 text-amber-900">
+            <AvatarFallback className="bg-transparent text-amber-900 font-bold">{getInitials(selectedItem.user.name)}</AvatarFallback>
           </Avatar>
           <div>
             <div className="font-heading text-[17px] font-bold leading-tight">{selectedItem.user.name}</div>
             <div className="text-[12px] text-white/60 font-mono mt-0.5">{selectedItem.user.emp_id} · {selectedItem.user.dept || 'No Dept'}</div>
           </div>
           <div className="ml-auto">
-            {selectedItem.status === 'paid' && <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] text-[11px] px-2.5 shadow-none font-semibold rounded-full">Lunas</Badge>}
-            {selectedItem.status === 'draft' && <Badge className="bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE] text-[11px] px-2.5 shadow-none font-semibold rounded-full">Draft</Badge>}
+            {selectedItem.status === 'paid' && <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] px-2.5 shadow-none font-semibold rounded-full">Lunas</Badge>}
+            {selectedItem.status === 'draft' && <Badge className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] px-2.5 shadow-none font-semibold rounded-full">Draft</Badge>}
             {selectedItem.status === 'not_generated' && <Badge className="bg-white/10 text-white/60 border border-white/20 text-[11px] px-2.5 shadow-none font-semibold rounded-full">Belum Dibuat</Badge>}
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-1 bg-white/10 rounded-lg overflow-hidden border border-white/10 p-1">
-          <div className="bg-white/5 p-2 text-center rounded-md">
-            <div className="font-heading text-[15px] font-bold text-white">{selectedItem.presentDays} hari</div>
-            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Kehadiran</div>
+        <div className="grid grid-cols-3 gap-1 bg-white/10 rounded-xl overflow-hidden border border-white/10 p-1">
+          <div className="bg-white/5 p-2 text-center rounded-lg">
+            <div className="font-mono text-[15px] font-bold text-white tabular-nums">{selectedItem.presentDays} hari</div>
+            <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Kehadiran</div>
           </div>
-          <div className="bg-white/5 p-2 text-center rounded-md">
-            <div className="font-mono text-[13px] font-bold text-[#FF5600]">{fmtCurrency(selectedItem.kasbonDeduction)}</div>
-            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Kasbon</div>
+          <div className="bg-white/5 p-2 text-center rounded-lg">
+            <div className="font-mono text-[13px] font-bold text-brand-orange tabular-nums">{fmtCurrency(selectedItem.kasbonDeduction)}</div>
+            <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Kasbon</div>
           </div>
-          <div className="bg-white/5 p-2 text-center rounded-md">
-            <div className="font-mono text-[13px] font-bold text-white">{fmtCurrency(selectedItem.basicSalary)}</div>
-            <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Gaji Pokok</div>
+          <div className="bg-white/5 p-2 text-center rounded-lg">
+            <div className="font-mono text-[13px] font-bold text-white tabular-nums">{fmtCurrency(selectedItem.basicSalary)}</div>
+            <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Gaji Pokok</div>
           </div>
         </div>
       </div>

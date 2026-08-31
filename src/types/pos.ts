@@ -85,6 +85,7 @@ export interface Pengaturan {
   no_rekening?: string
   atas_nama_rekening?: string
   qris_nmid?: string
+  qris_image_url?: string
 }
 
 export interface BillingCalculation {

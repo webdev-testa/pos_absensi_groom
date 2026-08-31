@@ -26,6 +26,9 @@ import {
   Info,
 } from 'lucide-react'
 
+import { posService } from '@/services/posService'
+import { toast } from 'sonner'
+
 interface DailyReportFormProps {
   isOpen: boolean
   onClose: () => void
@@ -46,30 +49,42 @@ export function DailyReportForm({
   onSave,
 }: DailyReportFormProps) {
   const [photoPreview, setPhotoPreview] = useState<string>(formData.foto_url || '')
+  const [isUploading, setIsUploading] = useState(false)
 
   if (!booking) return null
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const url = URL.createObjectURL(file)
-      setPhotoPreview(url)
-      setFormData(prev => ({ ...prev, foto_url: url }))
+      const localUrl = URL.createObjectURL(file)
+      setPhotoPreview(localUrl)
+      try {
+        setIsUploading(true)
+        const uploadedUrl = await posService.uploadPhoto(file, 'reports')
+        setPhotoPreview(uploadedUrl)
+        setFormData(prev => ({ ...prev, foto_url: uploadedUrl }))
+        toast.success('Foto berhasil diunggah ke storage!')
+      } catch (err: any) {
+        console.error('Upload error:', err)
+        toast.error(err.message || 'Gagal mengunggah foto')
+      } finally {
+        setIsUploading(false)
+      }
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 sm:p-7 rounded-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-w-[calc(100%-2rem)] bg-card text-foreground border border-border shadow-2xl p-6 sm:p-7 rounded-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-left pb-3 border-b border-border/80">
           <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase text-brand-orange">
             <Sparkles className="w-3.5 h-3.5" />
             Pencatatan Kondisi Harian
           </div>
-          <DialogTitle className="text-lg font-heading font-bold text-ink">
+          <DialogTitle className="text-lg font-heading font-bold text-foreground">
             Laporan Harian: {booking.cat?.nama}
           </DialogTitle>
-          <DialogDescription className="text-xs text-ink-muted flex items-center gap-2">
+          <DialogDescription className="text-xs text-muted-foreground flex items-center gap-2">
             <span>🗓️ Tanggal: {formatTanggal(today)}</span>
             <span>•</span>
             <span>Owner: {booking.owner?.nama}</span>
@@ -77,8 +92,8 @@ export function DailyReportForm({
         </DialogHeader>
 
         {/* Cat Mini Profile Banner */}
-        <div className="flex items-center gap-3 p-3 bg-surface-soft border border-hairline rounded-xl">
-          <div className="w-11 h-11 rounded-lg overflow-hidden bg-white border border-border shrink-0">
+        <div className="flex items-center gap-3 p-3 bg-surface-soft border border-border rounded-xl">
+          <div className="w-11 h-11 rounded-lg overflow-hidden bg-card border border-border shrink-0">
             {booking.cat?.foto_url ? (
               <img
                 src={booking.cat.foto_url}
@@ -86,21 +101,21 @@ export function DailyReportForm({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg bg-amber-50">
+              <div className="w-full h-full flex items-center justify-center text-lg bg-amber-500/10">
                 🐾
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs font-bold text-ink truncate">
+            <div className="text-xs font-bold text-foreground truncate">
               {booking.cat?.nama} ({booking.cat?.ras || 'Domestik'})
             </div>
-            <div className="text-[11px] text-ink-muted line-clamp-1">
+            <div className="text-[11px] text-muted-foreground line-clamp-1">
               {booking.cat?.catatan_kesehatan || 'Kondisi awal sehat'}
             </div>
           </div>
           <div className="text-right shrink-0">
-            <span className="text-[10px] font-mono font-medium text-ink-muted bg-white border border-border px-2 py-0.5 rounded-md">
+            <span className="text-[10px] font-mono font-medium text-muted-foreground bg-card border border-border px-2 py-0.5 rounded-md">
               Paket {booking.paket}
             </span>
           </div>
@@ -115,7 +130,7 @@ export function DailyReportForm({
         >
           {/* SECTION 1: NAFSU MAKAN */}
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
               <Utensils className="w-3.5 h-3.5 text-brand-orange" />
               Nafsu Makan *
             </label>
@@ -131,8 +146,8 @@ export function DailyReportForm({
                     }
                     className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-primary text-white border-primary shadow-xs font-semibold'
-                        : 'bg-surface-card text-ink hover:bg-surface-soft border-border'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs font-semibold'
+                        : 'bg-surface-soft text-foreground hover:bg-card border-border'
                     }`}
                   >
                     {opt}
@@ -144,8 +159,8 @@ export function DailyReportForm({
 
           {/* SECTION 2: MINUM */}
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5 flex items-center gap-1.5">
-              <Droplets className="w-3.5 h-3.5 text-cyan-600" />
+            <label className="block text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
+              <Droplets className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
               Konsumsi Air Minum *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -160,8 +175,8 @@ export function DailyReportForm({
                     }
                     className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-primary text-white border-primary shadow-xs font-semibold'
-                        : 'bg-surface-card text-ink hover:bg-surface-soft border-border'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs font-semibold'
+                        : 'bg-surface-soft text-foreground hover:bg-card border-border'
                     }`}
                   >
                     {opt}
@@ -173,7 +188,7 @@ export function DailyReportForm({
 
           {/* SECTION 3: FESES / BAB */}
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
               <span className="text-xs">💩</span>
               Feses (Buang Air Besar / BAB) *
             </label>
@@ -189,8 +204,8 @@ export function DailyReportForm({
                     }
                     className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-primary text-white border-primary shadow-xs font-semibold'
-                        : 'bg-surface-card text-ink hover:bg-surface-soft border-border'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs font-semibold'
+                        : 'bg-surface-soft text-foreground hover:bg-card border-border'
                     }`}
                   >
                     {opt}
@@ -202,7 +217,7 @@ export function DailyReportForm({
 
           {/* SECTION 4: URINASI / BAK */}
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1.5 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
               <span className="text-xs">🚽</span>
               Urinasi (Buang Air Kecil / BAK) *
             </label>
@@ -218,8 +233,8 @@ export function DailyReportForm({
                     }
                     className={`px-3 py-2 text-xs font-medium rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-primary text-white border-primary shadow-xs font-semibold'
-                        : 'bg-surface-card text-ink hover:bg-surface-soft border-border'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs font-semibold'
+                        : 'bg-surface-soft text-foreground hover:bg-card border-border'
                     }`}
                   >
                     {opt}
@@ -232,7 +247,7 @@ export function DailyReportForm({
           {/* SECTION 5: KONDISI UMUM & KETERANGAN */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-ink mb-1 flex items-center gap-1">
+              <label className="block text-xs font-semibold text-foreground mb-1 flex items-center gap-1">
                 <HeartPulse className="w-3.5 h-3.5 text-rose-500" />
                 Kondisi Umum & Mood
               </label>
@@ -243,13 +258,13 @@ export function DailyReportForm({
                   setFormData(prev => ({ ...prev, kondisi_umum: e.target.value }))
                 }
                 rows={3}
-                className="w-full text-xs bg-surface-card border border-border rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full text-xs bg-card border border-input rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-ink mb-1 flex items-center gap-1">
-                <Info className="w-3.5 h-3.5 text-ink-muted" />
+              <label className="block text-xs font-semibold text-foreground mb-1 flex items-center gap-1">
+                <Info className="w-3.5 h-3.5 text-muted-foreground" />
                 Keterangan / Catatan Tambahan
               </label>
               <textarea
@@ -259,24 +274,25 @@ export function DailyReportForm({
                   setFormData(prev => ({ ...prev, keterangan: e.target.value }))
                 }
                 rows={3}
-                className="w-full text-xs bg-surface-card border border-border rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full text-xs bg-card border border-input rounded-xl p-2.5 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
               />
             </div>
           </div>
 
           {/* SECTION 6: FOTO KUCING HARI INI */}
           <div>
-            <label className="block text-xs font-semibold text-ink mb-1 flex items-center gap-1.5">
+            <label className="block text-xs font-semibold text-foreground mb-1 flex items-center gap-1.5">
               <Camera className="w-3.5 h-3.5 text-brand-orange" />
-              Foto Kucing Hari Ini (Mock Upload)
+              Foto Kucing Hari Ini
             </label>
             <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 px-3.5 py-2 bg-surface-soft hover:bg-surface-muted border border-border rounded-xl text-xs font-medium text-ink cursor-pointer transition-colors">
+              <label className={`flex items-center gap-2 px-3.5 py-2 bg-surface-soft hover:bg-surface-muted border border-border rounded-xl text-xs font-medium text-foreground cursor-pointer transition-colors ${isUploading ? 'opacity-60 pointer-events-none' : ''}`}>
                 <Camera className="w-4 h-4 text-brand-orange" />
-                <span>Pilih Foto dari Galeri / Kamera</span>
+                <span>{isUploading ? 'Mengunggah foto...' : 'Pilih Foto dari Galeri / Kamera'}</span>
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={isUploading}
                   onChange={handlePhotoSelect}
                   className="hidden"
                 />
@@ -288,8 +304,8 @@ export function DailyReportForm({
                     alt="Preview"
                     className="w-9 h-9 object-cover rounded-lg border border-border"
                   />
-                  <span className="text-[11px] text-emerald-600 font-medium">
-                    ✓ Foto terlampir
+                  <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                    {isUploading ? 'Mengunggah...' : '✓ Foto terlampir'}
                   </span>
                 </div>
               )}
@@ -302,13 +318,13 @@ export function DailyReportForm({
               type="button"
               variant="outline"
               onClick={onClose}
-              className="text-xs h-9 cursor-pointer"
+              className="text-xs h-10 cursor-pointer rounded-xl border-border"
             >
               Batal
             </Button>
             <Button
               type="submit"
-              className="text-xs h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer gap-1.5"
+              className="text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer gap-1.5 rounded-xl"
             >
               <Save className="w-3.5 h-3.5" />
               Simpan & Buka WhatsApp Modal

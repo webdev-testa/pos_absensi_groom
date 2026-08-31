@@ -63,8 +63,10 @@ function RoleGuard({ allowedRoles }: { allowedRoles: string[] }) {
   }
 
   if (!allowedRoles.includes(user.role)) {
-    if (user.role === "admin" || user.role === "superadmin") {
+    if (user.role === "superadmin") {
       return <Navigate to="/admin/dashboard" replace />;
+    } else if (user.role === "admin") {
+      return <Navigate to="/admin/pos" replace />;
     } else if (user.role === "employee") {
       return (
         <div className="flex flex-col h-screen items-center justify-center font-mono text-sm bg-background text-foreground p-6 text-center">
@@ -114,7 +116,8 @@ export const router = createBrowserRouter([
         element: <AuthGuard />,
         children: [
           {
-            element: <RoleGuard allowedRoles={["admin", "superadmin"]} />,
+            // HR routes — superadmin only
+            element: <RoleGuard allowedRoles={["superadmin"]} />,
             children: [
               {
                 path: "/admin/dashboard",
@@ -136,6 +139,12 @@ export const router = createBrowserRouter([
                 path: "/admin/karyawan",
                 element: <ManageEmployee />,
               },
+            ],
+          },
+          {
+            // POS routes — superadmin + admin (POS staff)
+            element: <RoleGuard allowedRoles={["superadmin", "admin"]} />,
+            children: [
               {
                 path: "/admin/pos",
                 element: <PosDashboard />,

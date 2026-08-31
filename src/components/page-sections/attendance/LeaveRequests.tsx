@@ -41,7 +41,7 @@ export function LeaveRequests({
           <div className="stat-title mb-2.5">
             Total Menunggu
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400 tabular-nums">
             {statTotalPending}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">
@@ -59,7 +59,7 @@ export function LeaveRequests({
           <div className="stat-title mb-2.5">
             Cuti
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-purple-600 dark:text-purple-400">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-purple-600 dark:text-purple-400 tabular-nums">
             {statPendingCuti}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>
@@ -77,7 +77,7 @@ export function LeaveRequests({
           <div className="stat-title mb-2.5">
             Izin
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-amber-600 dark:text-amber-400 tabular-nums">
             {statPendingIzin}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>
@@ -95,7 +95,7 @@ export function LeaveRequests({
           <div className="stat-title mb-2.5">
             Sakit
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-destructive">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-destructive tabular-nums">
             {statPendingSakit}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">hari pending</div>

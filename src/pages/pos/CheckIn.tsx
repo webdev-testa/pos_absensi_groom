@@ -33,26 +33,31 @@ export default function CheckIn() {
   const catName = selectedCat?.nama || newCatData.nama || 'Kucing'
 
   // Triggered when clicking submit button in CheckInForm Step 3
-  const handleInitiateCheckIn = () => {
+  const handleInitiateCheckIn = async () => {
     if (bookingData.dp > 0) {
       setIsPaymentModalOpen(true)
     } else {
-      submitCheckIn()
-      toast.success(`Check-In untuk ${catName} berhasil disimpan!`, {
-        description: 'Tamu anabul siap menginap.',
-      })
-      setIsStrukOpen(true)
+      try {
+        await submitCheckIn()
+        setIsStrukOpen(true)
+      } catch (e) {
+        // Error toast is handled in mutation
+      }
     }
   }
 
   // Triggered when payment is confirmed in PosPaymentModal
-  const handlePaymentSuccess = (result: PaymentSuccessResult) => {
-    submitCheckIn(result)
+  const handlePaymentSuccess = async (result: PaymentSuccessResult) => {
+    try {
+      await submitCheckIn(result)
+    } catch (e) {
+      // Error toast is handled in mutation
+    }
   }
 
   return (
     <AdminLayout>
-      <div className="font-sans text-ink space-y-6 pb-12">
+      <div className="font-sans text-foreground space-y-6 pb-12">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
@@ -62,9 +67,9 @@ export default function CheckIn() {
                 size="sm"
                 aria-label="Kembali ke Dashboard Kucing"
                 title="Kembali ke Dashboard Kucing"
-                className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
+                className="h-10 w-10 p-0 rounded-xl border-border hover:bg-surface-soft cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4 text-ink" />
+                <ArrowLeft className="w-4 h-4 text-foreground" />
               </Button>
             </Link>
             <div>
@@ -72,7 +77,7 @@ export default function CheckIn() {
                 <Sparkles className="w-3.5 h-3.5" />
                 Registrasi Tamu Anabul
               </div>
-              <h1 className="text-xl sm:text-2xl font-heading font-bold text-ink tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground tracking-tight">
                 Check-In Kucing Baru 🐾
               </h1>
             </div>
@@ -82,7 +87,7 @@ export default function CheckIn() {
             variant="outline"
             size="sm"
             onClick={resetForm}
-            className="text-xs h-9 gap-1.5 border-hairline hover:bg-surface-soft cursor-pointer"
+            className="text-xs h-10 gap-1.5 border-border hover:bg-surface-soft cursor-pointer rounded-xl"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Reset Form

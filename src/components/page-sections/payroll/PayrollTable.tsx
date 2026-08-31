@@ -66,7 +66,7 @@ export function PayrollTable({
         
         <div className="flex items-center gap-3">
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-[180px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground">
+            <SelectTrigger className="w-[180px] bg-card border-border rounded-xl h-10 text-sm text-foreground shadow-xs">
               <SelectValue placeholder="Pilih Periode" />
             </SelectTrigger>
             <SelectContent>
@@ -76,7 +76,7 @@ export function PayrollTable({
             </SelectContent>
           </Select>
 
-          <Button onClick={exportExcel} variant="outline" className="bg-card border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft rounded-lg h-[38px] text-[13px] cursor-pointer">
+          <Button onClick={exportExcel} variant="outline" className="bg-card border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft rounded-xl h-10 text-sm cursor-pointer shadow-xs">
             <Download className="w-4 h-4 mr-1.5" />
             Export Excel
           </Button>
@@ -84,7 +84,7 @@ export function PayrollTable({
           <Button 
             onClick={() => generateMutation.mutate()} 
             disabled={generateMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none rounded-lg h-[38px] text-[13px] font-semibold cursor-pointer shadow-xs"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none rounded-xl h-10 text-sm font-semibold cursor-pointer shadow-xs"
           >
             {generateMutation.isPending ? (
               <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
@@ -112,7 +112,7 @@ export function PayrollTable({
         <TableBody>
           {filteredData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-10 text-muted-foreground text-[13px]">
+              <TableCell colSpan={8} className="text-center py-10 text-muted-foreground text-sm">
                 Tidak ada data payroll yang cocok.
               </TableCell>
             </TableRow>
@@ -124,7 +124,7 @@ export function PayrollTable({
                 <TableRow 
                   key={item.user.id} 
                   onClick={() => setSelectedUserId(item.user.id)}
-                  className={`border-b border-border/60 cursor-pointer transition-colors ${isSelected ? 'bg-[#E6F7F0]/40' : 'hover:bg-surface-soft/60'}`}
+                  className={`border-b border-border/60 cursor-pointer transition-colors ${isSelected ? 'bg-primary/5 dark:bg-primary/10' : 'hover:bg-surface-soft/60'}`}
                 >
                   <TableCell className="p-3.5 px-4">
                     <div className="flex items-center gap-2.5">
@@ -140,31 +140,31 @@ export function PayrollTable({
                   <TableCell className="p-3.5 px-4 text-[13px] text-muted-foreground">
                     {item.user.dept || '—'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-foreground">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-foreground tabular-nums">
                     {fmtCurrency(item.basicSalary)}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#10B981] font-semibold">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
                     {item.incentives > 0 ? `+${fmtCurrency(item.incentives)}` : 'Rp 0'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-[#FF5600] font-semibold">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono text-brand-orange font-semibold tabular-nums">
                     {item.kasbonDeduction > 0 ? `-${fmtCurrency(item.kasbonDeduction)}` : 'Rp 0'}
                   </TableCell>
-                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono font-bold text-foreground">
+                  <TableCell className="p-3.5 px-4 text-[12.5px] font-mono font-bold text-foreground tabular-nums">
                     {fmtCurrency(item.netSalary)}
                   </TableCell>
                   <TableCell className="p-3.5 px-4">
                     {item.status === 'paid' && (
-                      <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#E6F7F0] shadow-none">
+                      <Badge className="bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-emerald-50 shadow-none">
                         ● Terbayar
                       </Badge>
                     )}
                     {item.status === 'draft' && (
-                      <Badge className="bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#EFF6FF] shadow-none">
+                      <Badge className="bg-blue-50 text-blue-900 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/60 font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-blue-50 shadow-none">
                         ● Draft
                       </Badge>
                     )}
                     {item.status === 'not_generated' && (
-                      <Badge className="bg-[#F3EFE9] text-[#5C6B73] border border-[#E2DDD5] font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-[#F3EFE9] shadow-none">
+                      <Badge className="bg-surface-soft text-muted-foreground border border-border font-semibold text-[11.5px] px-2.5 py-0.5 rounded-full hover:bg-surface-soft shadow-none">
                         ○ Belum Dibuat
                       </Badge>
                     )}
@@ -173,7 +173,7 @@ export function PayrollTable({
                     <div className="flex items-center gap-1.5 justify-end">
                       <button 
                         onClick={() => openIncentiveModal(item)}
-                        className="px-2.5 py-1 rounded-md text-[12px] font-semibold border border-border bg-card text-muted-foreground hover:border-[#C8C2B8] hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
+                        className="px-2.5 py-1 rounded-lg text-xs font-semibold border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
                       >
                         Insentif
                       </button>
@@ -181,7 +181,7 @@ export function PayrollTable({
                         <button 
                           onClick={() => markPaidMutation.mutate(item)}
                           disabled={markPaidMutation.isPending}
-                          className="px-2.5 py-1 rounded-md text-[12px] font-semibold border-none bg-[#10B981] text-white hover:bg-[#059669] transition-all cursor-pointer shadow-xs"
+                          className="px-2.5 py-1 rounded-lg text-xs font-semibold border-none bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-xs"
                         >
                           Bayar
                         </button>
@@ -189,7 +189,7 @@ export function PayrollTable({
                       {item.status !== 'not_generated' && (
                         <button 
                           onClick={() => handlePrint(item)}
-                          className="p-1.5 rounded-md border border-border bg-card text-muted-foreground hover:border-[#C8C2B8] hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
+                          className="p-1.5 rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-all cursor-pointer shadow-xs"
                           title="Cetak Slip Gaji"
                         >
                           <Printer className="w-3.5 h-3.5" />

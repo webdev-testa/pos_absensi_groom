@@ -70,9 +70,9 @@ export function CheckOutForm({
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white border border-border rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-card border border-border rounded-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface-soft border border-hairline shrink-0">
+          <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface-soft border border-border shrink-0">
             {booking.cat?.foto_url ? (
               <img
                 src={booking.cat.foto_url}
@@ -80,21 +80,21 @@ export function CheckOutForm({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-xl bg-amber-50">
+              <div className="w-full h-full flex items-center justify-center text-xl bg-amber-500/10">
                 🐾
               </div>
             )}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-heading font-bold text-ink">
+              <h2 className="text-base font-heading font-bold text-foreground">
                 Check-Out: {booking.cat?.nama}
               </h2>
-              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 px-2 py-0.5 rounded-full">
                 Paket {booking.paket}
               </span>
             </div>
-            <p className="text-xs text-ink-muted mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Owner: <strong>{booking.owner?.nama}</strong> • WA:{' '}
               <span className="font-mono">{booking.owner?.no_wa}</span>
             </p>
@@ -107,7 +107,7 @@ export function CheckOutForm({
             variant="outline"
             size="sm"
             onClick={onCancel}
-            className="text-xs h-8.5 cursor-pointer"
+            className="text-xs h-10 cursor-pointer rounded-xl border-border"
           >
             Pilih Kucing Lain
           </Button>
@@ -117,7 +117,7 @@ export function CheckOutForm({
               variant="outline"
               size="sm"
               onClick={() => onPrintPreview(booking)}
-              className="text-xs h-8.5 gap-1.5 border-hairline font-medium hover:bg-surface-soft cursor-pointer"
+              className="text-xs h-10 gap-1.5 border-border font-medium hover:bg-surface-soft cursor-pointer rounded-xl"
             >
               <Printer className="w-3.5 h-3.5 text-primary" />
               Cetak Struk
@@ -130,29 +130,29 @@ export function CheckOutForm({
         {/* Left 3 cols: Checkout settings & Extra fees */}
         <div className="md:col-span-3 space-y-5">
           {/* Tanggal Checkout */}
-          <Card className="bg-white border border-border rounded-2xl p-5 shadow-xs space-y-3">
-            <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider font-mono">
+          <Card className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-3">
+            <h3 className="text-xs font-heading font-bold text-foreground uppercase tracking-wider font-mono">
               1. Tanggal Kepulangan / Check-Out
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block text-ink-muted mb-1">Tanggal Masuk</label>
-                <div className="p-2.5 bg-surface-soft rounded-xl font-mono text-ink font-semibold">
+                <label className="block text-muted-foreground mb-1">Tanggal Masuk</label>
+                <div className="p-2.5 bg-surface-soft rounded-xl font-mono text-foreground font-semibold">
                   {formatTanggal(booking.tanggal_masuk)}
                 </div>
               </div>
 
               <div>
-                <label className="block text-ink font-semibold mb-1">
+                <label className="block text-foreground font-semibold mb-1">
                   Tanggal Keluar Aktual *
                 </label>
                 <div className="relative">
-                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="date"
                     value={checkoutDate}
                     onChange={e => setCheckoutDate(e.target.value)}
-                    className="pl-8 h-10 text-xs font-mono"
+                    className="pl-8 h-10 text-xs font-mono bg-card border-input rounded-xl"
                   />
                 </div>
               </div>
@@ -160,12 +160,12 @@ export function CheckOutForm({
           </Card>
 
           {/* Biaya Tambahan */}
-          <Card className="bg-white border border-border rounded-2xl p-5 shadow-xs space-y-3">
+          <Card className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider font-mono">
+              <h3 className="text-xs font-heading font-bold text-foreground uppercase tracking-wider font-mono">
                 2. Biaya Tambahan & Layanan Ekstra
               </h3>
-              <span className="text-[11px] text-ink-muted">
+              <span className="text-[11px] text-muted-foreground">
                 {extraCharges.length} item ditambahkan
               </span>
             </div>
@@ -179,18 +179,18 @@ export function CheckOutForm({
                     className="flex items-center justify-between p-2.5 bg-surface-soft rounded-xl text-xs"
                   >
                     <div className="min-w-0 pr-2">
-                      <span className="font-semibold text-ink">
+                      <span className="font-semibold text-foreground">
                         {item.keterangan}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="font-mono font-bold text-primary">
+                      <span className="font-mono font-bold text-primary tabular-nums">
                         Rp {formatRupiah(item.jumlah)}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleRemoveExtraCharge(idx)}
-                        className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer"
+                        className="text-rose-600 dark:text-rose-400 hover:text-rose-800 p-1 cursor-pointer"
                         title="Hapus"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -202,13 +202,13 @@ export function CheckOutForm({
             )}
 
             {/* Add Extra Charge Inputs */}
-            <div className="pt-2 border-t border-hairline flex flex-col sm:flex-row gap-2">
+            <div className="pt-2 border-t border-border flex flex-col sm:flex-row gap-2">
               <Input
                 type="text"
                 placeholder="Keterangan (cth: Grooming kutu / Snack salmon)"
                 value={newChargeDesc}
                 onChange={e => setNewChargeDesc(e.target.value)}
-                className="text-xs h-9 sm:flex-1"
+                className="text-xs h-10 sm:flex-1 bg-card border-input rounded-xl"
               />
               <Input
                 type="number"
@@ -219,7 +219,7 @@ export function CheckOutForm({
                     e.target.value === '' ? '' : Number(e.target.value)
                   )
                 }
-                className="text-xs h-9 sm:w-32 font-mono"
+                className="text-xs h-10 sm:w-32 font-mono bg-card border-input rounded-xl tabular-nums"
               />
               <Button
                 type="button"
@@ -227,7 +227,7 @@ export function CheckOutForm({
                 size="sm"
                 onClick={handleAddExtraCharge}
                 disabled={!newChargeDesc.trim() || !newChargeAmount}
-                className="text-xs h-9 border-brand-orange text-brand-orange hover:bg-brand-orange/10 cursor-pointer shrink-0"
+                className="text-xs h-10 border-brand-orange text-brand-orange hover:bg-brand-orange/10 cursor-pointer shrink-0 rounded-xl"
               >
                 <Plus className="w-3.5 h-3.5 mr-1" /> Tambah
               </Button>
@@ -235,32 +235,32 @@ export function CheckOutForm({
           </Card>
 
           {/* Pelunasan & Metode Pembayaran */}
-          <Card className="bg-white border border-border rounded-2xl p-5 shadow-xs space-y-4">
-            <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider font-mono">
+          <Card className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
+            <h3 className="text-xs font-heading font-bold text-foreground uppercase tracking-wider font-mono">
               3. Pelunasan & Metode Bayar
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Nominal Pelunasan Diterima (Rp) *
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="number"
                     value={pelunasanAmount}
                     onChange={e => setCustomPelunasan(Number(e.target.value))}
-                    className="pl-8 h-10 text-xs sm:text-sm font-mono font-bold text-primary"
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono font-bold text-primary bg-card border-input rounded-xl tabular-nums"
                   />
                 </div>
-                <div className="text-[11px] text-ink-muted mt-1">
+                <div className="text-[11px] text-muted-foreground mt-1">
                   Otomatis terisi dari sisa bayar (Rp {formatRupiah(billing.sisa_bayar)})
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-ink mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   Metode Pembayaran
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -271,8 +271,8 @@ export function CheckOutForm({
                       onClick={() => setMetodeBayar(m)}
                       className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                         metodeBayar === m
-                          ? 'bg-primary text-white border-primary shadow-xs font-bold'
-                          : 'bg-surface-soft text-ink-muted border-border hover:bg-white'
+                          ? 'bg-primary text-primary-foreground border-primary shadow-xs font-bold'
+                          : 'bg-surface-soft text-muted-foreground border-border hover:bg-card'
                       }`}
                     >
                       {m}
@@ -308,10 +308,10 @@ export function CheckOutForm({
             Konfirmasi Check-Out & Buka WA
           </Button>
 
-          <div className="p-3 bg-surface-soft border border-hairline rounded-xl text-[11px] text-ink-muted leading-relaxed">
+          <div className="p-3 bg-surface-soft border border-border rounded-xl text-[11px] text-muted-foreground leading-relaxed">
             <Sparkles className="w-3.5 h-3.5 text-brand-orange inline mr-1" />
             Setelah konfirmasi, status penitipan akan diubah menjadi{' '}
-            <strong className="text-ink font-semibold">Selesai</strong> dan modal struk WhatsApp siap dikirimkan kepada owner.
+            <strong className="text-foreground font-semibold">Selesai</strong> dan modal struk WhatsApp siap dikirimkan kepada owner.
           </div>
         </div>
       </div>

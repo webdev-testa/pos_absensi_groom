@@ -38,13 +38,13 @@ export function AttendanceStats({
             className={`bg-card border rounded-xl p-4.5 transition-all shadow-xs cursor-pointer ${
               isActive
                 ? "border-primary ring-2 ring-primary/20 bg-surface-soft/40"
-                : "border-border hover:border-[#C8C2B8] hover:-translate-y-[1px]"
+                : "border-border hover:border-foreground/20 hover:-translate-y-[1px]"
             }`}
           >
             <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2.5">
               {s.title}
             </div>
-            <div className={`font-heading text-[30px] font-bold tracking-tight leading-none ${s.color}`}>
+            <div className={`font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none tabular-nums ${s.color}`}>
               {s.value}
             </div>
             <div className="text-xs text-muted-foreground/80 mt-1.5">{s.sub}</div>

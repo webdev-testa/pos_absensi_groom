@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/hooks/useAuth'
 interface AdminLayoutProps {
   children: ReactNode
 }
@@ -32,8 +33,8 @@ function NavItem({
   to: string; 
   icon: React.ElementType; 
   label: string; 
-  onClick?: () => void;
-  activeMatcher?: (pathname: string) => boolean;
+  onClick?: () => void; 
+  activeMatcher?: (pathname: string) => boolean; 
 }) {
   const location = useLocation()
   const isActive = activeMatcher
@@ -46,8 +47,8 @@ function NavItem({
       onClick={onClick}
       className={`flex items-center gap-3 px-6 py-2.5 text-[13.5px] font-medium transition-all border-l-2 ${
         isActive 
-          ? 'text-white bg-white/10 border-amber-400 font-semibold' 
-          : 'text-white/75 border-transparent hover:text-white hover:bg-white/5'
+          ? 'text-sidebar-primary-foreground bg-sidebar-accent border-brand-accent font-semibold' 
+          : 'text-sidebar-foreground/75 border-transparent hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
       }`}
     >
       <Icon className="w-4 h-4 shrink-0" />
@@ -58,8 +59,10 @@ function NavItem({
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [desktopOpen, setDesktopOpen] = useState(true)
+  const showHR = user?.role === 'superadmin'
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -78,19 +81,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-background font-sans">
       {/* MOBILE TOP BAR */}
-      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-primary text-white sticky top-0 z-40 shadow-xs">
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-sidebar text-sidebar-foreground border-b border-sidebar-border sticky top-0 z-40 shadow-xs">
         <div className="flex items-center gap-3">
           <button
             onClick={toggleSidebar}
             aria-label={mobileOpen ? "Tutup sidebar" : "Buka sidebar"}
-            className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-white/90 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg transition-colors cursor-pointer"
+            className="p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center text-sidebar-foreground/90 hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent rounded-lg transition-colors cursor-pointer"
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <div className="flex items-center gap-2">
             <span className="text-lg">🐾</span>
-            <span className="font-heading font-bold text-base tracking-tight">Absen Dr. Meow</span>
-            <span className="text-[10px] font-mono text-white/80 uppercase bg-white/10 px-1.5 py-0.5 rounded font-semibold">Admin</span>
+            <span className="font-heading font-bold text-base tracking-tight text-sidebar-primary-foreground">Absen Dr. Meow</span>
+            <span className="text-[10px] font-mono text-sidebar-foreground/80 uppercase bg-sidebar-accent px-1.5 py-0.5 rounded font-semibold border border-sidebar-border">Admin</span>
           </div>
         </div>
       </header>
@@ -105,34 +108,38 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* SIDEBAR */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[220px] bg-primary py-8 shrink-0 transition-transform duration-300 ease-in-out shadow-xl md:shadow-none overflow-y-auto ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col w-[220px] bg-sidebar text-sidebar-foreground border-r border-sidebar-border py-8 shrink-0 transition-transform duration-300 ease-in-out shadow-xl md:shadow-none overflow-y-auto ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         } ${desktopOpen ? 'md:translate-x-0' : 'md:-translate-x-full'}`}
       >
-        <div className="px-6 mb-6 pb-6 border-b border-white/10 shrink-0">
-          <span className="block text-[11px] font-semibold text-white/70 tracking-[1.5px] uppercase mb-1 font-mono">
+        <div className="px-6 mb-6 pb-6 border-b border-sidebar-border shrink-0">
+          <span className="block text-[11px] font-semibold text-sidebar-foreground/60 tracking-[1.5px] uppercase mb-1 font-mono">
             Klinik Hewan
           </span>
           <div className="flex items-center gap-2">
             <span className="text-xl">🐾</span>
-            <div className="font-heading font-bold text-lg text-white tracking-tight">Dr. Meow</div>
+            <div className="font-heading font-bold text-lg text-sidebar-primary-foreground tracking-tight">Dr. Meow</div>
           </div>
         </div>
 
-        <div className="px-6 py-2 pb-1 font-mono text-[10px] tracking-[1.5px] uppercase text-white/60 font-semibold shrink-0">
-          Operasional
-        </div>
-        <NavItem to="/admin/dashboard" icon={Home} label="Dashboard" onClick={() => setMobileOpen(false)} />
-        <NavItem to="/admin/karyawan" icon={Users} label="Karyawan" onClick={() => setMobileOpen(false)} />
-        <NavItem to="/admin/absensi" icon={CalendarClock} label="Absensi" onClick={() => setMobileOpen(false)} />
+        {showHR && (
+          <>
+            <div className="px-6 py-2 pb-1 font-mono text-[10px] tracking-[1.5px] uppercase text-sidebar-foreground/50 font-semibold shrink-0">
+              Operasional
+            </div>
+            <NavItem to="/admin/dashboard" icon={Home} label="Dashboard" onClick={() => setMobileOpen(false)} />
+            <NavItem to="/admin/karyawan" icon={Users} label="Karyawan" onClick={() => setMobileOpen(false)} />
+            <NavItem to="/admin/absensi" icon={CalendarClock} label="Absensi" onClick={() => setMobileOpen(false)} />
 
-        <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-white/60 font-semibold shrink-0">
-          Keuangan & Gaji
-        </div>
-        <NavItem to="/admin/kasbon" icon={Wallet} label="Kasbon" onClick={() => setMobileOpen(false)} />
-        <NavItem to="/admin/payroll" icon={FileText} label="Payroll" onClick={() => setMobileOpen(false)} />
+            <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-sidebar-foreground/50 font-semibold shrink-0">
+              Keuangan & Gaji
+            </div>
+            <NavItem to="/admin/kasbon" icon={Wallet} label="Kasbon" onClick={() => setMobileOpen(false)} />
+            <NavItem to="/admin/payroll" icon={FileText} label="Payroll" onClick={() => setMobileOpen(false)} />
+          </>
+        )}
 
-        <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-amber-400 font-semibold shrink-0">
+        <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-brand-accent font-semibold shrink-0">
           Penitipan Kucing
         </div>
         <NavItem 
@@ -147,21 +154,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <NavItem to="/admin/pos/check-out" icon={LogOut} label="Check-Out" onClick={() => setMobileOpen(false)} />
         <NavItem to="/admin/pos/pengaturan" icon={Settings} label="Pengaturan POS" onClick={() => setMobileOpen(false)} />
 
-        <div className="mt-auto px-6 pt-5 border-t border-white/10 shrink-0">
+        <div className="mt-auto px-6 pt-5 border-t border-sidebar-border shrink-0">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 mb-4 text-amber-400 text-xs font-semibold hover:text-amber-300 transition-colors bg-transparent border-none cursor-pointer w-full text-left"
+            className="flex items-center gap-3 mb-4 text-brand-accent text-xs font-semibold hover:text-brand-accent-hover transition-colors bg-transparent border-none cursor-pointer w-full text-left"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             Keluar / Switch Role
           </button>
           <div className="flex items-center gap-2.5">
-            <Avatar className="w-8 h-8 rounded-full bg-amber-500 text-white font-heading font-semibold text-xs flex items-center justify-center">
-              <AvatarFallback className="bg-transparent text-white font-bold">A</AvatarFallback>
+            <Avatar className="w-8 h-8 rounded-full bg-brand-accent text-primary font-heading font-semibold text-xs flex items-center justify-center">
+              <AvatarFallback className="bg-transparent text-primary font-bold">{user?.name?.charAt(0)?.toUpperCase() || 'A'}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="text-xs text-white font-semibold">Admin Klinik</div>
-              <div className="text-[11px] text-white/70">Administrator</div>
+              <div className="text-xs text-sidebar-primary-foreground font-semibold">{user?.name || 'User'}</div>
+              <div className="text-[11px] text-sidebar-foreground/70">{user?.role === 'superadmin' ? 'Super Admin' : 'POS Admin'}</div>
             </div>
           </div>
         </div>

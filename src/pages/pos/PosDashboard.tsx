@@ -44,7 +44,7 @@ export default function PosDashboard() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-ink space-y-6 pb-12">
+      <div className="font-sans text-foreground space-y-6 pb-12">
         {/* TOP HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border/80">
           <div>
@@ -52,10 +52,10 @@ export default function PosDashboard() {
               <Sparkles className="w-3.5 h-3.5" />
               Cat Boarding & Care Module
             </div>
-            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-ink tracking-tight mt-0.5">
+            <h1 className="text-2xl sm:text-3xl font-heading font-bold text-foreground tracking-tight mt-0.5">
               Dashboard Penitipan Kucing 🐱
             </h1>
-            <p className="text-xs sm:text-sm text-ink-muted mt-1 flex items-center gap-2">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 flex items-center gap-2">
               <Calendar className="w-3.5 h-3.5 text-primary" />
               <span>Hari ini: <strong>{formatTanggal(today)}</strong></span>
               <span>•</span>
@@ -67,14 +67,14 @@ export default function PosDashboard() {
             <Link to="/admin/pos/laporan">
               <Button
                 variant="outline"
-                className="h-10 text-xs sm:text-sm border-hairline font-medium hover:bg-surface-soft cursor-pointer"
+                className="h-10 text-xs sm:text-sm border-border font-medium hover:bg-surface-soft cursor-pointer rounded-xl"
               >
                 <ClipboardList className="w-4 h-4 mr-1.5 text-primary" />
                 Laporan Harian
               </Button>
             </Link>
             <Link to="/admin/pos/check-in">
-              <Button className="h-10 text-xs sm:text-sm bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-xs cursor-pointer">
+              <Button className="h-10 text-xs sm:text-sm bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-xs cursor-pointer rounded-xl">
                 <PlusCircle className="w-4 h-4 mr-1.5"/>
                 Check-In Kucing Baru
               </Button>
@@ -85,19 +85,19 @@ export default function PosDashboard() {
         {/* STAT METRICS CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Total Aktif */}
-          <Card className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
+          <Card className="bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Kucing Menginap
               </span>
-              <div className="w-8 h-8 rounded-xl bg-amber-50 text-brand-orange flex items-center justify-center text-base">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-brand-orange flex items-center justify-center text-base">
                 🐾
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-ink">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-foreground tabular-nums">
               {stats.totalActive}
             </div>
-            <p className="text-[11px] text-ink-muted mt-1">Total anabul aktif saat ini</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Total anabul aktif saat ini</p>
           </Card>
 
           {/* Belum Laporan */}
@@ -105,22 +105,22 @@ export default function PosDashboard() {
             onClick={() => setActiveTab('unreported')}
             className={`border rounded-2xl p-4 sm:p-5 shadow-xs cursor-pointer transition-all ${
               stats.notReportedToday > 0
-                ? 'bg-amber-50/60 border-amber-300/80 hover:bg-amber-50'
-                : 'bg-white border-border'
+                ? 'bg-amber-50/60 dark:bg-amber-950/40 border-amber-300/80 dark:border-amber-800/60 hover:bg-amber-50 dark:hover:bg-amber-950/60'
+                : 'bg-card border-border'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-amber-900 uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-amber-900 dark:text-amber-200 uppercase tracking-wider font-semibold">
                 Belum Laporan
               </span>
-              <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center">
                 <AlertCircle className="w-4 h-4" />
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-amber-900">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-amber-900 dark:text-amber-200 tabular-nums">
               {stats.notReportedToday}
             </div>
-            <p className="text-[11px] text-amber-800 mt-1">
+            <p className="text-[11px] text-amber-800 dark:text-amber-300/80 mt-1">
               {stats.notReportedToday === 0
                 ? 'Semua kucing sudah dilaporkan hari ini! 🎉'
                 : 'Perlu dicatat kondisinya hari ini'}
@@ -132,38 +132,38 @@ export default function PosDashboard() {
             onClick={() => setActiveTab('today_checkout')}
             className={`border rounded-2xl p-4 sm:p-5 shadow-xs cursor-pointer transition-all ${
               stats.checkoutToday > 0
-                ? 'bg-rose-50/50 border-rose-200 hover:bg-rose-50'
-                : 'bg-white border-border'
+                ? 'bg-rose-50/60 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/60'
+                : 'bg-card border-border'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-rose-800 uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-rose-800 dark:text-rose-200 uppercase tracking-wider font-semibold">
                 Checkout Hari Ini
               </span>
-              <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 flex items-center justify-center">
                 <LogOut className="w-4 h-4" />
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-rose-800">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-rose-800 dark:text-rose-200 tabular-nums">
               {stats.checkoutToday}
             </div>
-            <p className="text-[11px] text-rose-700 mt-1">Dijadwalkan pulang hari ini</p>
+            <p className="text-[11px] text-rose-700 dark:text-rose-300/80 mt-1">Dijadwalkan pulang hari ini</p>
           </Card>
 
           {/* Checkout Besok */}
-          <Card className="bg-white border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
+          <Card className="bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-ink-muted uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Checkout Besok
               </span>
-              <div className="w-8 h-8 rounded-xl bg-surface-soft text-ink flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-surface-soft text-foreground flex items-center justify-center">
                 <Calendar className="w-4 h-4" />
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-ink">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-foreground tabular-nums">
               {stats.checkoutTomorrow}
             </div>
-            <p className="text-[11px] text-ink-muted mt-1">Dijadwalkan pulang besok</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Dijadwalkan pulang besok</p>
           </Card>
         </div>
 
@@ -171,23 +171,23 @@ export default function PosDashboard() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-heading font-bold text-ink">
+              <h2 className="text-lg font-heading font-bold text-foreground">
                 Kucing Sedang Menginap
               </h2>
-              <p className="text-xs text-ink-muted">
+              <p className="text-xs text-muted-foreground">
                 Status laporan harian, periode titip, dan detail kontak owner.
               </p>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex items-center gap-1 bg-surface-soft p-1 rounded-xl border border-hairline w-fit">
+            <div className="flex items-center gap-1 bg-surface-soft p-1 rounded-xl border border-border w-fit">
               <button
                 type="button"
                 onClick={() => setActiveTab('all')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                   activeTab === 'all'
-                    ? 'bg-white text-ink shadow-xs font-semibold'
-                    : 'text-ink-muted hover:text-ink'
+                    ? 'bg-card text-foreground shadow-xs font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Semua ({activeBookings.length})
@@ -198,7 +198,7 @@ export default function PosDashboard() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                   activeTab === 'unreported'
                     ? 'bg-amber-500 text-white shadow-xs font-semibold'
-                    : 'text-ink-muted hover:text-ink'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Belum Laporan ({stats.notReportedToday})
@@ -209,7 +209,7 @@ export default function PosDashboard() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                   activeTab === 'today_checkout'
                     ? 'bg-rose-600 text-white shadow-xs font-semibold'
-                    : 'text-ink-muted hover:text-ink'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Checkout Hari Ini ({stats.checkoutToday})
@@ -218,17 +218,17 @@ export default function PosDashboard() {
           </div>
 
           {displayedBookings.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-2xl border border-dashed border-hairline-strong">
+            <div className="p-12 text-center bg-card rounded-2xl border border-dashed border-border">
               <div className="text-3xl mb-2">🐾</div>
-              <h3 className="text-sm font-bold text-ink">Tidak ada data untuk filter ini</h3>
-              <p className="text-xs text-ink-muted mt-1 mb-4">
+              <h3 className="text-sm font-bold text-foreground">Tidak ada data untuk filter ini</h3>
+              <p className="text-xs text-muted-foreground mt-1 mb-4">
                 Semua kucing dalam kategori ini telah diproses atau belum ada data.
               </p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setActiveTab('all')}
-                className="text-xs"
+                className="text-xs rounded-xl"
               >
                 Tampilkan Semua Kucing
               </Button>

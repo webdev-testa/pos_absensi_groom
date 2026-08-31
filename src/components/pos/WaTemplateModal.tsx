@@ -103,32 +103,32 @@ export function WaTemplateModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 sm:p-7 rounded-2xl">
+      <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] bg-card text-foreground border border-border shadow-2xl p-6 sm:p-7 rounded-2xl">
         <DialogHeader className="space-y-1 text-left pb-2 border-b border-border/60">
           <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase text-brand-orange">
             <Sparkles className="w-3.5 h-3.5" />
             Template WhatsApp Otomatis
           </div>
-          <DialogTitle className="text-xl font-heading font-bold text-ink">
+          <DialogTitle className="text-xl font-heading font-bold text-foreground">
             {modalTitles[type]}
           </DialogTitle>
-          <DialogDescription className="text-xs text-ink-muted">
+          <DialogDescription className="text-xs text-muted-foreground">
             Salin atau kirim langsung ke nomor WhatsApp pemilik kucing.
           </DialogDescription>
         </DialogHeader>
 
         {/* Owner Info Pill */}
-        <div className="flex items-center justify-between p-3 bg-surface-soft border border-hairline rounded-xl">
+        <div className="flex items-center justify-between p-3 bg-surface-soft border border-border rounded-xl">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
               {data.owner?.nama?.charAt(0) || 'O'}
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-ink truncate">
+              <div className="text-sm font-semibold text-foreground truncate">
                 {data.owner?.nama || 'Owner'}
               </div>
-              <div className="text-xs font-mono text-ink-muted flex items-center gap-1">
-                <MessageCircle className="w-3 h-3 text-emerald-600 inline" />
+              <div className="text-xs font-mono text-muted-foreground flex items-center gap-1">
+                <MessageCircle className="w-3 h-3 text-emerald-600 dark:text-emerald-400 inline" />
                 {ownerWa || 'No WA tidak tersedia'}
               </div>
             </div>
@@ -146,11 +146,11 @@ export function WaTemplateModal({
             readOnly
             value={messageText}
             rows={12}
-            className="w-full text-xs font-mono text-ink/90 bg-[#FAF8F5] border border-border rounded-xl p-3.5 leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-primary shadow-inner selection:bg-brand-accent/30"
+            className="w-full text-xs font-mono text-foreground bg-surface-soft border border-border rounded-xl p-3.5 leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-primary shadow-inner selection:bg-brand-accent/30"
           />
           {type === 'daily_report' && (
-            <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200/80 rounded-lg text-[11px] text-amber-800 font-sans">
-              <Camera className="w-4 h-4 text-amber-600 shrink-0" />
+            <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 rounded-lg text-[11px] text-amber-900 dark:text-amber-200 font-sans">
+              <Camera className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>
                 <strong>Tips:</strong> Jangan lupa lampirkan foto kucing terbaru saat mengirim ke WhatsApp owner!
               </span>
@@ -164,7 +164,7 @@ export function WaTemplateModal({
             type="button"
             variant="outline"
             onClick={onClose}
-            className="border-hairline text-ink-muted hover:text-ink text-xs h-10 px-4 cursor-pointer"
+            className="border-border text-muted-foreground hover:text-foreground text-xs h-10 px-4 cursor-pointer rounded-xl"
           >
             Tutup
           </Button>
@@ -173,11 +173,11 @@ export function WaTemplateModal({
               type="button"
               variant="outline"
               onClick={handleCopy}
-              className="flex-1 sm:flex-initial items-center gap-1.5 text-xs h-10 px-4 border-hairline font-medium hover:bg-surface-soft cursor-pointer"
+              className="flex-1 sm:flex-initial items-center gap-1.5 text-xs h-10 px-4 border-border font-medium hover:bg-surface-soft cursor-pointer rounded-xl"
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-600" />
+                  <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Tersalin!</span>
                 </>
               ) : (
@@ -190,7 +190,7 @@ export function WaTemplateModal({
             <Button
               type="button"
               onClick={handleOpenWhatsApp}
-              className="flex-1 sm:flex-initial items-center gap-1.5 text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-initial items-center gap-1.5 text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer rounded-xl"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
               <span>Buka WhatsApp</span>

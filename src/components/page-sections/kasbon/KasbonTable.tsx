@@ -49,20 +49,20 @@ export function KasbonTable({
             disabled={loadingKasbon}
             aria-label="Refresh data kasbon"
             title="Refresh data kasbon"
-            className="border-border text-muted-foreground hover:bg-surface-soft h-[38px] w-[38px] cursor-pointer"
+            className="border-border text-muted-foreground hover:bg-surface-soft h-10 w-10 cursor-pointer rounded-xl"
           >
             <RefreshCw className={`w-4 h-4 ${loadingKasbon ? 'animate-spin' : ''}`} />
           </Button>
           <Button 
             variant="outline" 
-            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-[38px] cursor-pointer" 
+            className="border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft h-10 cursor-pointer rounded-xl" 
             onClick={onExportClick}
           >
             <Download className="w-4 h-4 mr-2" />
             Export Excel
           </Button>
           <Button 
-            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[38px] font-semibold cursor-pointer shadow-xs" 
+            className="bg-primary hover:bg-primary/90 text-primary-foreground border-none h-10 font-semibold cursor-pointer shadow-xs rounded-xl" 
             onClick={onAddClick}
           >
             <Plus className="w-4 h-4 mr-2" strokeWidth={2.5} />
@@ -106,7 +106,7 @@ export function KasbonTable({
                     <span className="font-mono text-[12.5px] text-muted-foreground">{row.date}</span>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className="font-mono font-semibold text-[13.5px] text-[#FF5600]">− {fmtCurrency(row.amount)}</span>
+                    <span className="font-mono font-semibold text-[13.5px] text-brand-orange tabular-nums">− {fmtCurrency(row.amount)}</span>
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
                     <span className="text-[12.5px] text-muted-foreground max-w-[160px] block truncate" title={row.note}>
@@ -117,7 +117,7 @@ export function KasbonTable({
                     <KasbonStatusBadge status={row.status} />
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
-                    <span className={`font-mono font-medium text-[13.5px] ${row.balance > 0 ? 'text-[#FF5600]' : 'text-muted-foreground'}`}>
+                    <span className={`font-mono font-medium text-[13.5px] tabular-nums ${row.balance > 0 ? 'text-brand-orange' : 'text-muted-foreground'}`}>
                       {row.balance > 0 ? fmtCurrency(row.balance) : '—'}
                     </span>
                   </TableCell>
@@ -127,7 +127,7 @@ export function KasbonTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-md bg-[#E6F7F0] border-[#A7F3D0] text-[#065F46] hover:bg-[#A7F3D0] hover:text-[#065F46] font-semibold cursor-pointer disabled:opacity-50"
+                          className="h-[28px] text-[12px] px-3 rounded-lg bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 dark:hover:bg-emerald-900/60 font-semibold cursor-pointer disabled:opacity-50"
                           onClick={() => onApprove(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -136,7 +136,7 @@ export function KasbonTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-md bg-[#FEE2E2] border-[#FECACA] text-[#991B1B] hover:bg-[#FECACA] hover:text-[#991B1B] font-semibold cursor-pointer disabled:opacity-50"
+                          className="h-[28px] text-[12px] px-3 rounded-lg bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60 dark:hover:bg-rose-900/60 font-semibold cursor-pointer disabled:opacity-50"
                           onClick={() => onReject(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -147,7 +147,7 @@ export function KasbonTable({
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="h-[28px] text-[12px] px-3 rounded-md border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft whitespace-nowrap cursor-pointer disabled:opacity-50"
+                        className="h-[28px] text-[12px] px-3 rounded-lg border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft whitespace-nowrap cursor-pointer disabled:opacity-50"
                         onClick={() => onMarkDeducted(row.id)}
                         disabled={deductPending}
                       >

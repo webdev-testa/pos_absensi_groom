@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-[#1A1814] w-full">
+      <div className="font-sans text-foreground w-full">
         
         {/* HEADER */}
         <DashboardHeader

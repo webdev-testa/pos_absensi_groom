@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
-import { usePosStore } from '@/data/pos-store'
-import type { Owner, Cat, Booking, Transaction } from '@/types/pos'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { posService, type CreateCheckInPayload } from '@/services/posService'
+import type { Owner, Cat, Booking, PaketHarga, Pengaturan } from '@/types/pos'
+import { toast } from 'sonner'
 
 export interface NewOwnerForm {
   nama: string
@@ -28,9 +30,19 @@ export interface BookingForm {
   dp: number
 }
 
-export function useCheckIn() {
-  const store = usePosStore()
+const DEFAULT_PENGATURAN: Pengaturan = {
+  id: 1,
+  nama_usaha: 'Dr. Meow Cat Hotel & Care',
+  no_wa_usaha: '081234567890',
+  alamat_usaha: 'Jl. Ahmad Yani No. 45, Jakarta Selatan',
+  nama_bank: 'BCA (Bank Central Asia)',
+  no_rekening: '8735091234',
+  atas_nama_rekening: 'Dr. Meow Cat Clinic',
+  qris_nmid: 'ID1020304050607',
+}
 
+export function useCheckIn() {
+  const queryClient = useQueryClient()
   const today = new Date().toISOString().split('T')[0]
   const tomorrow = useMemo(() => {
     const d = new Date()
@@ -65,10 +77,29 @@ export function useCheckIn() {
     foto_url: '',
   })
 
-  // Step 3: Booking state
+  // Queries
+  const { data: searchResults = [] } = useQuery<Owner[]>({
+    queryKey: ['pos_owners_search', searchOwnerQuery],
+    queryFn: () => posService.searchOwners(searchOwnerQuery),
+    enabled: Boolean(searchOwnerQuery.trim()),
+    staleTime: 1000 * 10,
+  })
+
+  const { data: allPakets = [] } = useQuery<PaketHarga[]>({
+    queryKey: ['pos_pakets'],
+    queryFn: () => posService.fetchPaketHarga(),
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const { data: pengaturan = DEFAULT_PENGATURAN } = useQuery<Pengaturan>({
+    queryKey: ['pos_pengaturan'],
+    queryFn: () => posService.fetchPengaturan(),
+    staleTime: 1000 * 60 * 5,
+  })
+
   const activePakets = useMemo(
-    () => store.paketHarga.filter(p => p.aktif),
-    [store.paketHarga]
+    () => allPakets.filter(p => p.aktif),
+    [allPakets]
   )
 
   const defaultPaket = activePakets[1] || activePakets[0] || {
@@ -76,6 +107,7 @@ export function useCheckIn() {
     harga_per_hari: 75000,
   }
 
+  // Step 3: Booking state
   const [bookingData, setBookingData] = useState<BookingForm>({
     paket: defaultPaket.nama,
     harga_per_hari: defaultPaket.harga_per_hari,
@@ -89,30 +121,18 @@ export function useCheckIn() {
   const [createdBooking, setCreatedBooking] = useState<Booking | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Owner search filter
-  const searchResults = useMemo(() => {
-    if (!searchOwnerQuery.trim()) return []
-    const q = searchOwnerQuery.toLowerCase()
-    return store.owners
-      .filter(o => o.nama.toLowerCase().includes(q) || o.no_wa.includes(q))
-      .map(o => ({
-        ...o,
-        cats: store.cats.filter(c => c.owner_id === o.id),
-      }))
-  }, [searchOwnerQuery, store.owners, store.cats])
-
   // Cats for selected owner
   const ownerCats = useMemo(() => {
     if (!selectedOwner) return []
-    return store.cats.filter(c => c.owner_id === selectedOwner.id)
-  }, [selectedOwner, store.cats])
+    return selectedOwner.cats || []
+  }, [selectedOwner])
 
   // Select existing owner
   const selectOwner = (owner: Owner) => {
     setSelectedOwner(owner)
     setIsNewOwner(false)
     setSelectedCat(null)
-    const existingCats = store.cats.filter(c => c.owner_id === owner.id)
+    const existingCats = owner.cats || []
     if (existingCats.length === 0) {
       setIsNewCat(true)
     } else {
@@ -184,102 +204,84 @@ export function useCheckIn() {
     setIsModalOpen(false)
   }
 
+  // CheckIn Mutation
+  const checkInMutation = useMutation({
+    mutationFn: async (paymentDetails?: {
+      method?: 'QRIS' | 'Tunai' | 'Transfer' | string
+      cashTendered?: number
+      change?: number
+      referenceNote?: string
+    }) => {
+      const payload: CreateCheckInPayload = {
+        owner: selectedOwner
+          ? {
+              id: selectedOwner.id,
+              nama: selectedOwner.nama,
+              no_wa: selectedOwner.no_wa,
+              email: selectedOwner.email,
+              alamat: selectedOwner.alamat,
+            }
+          : {
+              nama: newOwnerData.nama,
+              no_wa: newOwnerData.no_wa,
+              email: newOwnerData.email || undefined,
+              alamat: newOwnerData.alamat || undefined,
+            },
+        cat: selectedCat
+          ? {
+              id: selectedCat.id,
+              nama: selectedCat.nama,
+              ras: selectedCat.ras,
+              jenis_kelamin: selectedCat.jenis_kelamin,
+              warna: selectedCat.warna,
+              umur_estimasi: selectedCat.umur_estimasi,
+              catatan_kesehatan: selectedCat.catatan_kesehatan,
+              foto_url: selectedCat.foto_url,
+            }
+          : {
+              nama: newCatData.nama,
+              ras: newCatData.ras || undefined,
+              jenis_kelamin: newCatData.jenis_kelamin,
+              warna: newCatData.warna || undefined,
+              umur_estimasi: newCatData.umur_estimasi || undefined,
+              catatan_kesehatan: newCatData.catatan_kesehatan || undefined,
+              foto_url: newCatData.foto_url || undefined,
+            },
+        booking: {
+          tanggal_masuk: bookingData.tanggal_masuk,
+          tanggal_keluar_estimasi: bookingData.tanggal_keluar_estimasi,
+          paket: bookingData.paket,
+          harga_per_hari: bookingData.harga_per_hari,
+          catatan: bookingData.catatan || undefined,
+          dp: bookingData.dp,
+          paymentDetails,
+        },
+      }
+
+      return posService.createCheckIn(payload)
+    },
+    onSuccess: (booking) => {
+      setCreatedBooking(booking)
+      queryClient.invalidateQueries({ queryKey: ['pos_bookings'] })
+      queryClient.invalidateQueries({ queryKey: ['pos_owners_search'] })
+      toast.success(`Check-In untuk ${booking.cat?.nama || 'Kucing'} berhasil!`, {
+        description: 'Data tamu anabul berhasil disimpan ke database.',
+      })
+    },
+    onError: (err: any) => {
+      console.error('Check-In error:', err)
+      toast.error(err.message || 'Gagal memproses check-in')
+    },
+  })
+
   // Submit Check-In
-  const submitCheckIn = (paymentDetails?: {
+  const submitCheckIn = async (paymentDetails?: {
     method: 'QRIS' | 'Tunai' | 'Transfer'
     cashTendered?: number
     change?: number
     referenceNote?: string
-  }): Booking => {
-    const nowIso = new Date().toISOString()
-
-    // 1. Resolve Owner
-    let ownerId: string
-    let finalOwner: Owner
-    if (selectedOwner) {
-      ownerId = selectedOwner.id
-      finalOwner = selectedOwner
-    } else {
-      ownerId = `own-${Date.now()}`
-      finalOwner = {
-        id: ownerId,
-        nama: newOwnerData.nama,
-        no_wa: newOwnerData.no_wa,
-        email: newOwnerData.email || undefined,
-        alamat: newOwnerData.alamat || undefined,
-        created_at: nowIso,
-      }
-      store.addOwner(finalOwner)
-    }
-
-    // 2. Resolve Cat
-    let catId: string
-    let finalCat: Cat
-    if (selectedCat) {
-      catId = selectedCat.id
-      finalCat = selectedCat
-    } else {
-      catId = `cat-${Date.now()}`
-      finalCat = {
-        id: catId,
-        owner_id: ownerId,
-        nama: newCatData.nama,
-        ras: newCatData.ras || undefined,
-        jenis_kelamin: newCatData.jenis_kelamin,
-        warna: newCatData.warna || undefined,
-        umur_estimasi: newCatData.umur_estimasi || undefined,
-        catatan_kesehatan: newCatData.catatan_kesehatan || undefined,
-        foto_url:
-          newCatData.foto_url ||
-          'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=500&auto=format&fit=crop&q=60',
-        created_at: nowIso,
-        owner: finalOwner,
-      }
-      store.addCat(finalCat)
-    }
-
-    // 3. Create Booking
-    const bookingId = `bk-${Date.now()}`
-    const newBooking: Booking = {
-      id: bookingId,
-      cat_id: catId,
-      owner_id: ownerId,
-      tanggal_masuk: bookingData.tanggal_masuk,
-      tanggal_keluar_estimasi: bookingData.tanggal_keluar_estimasi,
-      paket: bookingData.paket,
-      harga_per_hari: bookingData.harga_per_hari,
-      catatan: bookingData.catatan || undefined,
-      status: 'aktif',
-      created_at: nowIso,
-      cat: finalCat,
-      owner: finalOwner,
-      transactions: [],
-      daily_reports: [],
-      sudah_laporan: false,
-    }
-    store.addBooking(newBooking)
-
-    // 4. Create DP Transaction if entered
-    if (bookingData.dp > 0) {
-      const tx: Transaction = {
-        id: `tx-${Date.now()}`,
-        booking_id: bookingId,
-        tipe: 'dp',
-        jumlah: Number(bookingData.dp),
-        metode_bayar: paymentDetails?.method || 'QRIS',
-        uang_diterima: paymentDetails?.cashTendered,
-        kembalian: paymentDetails?.change,
-        keterangan: paymentDetails?.referenceNote
-          ? `DP Penitipan via ${paymentDetails.method} (${paymentDetails.referenceNote})`
-          : `DP Penitipan via ${paymentDetails?.method || 'QRIS'}`,
-        created_at: nowIso,
-      }
-      store.addTransaction(tx)
-      newBooking.transactions = [tx]
-    }
-
-    setCreatedBooking(newBooking)
-    return newBooking
+  }) => {
+    return checkInMutation.mutateAsync(paymentDetails)
   }
 
   return {
@@ -318,6 +320,7 @@ export function useCheckIn() {
     isModalOpen,
     setIsModalOpen,
     resetForm,
-    pengaturan: store.pengaturan,
+    pengaturan,
+    isSubmitting: checkInMutation.isPending,
   }
 }

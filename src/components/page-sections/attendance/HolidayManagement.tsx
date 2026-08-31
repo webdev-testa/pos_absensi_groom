@@ -45,7 +45,7 @@ export function HolidayManagement({
           <div className="stat-title mb-2.5">
             Total Hari Libur
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-foreground">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-foreground tabular-nums">
             {holidays.length}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">
@@ -56,7 +56,7 @@ export function HolidayManagement({
           <div className="stat-title mb-2.5">
             Akan Datang
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-emerald-600 dark:text-emerald-400">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-emerald-600 dark:text-emerald-400 tabular-nums">
             {upcomingHolidays.length}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">
@@ -67,7 +67,7 @@ export function HolidayManagement({
           <div className="stat-title mb-2.5">
             Sudah Lewat
           </div>
-          <div className="font-heading text-[32px] font-bold tracking-tight leading-none text-muted-foreground">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-muted-foreground tabular-nums">
             {pastHolidays.length}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">tahun ini</div>

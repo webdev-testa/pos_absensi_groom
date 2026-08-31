@@ -84,18 +84,18 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     ? 'bg-brand-orange text-white ring-4 ring-brand-orange/20 shadow-xs'
                     : isDone
                     ? 'bg-emerald-600 text-white'
-                    : 'bg-surface-soft text-ink-muted border border-border'
+                    : 'bg-surface-soft text-muted-foreground border border-border'
                 }`}
               >
                 {isDone ? <CheckCircle2 className="w-4 h-4" /> : s.num}
               </div>
               <div className="hidden sm:block">
-                <div className="text-[10px] uppercase font-mono tracking-wider text-ink-muted">
+                <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
                   Langkah {s.num}
                 </div>
                 <div
                   className={`text-xs font-semibold ${
-                    isCurrent ? 'text-ink' : 'text-ink-muted'
+                    isCurrent ? 'text-foreground' : 'text-muted-foreground'
                   }`}
                 >
                   {s.title}
@@ -111,13 +111,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
       {/* STEP 1: OWNER SELECTION */}
       {step === 1 && (
-        <Card className="max-w-2xl mx-auto bg-white border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
+        <Card className="max-w-2xl mx-auto bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
           <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/80">
             <div>
-              <h2 className="text-base font-heading font-bold text-ink">
+              <h2 className="text-base font-heading font-bold text-foreground">
                 Langkah 1: Pilih atau Daftarkan Owner
               </h2>
-              <p className="text-xs text-ink-muted mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Cari data pelanggan lama berdasarkan Nama / No WA, atau buat baru.
               </p>
             </div>
@@ -127,7 +127,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                 variant="outline"
                 size="sm"
                 onClick={chooseNewOwner}
-                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer"
+                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer rounded-xl"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 + Owner Baru
@@ -138,13 +138,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
           {!isNewOwner ? (
             <div className="space-y-4">
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Ketik nama atau nomor WhatsApp owner (cth: Fara / 0812...)"
                   value={searchOwnerQuery}
                   onChange={e => setSearchOwnerQuery(e.target.value)}
-                  className="pl-9.5 h-11 text-xs sm:text-sm bg-surface-card border-border focus-visible:ring-primary rounded-xl"
+                  className="pl-9.5 h-11 text-xs sm:text-sm bg-card border-input focus-visible:ring-ring/40 rounded-xl"
                   autoFocus
                 />
               </div>
@@ -152,19 +152,19 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
               {/* Search Results */}
               {searchOwnerQuery.trim() !== '' && (
                 <div className="space-y-2 mt-3">
-                  <div className="text-[11px] font-mono text-ink-muted uppercase tracking-wider">
+                  <div className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
                     Hasil Pencarian ({searchResults.length})
                   </div>
                   {searchResults.length === 0 ? (
-                    <div className="p-6 text-center bg-[#FAF8F5] rounded-xl border border-hairline">
-                      <p className="text-xs text-ink-muted mb-3">
+                    <div className="p-6 text-center bg-surface-soft rounded-xl border border-border">
+                      <p className="text-xs text-muted-foreground mb-3">
                         Tidak ditemukan data owner dengan kata kunci &quot;{searchOwnerQuery}&quot;
                       </p>
                       <Button
                         type="button"
                         onClick={chooseNewOwner}
                         size="sm"
-                        className="text-xs bg-primary hover:bg-primary-hover text-white cursor-pointer"
+                        className="text-xs bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl"
                       >
                         <UserPlus className="w-3.5 h-3.5 mr-1" />
                         Buat Data Owner Baru
@@ -175,13 +175,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                       <div
                         key={owner.id}
                         onClick={() => selectOwner(owner)}
-                        className="p-3.5 bg-surface-soft hover:bg-surface-muted/80 border border-hairline hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-between group"
+                        className="p-3.5 bg-surface-soft hover:bg-surface-muted/80 border border-border hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-between group"
                       >
                         <div>
-                          <div className="text-sm font-semibold text-ink group-hover:text-brand-orange transition-colors">
+                          <div className="text-sm font-semibold text-foreground group-hover:text-brand-orange transition-colors">
                             {owner.nama}
                           </div>
-                          <div className="text-xs text-ink-muted font-mono flex items-center gap-2 mt-0.5">
+                          <div className="text-xs text-muted-foreground font-mono flex items-center gap-2 mt-0.5">
                             <span>📞 {owner.no_wa}</span>
                             {owner.email && <span>• {owner.email}</span>}
                           </div>
@@ -190,7 +190,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                               {owner.cats.map(c => (
                                 <span
                                   key={c.id}
-                                  className="inline-flex items-center text-[10px] bg-white border border-border px-2 py-0.5 rounded-md text-ink-muted"
+                                  className="inline-flex items-center text-[10px] bg-card border border-border px-2 py-0.5 rounded-md text-muted-foreground"
                                 >
                                   🐱 {c.nama} ({c.ras || 'Domestik'})
                                 </span>
@@ -212,12 +212,12 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
               )}
 
               {searchOwnerQuery.trim() === '' && (
-                <div className="p-8 text-center bg-[#FAF8F5] border border-dashed border-hairline-strong rounded-2xl">
-                  <div className="w-12 h-12 rounded-full bg-amber-50 text-brand-orange flex items-center justify-center mx-auto mb-3 text-xl">
+                <div className="p-8 text-center bg-surface-soft border border-dashed border-border rounded-2xl">
+                  <div className="w-12 h-12 rounded-full bg-amber-500/10 text-brand-orange flex items-center justify-center mx-auto mb-3 text-xl">
                     🔍
                   </div>
-                  <h3 className="text-sm font-semibold text-ink">Cari Data Pelanggan</h3>
-                  <p className="text-xs text-ink-muted max-w-sm mx-auto mt-1 mb-4">
+                  <h3 className="text-sm font-semibold text-foreground">Cari Data Pelanggan</h3>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
                     Ketik nama atau nomor WA di kolom pencarian di atas untuk memilih owner yang sudah terdaftar.
                   </p>
                   <Button
@@ -225,7 +225,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     variant="outline"
                     onClick={chooseNewOwner}
                     size="sm"
-                    className="text-xs border-hairline font-medium hover:bg-white cursor-pointer"
+                    className="text-xs border-border font-medium hover:bg-card cursor-pointer rounded-xl"
                   >
                     Atau Klik untuk Buat Owner Baru
                   </Button>
@@ -247,7 +247,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
               </div>
 
               <div>
-                <label htmlFor="owner-fullname" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="owner-fullname" className="block text-xs font-semibold text-foreground mb-1">
                   Nama Lengkap Owner *
                 </label>
                 <Input
@@ -258,14 +258,14 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   onChange={e =>
                     setNewOwnerData(prev => ({ ...prev, nama: e.target.value }))
                   }
-                  className="h-10 text-xs sm:text-sm"
+                  className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="owner-phone" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="owner-phone" className="block text-xs font-semibold text-foreground mb-1">
                     Nomor WhatsApp *
                   </label>
                   <Input
@@ -276,13 +276,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     onChange={e =>
                       setNewOwnerData(prev => ({ ...prev, no_wa: e.target.value }))
                     }
-                    className="h-10 text-xs sm:text-sm font-mono"
+                    className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="owner-email" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="owner-email" className="block text-xs font-semibold text-foreground mb-1">
                     Email (Opsional)
                   </label>
                   <Input
@@ -293,13 +293,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     onChange={e =>
                       setNewOwnerData(prev => ({ ...prev, email: e.target.value }))
                     }
-                    className="h-10 text-xs sm:text-sm"
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="owner-address" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="owner-address" className="block text-xs font-semibold text-foreground mb-1">
                   Alamat Tempat Tinggal
                 </label>
                 <textarea
@@ -310,7 +310,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     setNewOwnerData(prev => ({ ...prev, alamat: e.target.value }))
                   }
                   rows={2}
-                  className="w-full text-xs sm:text-sm bg-surface-card border border-border rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() => setIsNewOwner(false)}
-                  className="text-xs h-9 cursor-pointer"
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
                 >
                   Batal
                 </Button>
@@ -331,7 +331,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     setIsNewCat(true)
                     setStep(2)
                   }}
-                  className="text-xs h-9 bg-primary hover:bg-primary-hover text-white cursor-pointer"
+                  className="text-xs h-10 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl shadow-xs"
                 >
                   Lanjut ke Data Kucing <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
@@ -343,19 +343,19 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
       {/* STEP 2: CAT SELECTION */}
       {step === 2 && (
-        <Card className="max-w-2xl mx-auto bg-white border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
+        <Card className="max-w-2xl mx-auto bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
           <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/80">
             <div>
-              <h2 className="text-base font-heading font-bold text-ink">
+              <h2 className="text-base font-heading font-bold text-foreground">
                 Langkah 2: Pilih atau Tambah Kucing
               </h2>
-              <p className="text-xs text-ink-muted mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Owner:{' '}
                 <strong className="text-primary">
                   {selectedOwner ? selectedOwner.nama : newOwnerData.nama}
                 </strong>
                 {selectedOwner && (
-                  <span className="font-mono text-ink-muted ml-1">
+                  <span className="font-mono text-muted-foreground ml-1">
                     ({selectedOwner.no_wa})
                   </span>
                 )}
@@ -367,7 +367,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                 variant="outline"
                 size="sm"
                 onClick={chooseNewCat}
-                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer"
+                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer rounded-xl"
               >
                 <CatIcon className="w-3.5 h-3.5" />
                 + Kucing Baru
@@ -378,7 +378,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
           {/* If owner has existing cats and not in new-cat mode */}
           {selectedOwner && !isNewCat && ownerCats.length > 0 ? (
             <div className="space-y-3">
-              <div className="text-xs font-semibold text-ink mb-2">
+              <div className="text-xs font-semibold text-foreground mb-2">
                 Pilih kucing yang akan dititipkan:
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -386,9 +386,9 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   <div
                     key={cat.id}
                     onClick={() => selectCat(cat)}
-                    className="p-4 bg-surface-soft hover:bg-surface-muted/90 border-2 border-hairline hover:border-brand-orange rounded-xl transition-all cursor-pointer flex items-center gap-3.5 group"
+                    className="p-4 bg-surface-soft hover:bg-surface-muted/90 border-2 border-border hover:border-brand-orange rounded-xl transition-all cursor-pointer flex items-center gap-3.5 group"
                   >
-                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-white border border-border shrink-0">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-card border border-border shrink-0">
                       {cat.foto_url ? (
                         <img
                           src={cat.foto_url}
@@ -396,20 +396,20 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xl bg-amber-50">
+                        <div className="w-full h-full flex items-center justify-center text-xl bg-amber-500/10">
                           🐾
                         </div>
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-bold text-ink group-hover:text-brand-orange transition-colors truncate">
+                      <div className="text-sm font-bold text-foreground group-hover:text-brand-orange transition-colors truncate">
                         {cat.nama}
                       </div>
-                      <div className="text-xs text-ink-muted truncate">
+                      <div className="text-xs text-muted-foreground truncate">
                         {cat.ras || 'Domestik'} • {cat.jenis_kelamin || 'Jantan'}
                       </div>
                       {cat.umur_estimasi && (
-                        <div className="text-[11px] text-ink-subtle mt-0.5">
+                        <div className="text-[11px] text-muted-foreground/70 mt-0.5">
                           Usia: {cat.umur_estimasi}
                         </div>
                       )}
@@ -423,7 +423,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="text-xs h-9 cursor-pointer"
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali ke Owner
                 </Button>
@@ -431,7 +431,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   type="button"
                   variant="outline"
                   onClick={chooseNewCat}
-                  className="text-xs h-9 border-brand-orange text-brand-orange hover:bg-brand-orange/10 cursor-pointer"
+                  className="text-xs h-10 border-brand-orange text-brand-orange hover:bg-brand-orange/10 cursor-pointer rounded-xl"
                 >
                   Tambah Kucing Baru Lainnya
                 </Button>
@@ -455,7 +455,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="cat-name" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="cat-name" className="block text-xs font-semibold text-foreground mb-1">
                     Nama Kucing *
                   </label>
                   <Input
@@ -466,13 +466,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     onChange={e =>
                       setNewCatData(prev => ({ ...prev, nama: e.target.value }))
                     }
-                    className="h-10 text-xs sm:text-sm"
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="cat-breed" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="cat-breed" className="block text-xs font-semibold text-foreground mb-1">
                     Ras Kucing
                   </label>
                   <Input
@@ -483,14 +483,14 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     onChange={e =>
                       setNewCatData(prev => ({ ...prev, ras: e.target.value }))
                     }
-                    className="h-10 text-xs sm:text-sm"
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <span className="block text-xs font-semibold text-ink mb-1">
+                  <span className="block text-xs font-semibold text-foreground mb-1">
                     Jenis Kelamin *
                   </span>
                   <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Jenis kelamin kucing">
@@ -507,8 +507,8 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                           }
                           className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-primary text-white border-primary shadow-xs'
-                              : 'bg-surface-soft text-ink-muted border-border hover:bg-white'
+                              ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                              : 'bg-surface-soft text-muted-foreground border-border hover:bg-card'
                           }`}
                         >
                           {gender === 'Jantan' ? '♂ Jantan' : '♀ Betina'}
@@ -519,7 +519,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                 </div>
 
                 <div>
-                  <label htmlFor="cat-color" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="cat-color" className="block text-xs font-semibold text-foreground mb-1">
                     Warna / Corak
                   </label>
                   <Input
@@ -530,12 +530,12 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     onChange={e =>
                       setNewCatData(prev => ({ ...prev, warna: e.target.value }))
                     }
-                    className="h-10 text-xs sm:text-sm"
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="cat-age" className="block text-xs font-semibold text-ink mb-1">
+                  <label htmlFor="cat-age" className="block text-xs font-semibold text-foreground mb-1">
                     Estimasi Usia
                   </label>
                   <Input
@@ -549,13 +549,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                         umur_estimasi: e.target.value,
                       }))
                     }
-                    className="h-10 text-xs sm:text-sm"
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="cat-notes" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="cat-notes" className="block text-xs font-semibold text-foreground mb-1">
                   Catatan Kesehatan / Alergi / Kebiasaan
                 </label>
                 <textarea
@@ -569,7 +569,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     }))
                   }
                   rows={2}
-                  className="w-full text-xs sm:text-sm bg-surface-card border border-border rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                  className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
                 />
               </div>
 
@@ -578,7 +578,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="text-xs h-9 cursor-pointer"
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
                 >
                   <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali ke Owner
                 </Button>
@@ -589,7 +589,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     setSelectedCat(null)
                     setStep(3)
                   }}
-                  className="text-xs h-9 bg-primary hover:bg-primary-hover text-white cursor-pointer"
+                  className="text-xs h-10 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl shadow-xs"
                 >
                   Lanjut ke Paket Penitipan <ArrowRight className="w-3.5 h-3.5 ml-1" />
                 </Button>
@@ -603,12 +603,12 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
       {step === 3 && (
         <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left 2 Cols: Form */}
-          <Card className="md:col-span-2 bg-white border border-border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
+          <Card className="md:col-span-2 bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
             <div className="pb-3 border-b border-border/80">
-              <h2 className="text-base font-heading font-bold text-ink">
+              <h2 className="text-base font-heading font-bold text-foreground">
                 Langkah 3: Rincian Paket & Tanggal Menginap
               </h2>
-              <p className="text-xs text-ink-muted mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Kucing:{' '}
                 <strong className="text-brand-orange">
                   {selectedCat ? selectedCat.nama : newCatData.nama}
@@ -622,7 +622,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
             {/* Paket Selection Cards */}
             <div>
-              <span className="block text-xs font-semibold text-ink mb-2">
+              <span className="block text-xs font-semibold text-foreground mb-2">
                 Pilih Paket Penitipan *
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5" role="radiogroup" aria-label="Paket penitipan kucing">
@@ -643,24 +643,24 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                       onClick={() => selectPaket(pkg.nama)}
                       className={`p-3 rounded-xl border-2 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                         isSelected
-                          ? 'border-brand-orange bg-amber-50/50 shadow-xs'
-                          : 'border-hairline bg-surface-soft hover:bg-white hover:border-border'
+                          ? 'border-brand-orange bg-amber-50/50 dark:bg-amber-950/30 shadow-xs'
+                          : 'border-border bg-surface-soft hover:bg-card hover:border-border'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-heading font-bold text-xs text-ink flex items-center gap-1">
+                        <span className="font-heading font-bold text-xs text-foreground flex items-center gap-1">
                           <Sparkles
                             className={`w-3.5 h-3.5 ${
-                              isSelected ? 'text-brand-orange' : 'text-ink-muted'
+                              isSelected ? 'text-brand-orange' : 'text-muted-foreground'
                             }`}
                           />
                           {pkg.nama}
                         </span>
-                        <span className="font-mono text-xs font-bold text-primary">
+                        <span className="font-mono text-xs font-bold text-primary tabular-nums">
                           Rp {formatRupiah(pkg.harga_per_hari)}/hr
                         </span>
                       </div>
-                      <p className="text-[11px] text-ink-muted line-clamp-2 leading-snug">
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug">
                         {pkg.deskripsi || '-'}
                       </p>
                     </div>
@@ -672,7 +672,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
             {/* Custom Rate per day if needed */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="booking-rate" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="booking-rate" className="block text-xs font-semibold text-foreground mb-1">
                   Harga per Hari (Rp)
                 </label>
                 <Input
@@ -685,16 +685,16 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                       harga_per_hari: Number(e.target.value),
                     }))
                   }
-                  className="h-10 text-xs sm:text-sm font-mono"
+                  className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl tabular-nums"
                 />
               </div>
 
               <div>
-                <label htmlFor="booking-dp" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="booking-dp" className="block text-xs font-semibold text-foreground mb-1">
                   Uang Muka / DP (Opsional)
                 </label>
                 <div className="relative">
-                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="booking-dp"
                     type="number"
@@ -706,7 +706,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                         dp: Number(e.target.value),
                       }))
                     }
-                    className="pl-8 h-10 text-xs sm:text-sm font-mono text-emerald-700 font-semibold"
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono text-emerald-600 dark:text-emerald-400 font-semibold bg-card border-input rounded-xl tabular-nums"
                   />
                 </div>
               </div>
@@ -715,11 +715,11 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
             {/* Dates */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="booking-checkin" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="booking-checkin" className="block text-xs font-semibold text-foreground mb-1">
                   Tanggal Masuk (Check-In) *
                 </label>
                 <div className="relative">
-                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="booking-checkin"
                     type="date"
@@ -730,18 +730,18 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                         tanggal_masuk: e.target.value,
                       }))
                     }
-                    className="pl-8 h-10 text-xs sm:text-sm font-mono"
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="booking-checkout" className="block text-xs font-semibold text-ink mb-1">
+                <label htmlFor="booking-checkout" className="block text-xs font-semibold text-foreground mb-1">
                   Estimasi Tanggal Keluar (Check-Out) *
                 </label>
                 <div className="relative">
-                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
+                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     id="booking-checkout"
                     type="date"
@@ -752,7 +752,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                         tanggal_keluar_estimasi: e.target.value,
                       }))
                     }
-                    className="pl-8 h-10 text-xs sm:text-sm font-mono"
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
                     required
                   />
                 </div>
@@ -761,7 +761,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
             {/* Special Instructions */}
             <div>
-              <label htmlFor="booking-notes" className="block text-xs font-semibold text-ink mb-1">
+              <label htmlFor="booking-notes" className="block text-xs font-semibold text-foreground mb-1">
                 Catatan Khusus / Permintaan Khusus
               </label>
               <textarea
@@ -772,7 +772,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   setBookingData(prev => ({ ...prev, catatan: e.target.value }))
                 }
                 rows={2}
-                className="w-full text-xs sm:text-sm bg-surface-card border border-border rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
               />
             </div>
 
@@ -781,7 +781,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setStep(2)}
-                className="text-xs h-9 cursor-pointer"
+                className="text-xs h-10 cursor-pointer rounded-xl border-border"
               >
                 <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali
               </Button>
@@ -794,7 +794,7 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                     submitCheckIn()
                   }
                 }}
-                className="text-xs h-10 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer"
+                className="text-xs h-11 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer rounded-xl"
               >
                 <CheckCircle2 className="w-4 h-4 mr-1.5" /> Konfirmasi & Simpan Check-In
               </Button>
@@ -803,55 +803,55 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
 
           {/* Right 1 Col: Summary Card */}
           <div className="space-y-4">
-            <Card className="bg-[#FAF8F5] border border-border rounded-2xl p-5 shadow-xs">
-              <div className="flex items-center gap-2 pb-3 mb-3 border-b border-hairline font-heading font-bold text-xs text-ink">
+            <Card className="bg-surface-soft border border-border rounded-2xl p-5 shadow-xs">
+              <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border font-heading font-bold text-xs text-foreground">
                 <Info className="w-4 h-4 text-brand-orange" />
                 Ringkasan Estimasi Check-In
               </div>
 
               <div className="space-y-2.5 text-xs">
-                <div className="flex justify-between text-ink-muted">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Durasi Menginap</span>
-                  <span className="font-mono font-bold text-ink">
+                  <span className="font-mono font-bold text-foreground">
                     {totalNights} Malam
                   </span>
                 </div>
 
-                <div className="flex justify-between text-ink-muted">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Paket Dipilih</span>
-                  <span className="font-medium text-ink">{bookingData.paket}</span>
+                  <span className="font-medium text-foreground">{bookingData.paket}</span>
                 </div>
 
-                <div className="flex justify-between text-ink-muted">
+                <div className="flex justify-between text-muted-foreground">
                   <span>Tarif / Malam</span>
-                  <span className="font-mono text-ink">
+                  <span className="font-mono text-foreground tabular-nums">
                     Rp {formatRupiah(bookingData.harga_per_hari)}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-hairline flex justify-between font-bold text-ink text-sm">
+                <div className="pt-2 border-t border-border flex justify-between font-bold text-foreground text-sm">
                   <span>Total Estimasi</span>
-                  <span className="font-mono text-primary">
+                  <span className="font-mono text-primary tabular-nums">
                     Rp {formatRupiah(totalCost)}
                   </span>
                 </div>
 
-                <div className="flex justify-between text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-lg text-[11px] font-medium">
+                <div className="flex justify-between text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 rounded-lg text-[11px] font-medium">
                   <span>DP Dibayar Sekarang</span>
-                  <span className="font-mono font-bold">
+                  <span className="font-mono font-bold tabular-nums">
                     - Rp {formatRupiah(bookingData.dp || 0)}
                   </span>
                 </div>
 
-                <div className="flex justify-between bg-white p-2.5 rounded-xl border border-hairline text-xs font-semibold text-ink">
+                <div className="flex justify-between bg-card p-2.5 rounded-xl border border-border text-xs font-semibold text-foreground">
                   <span>Sisa Pelunasan Nanti</span>
-                  <span className="font-mono text-brand-orange font-bold">
+                  <span className="font-mono text-brand-orange font-bold tabular-nums">
                     Rp {formatRupiah(sisaBayar)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-hairline text-[11px] text-ink-muted leading-relaxed">
+              <div className="mt-4 pt-3 border-t border-border text-[11px] text-muted-foreground leading-relaxed">
                 ✨ Setelah klik <strong>Konfirmasi Check-In</strong>, modal template WhatsApp akan otomatis terbuka untuk dikirimkan ke owner.
               </div>
             </Card>

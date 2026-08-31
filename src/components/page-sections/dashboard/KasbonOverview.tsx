@@ -23,7 +23,7 @@ export function KasbonOverview({ kasbonStats }: KasbonOverviewProps) {
       </div>
       <div className="p-5">
         <div className="flex items-baseline gap-1.5 mb-1.5">
-          <div className="font-heading text-[30px] font-bold tracking-tight text-amber-600 dark:text-amber-400">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-brand-orange tabular-nums">
             {fmtCurrency(kasbonStats.totalKasbonAmt)}
           </div>
           <div className="text-xs text-muted-foreground font-mono">total</div>
@@ -31,17 +31,17 @@ export function KasbonOverview({ kasbonStats }: KasbonOverviewProps) {
         <div className="text-xs text-muted-foreground mb-4">{kasbonStats.countTransactions} pengambilan aktif</div>
         <Progress 
           value={kasbonStats.totalKasbonAmt > 0 ? Math.round((kasbonStats.unpaidKasbonAmt / kasbonStats.totalKasbonAmt) * 100) : 0} 
-          indicatorClassName="bg-amber-500"
+          indicatorClassName="bg-brand-accent"
           className="h-2 rounded-full mb-4 bg-surface-soft"
         />
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-surface-soft rounded-xl p-3 border border-border/60">
             <div className="stat-title mb-1 text-xs">Belum dipotong</div>
-            <div className="font-heading text-[17px] font-bold tracking-tight text-amber-600 dark:text-amber-400">{fmtCurrency(kasbonStats.unpaidKasbonAmt)}</div>
+            <div className="font-mono text-base font-bold tracking-tight text-amber-600 dark:text-amber-400 tabular-nums">{fmtCurrency(kasbonStats.unpaidKasbonAmt)}</div>
           </div>
           <div className="bg-surface-soft rounded-xl p-3 border border-border/60">
             <div className="stat-title mb-1 text-xs">Sudah dipotong</div>
-            <div className="font-heading text-[17px] font-bold tracking-tight text-emerald-600 dark:text-emerald-400">{fmtCurrency(kasbonStats.deductedKasbonAmt)}</div>
+            <div className="font-mono text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400 tabular-nums">{fmtCurrency(kasbonStats.deductedKasbonAmt)}</div>
           </div>
         </div>
       </div>

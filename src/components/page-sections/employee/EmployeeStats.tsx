@@ -14,7 +14,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Total aktif</div>
-          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-[#10B981]">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-[#10B981] tabular-nums">
             {totalAktif}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">staf aktif</div>
@@ -23,7 +23,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Nonaktif</div>
-          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-muted-foreground">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-muted-foreground tabular-nums">
             {totalNonaktif}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">diarsipkan</div>
@@ -32,7 +32,7 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Total gaji pokok</div>
-          <div className="font-heading text-[30px] font-bold tracking-tight leading-none text-foreground">
+          <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-foreground tabular-nums">
             {fmtCurrency(totalSalary)}
           </div>
           <div className="text-[12px] text-muted-foreground mt-1.5">per bulan</div>
@@ -41,10 +41,10 @@ export function EmployeeStats({ totalAktif, totalNonaktif, totalSalary, topDept 
       <Card className="rounded-xl shadow-xs border border-border bg-card">
         <CardContent className="p-[18px_20px]">
           <div className="stat-title mb-2">Posisi terbanyak</div>
-          <div className="font-heading text-[22px] font-bold tracking-tight leading-[30px] text-foreground truncate">
+          <div className="font-heading text-[20px] font-bold tracking-tight leading-[28px] text-foreground truncate">
             {topDept?.[0] || '—'}
           </div>
-          <div className="text-[12px] text-muted-foreground mt-1.5">
+          <div className="text-[12px] text-muted-foreground mt-1.5 font-mono">
             {topDept ? `${topDept[1]} orang` : '-'}
           </div>
         </CardContent>

@@ -1,16 +1,17 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { usePosStore } from '@/data/pos-store'
 import { CheckOutForm } from '@/components/pos/CheckOutForm'
 import { PosPaymentModal } from '@/components/pos/PosPaymentModal'
 import { WaTemplateModal } from '@/components/pos/WaTemplateModal'
 import { StrukPdf } from '@/components/pos/StrukPdf'
 import { formatTanggalPendek, formatRupiah, calculateBilling } from '@/utils/pos.utils'
-import type { Booking, Transaction, BillingCalculation } from '@/types/pos'
+import { posService, type ExecuteCheckoutPayload } from '@/services/posService'
+import type { Booking, Transaction, BillingCalculation, Pengaturan } from '@/types/pos'
 import type { PaymentSuccessResult } from '@/components/pos/PosPaymentModal'
 import {
   Search,
@@ -21,8 +22,19 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+const DEFAULT_PENGATURAN: Pengaturan = {
+  id: 1,
+  nama_usaha: 'Dr. Meow Cat Hotel & Care',
+  no_wa_usaha: '081234567890',
+  alamat_usaha: 'Jl. Ahmad Yani No. 45, Jakarta Selatan',
+  nama_bank: 'BCA (Bank Central Asia)',
+  no_rekening: '8735091234',
+  atas_nama_rekening: 'Dr. Meow Cat Clinic',
+  qris_nmid: 'ID1020304050607',
+}
+
 export default function CheckOut() {
-  const store = usePosStore()
+  const queryClient = useQueryClient()
   const today = new Date().toISOString().split('T')[0]
 
   const [searchQuery, setSearchQuery] = useState('')
@@ -43,10 +55,23 @@ export default function CheckOut() {
   const [isWaModalOpen, setIsWaModalOpen] = useState(false)
   const [isStrukOpen, setIsStrukOpen] = useState(false)
 
+  // Queries
+  const { data: allBookings = [] } = useQuery<Booking[]>({
+    queryKey: ['pos_bookings'],
+    queryFn: () => posService.fetchBookings(),
+    staleTime: 1000 * 30,
+  })
+
+  const { data: pengaturan = DEFAULT_PENGATURAN } = useQuery<Pengaturan>({
+    queryKey: ['pos_pengaturan'],
+    queryFn: () => posService.fetchPengaturan(),
+    staleTime: 1000 * 60 * 5,
+  })
+
   // Active bookings list
   const activeBookings = useMemo(() => {
-    return store.getFullBookings().filter(b => b.status === 'aktif')
-  }, [store.bookings, store.cats, store.owners, store.transactions])
+    return allBookings.filter(b => b.status === 'aktif')
+  }, [allBookings])
 
   const filteredBookings = useMemo(() => {
     if (!searchQuery.trim()) return activeBookings
@@ -59,6 +84,92 @@ export default function CheckOut() {
     )
   }, [activeBookings, searchQuery])
 
+  // Checkout Mutation
+  const checkoutMutation = useMutation({
+    mutationFn: async (payload: {
+      bookingToCheckout: Booking
+      checkoutDate: string
+      extraCharges: { keterangan: string; jumlah: number }[]
+      pelunasanAmount: number
+      paymentDetails?: PaymentSuccessResult
+    }) => {
+      const { bookingToCheckout, checkoutDate, extraCharges, pelunasanAmount, paymentDetails } = payload
+      const executePayload: ExecuteCheckoutPayload = {
+        bookingId: bookingToCheckout.id,
+        checkoutDate,
+        extraCharges,
+        pelunasanAmount,
+        paymentDetails,
+      }
+
+      await posService.executeCheckout(executePayload)
+
+      // Build local representation for instant receipt generation
+      const nowIso = new Date().toISOString()
+      const newTransactions: Transaction[] = [
+        ...(bookingToCheckout.transactions || []),
+      ]
+
+      for (const item of extraCharges) {
+        newTransactions.push({
+          id: `tx-extra-${Date.now()}`,
+          booking_id: bookingToCheckout.id,
+          tipe: 'biaya_tambahan',
+          jumlah: item.jumlah,
+          keterangan: item.keterangan,
+          created_at: nowIso,
+        })
+      }
+
+      if (pelunasanAmount > 0) {
+        const method = paymentDetails?.method || 'QRIS'
+        newTransactions.push({
+          id: `tx-pelunasan-${Date.now()}`,
+          booking_id: bookingToCheckout.id,
+          tipe: 'pelunasan',
+          jumlah: pelunasanAmount,
+          metode_bayar: method,
+          uang_diterima: paymentDetails?.cashTendered,
+          kembalian: paymentDetails?.change,
+          keterangan: paymentDetails?.referenceNote
+            ? `Pelunasan Checkout via ${method} (${paymentDetails.referenceNote})`
+            : `Pelunasan Checkout via ${method}`,
+          created_at: nowIso,
+        })
+      }
+
+      const updatedBooking: Booking = {
+        ...bookingToCheckout,
+        status: 'selesai',
+        tanggal_keluar_aktual: checkoutDate,
+        transactions: newTransactions,
+      }
+
+      const finalBilling = calculateBilling(updatedBooking, checkoutDate)
+
+      return {
+        ...updatedBooking,
+        billing: finalBilling,
+      }
+    },
+    onSuccess: (finalData) => {
+      setCompletedBooking(finalData)
+      queryClient.invalidateQueries({ queryKey: ['pos_bookings'] })
+      queryClient.invalidateQueries({ queryKey: ['pos_booking', finalData.id] })
+      toast.success(`Check-Out untuk ${finalData.cat?.nama || 'Kucing'} berhasil!`, {
+        description: 'Status penitipan telah ditutup dan disimpan ke database.',
+      })
+      setSelectedBooking(null)
+      setPendingCheckoutData(null)
+      setIsPaymentModalOpen(false)
+      setIsStrukOpen(true)
+    },
+    onError: (err: any) => {
+      console.error('Checkout error:', err)
+      toast.error(err.message || 'Gagal memproses check-out')
+    },
+  })
+
   // Execute actual database changes
   const executeCheckout = (
     bookingToCheckout: Booking,
@@ -67,67 +178,13 @@ export default function CheckOut() {
     pelunasanAmount: number,
     paymentDetails?: PaymentSuccessResult
   ) => {
-    const nowIso = new Date().toISOString()
-    const newTxList: Transaction[] = []
-
-    // 1. Insert Extra Charges Transactions
-    for (const item of extraCharges) {
-      const tx: Transaction = {
-        id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
-        booking_id: bookingToCheckout.id,
-        tipe: 'biaya_tambahan',
-        jumlah: item.jumlah,
-        keterangan: item.keterangan,
-        created_at: nowIso,
-      }
-      store.addTransaction(tx)
-      newTxList.push(tx)
-    }
-
-    // 2. Insert Pelunasan Transaction if > 0
-    if (pelunasanAmount > 0) {
-      const method = paymentDetails?.method || 'QRIS'
-      const pelunasanTx: Transaction = {
-        id: `tx-${Date.now()}-pelunasan`,
-        booking_id: bookingToCheckout.id,
-        tipe: 'pelunasan',
-        jumlah: pelunasanAmount,
-        metode_bayar: method,
-        uang_diterima: paymentDetails?.cashTendered,
-        kembalian: paymentDetails?.change,
-        keterangan: paymentDetails?.referenceNote
-          ? `Pelunasan Checkout via ${method} (${paymentDetails.referenceNote})`
-          : `Pelunasan Checkout via ${method}`,
-        created_at: nowIso,
-      }
-      store.addTransaction(pelunasanTx)
-      newTxList.push(pelunasanTx)
-    }
-
-    // 3. Update Booking to 'selesai'
-    store.updateBooking(bookingToCheckout.id, {
-      status: 'selesai',
-      tanggal_keluar_aktual: checkoutDate,
+    checkoutMutation.mutate({
+      bookingToCheckout,
+      checkoutDate,
+      extraCharges,
+      pelunasanAmount,
+      paymentDetails,
     })
-
-    // Calculate final billing for modal and receipt
-    const updatedBooking: Booking = {
-      ...bookingToCheckout,
-      status: 'selesai',
-      tanggal_keluar_aktual: checkoutDate,
-      transactions: [
-        ...(bookingToCheckout.transactions || []),
-        ...newTxList,
-      ],
-    }
-    const finalBilling = calculateBilling(updatedBooking, checkoutDate)
-
-    setCompletedBooking({
-      ...updatedBooking,
-      billing: finalBilling,
-    })
-
-    return updatedBooking
   }
 
   // Handle Checkout Confirmation from Form
@@ -150,11 +207,6 @@ export default function CheckOut() {
         data.extraCharges,
         data.pelunasanAmount
       )
-      toast.success(`Check-Out untuk ${selectedBooking.cat?.nama} berhasil!`, {
-        description: 'Status penitipan telah ditutup.',
-      })
-      setSelectedBooking(null)
-      setIsStrukOpen(true)
     }
   }
 
@@ -173,7 +225,7 @@ export default function CheckOut() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-ink space-y-6 pb-12">
+      <div className="font-sans text-foreground space-y-6 pb-12">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
@@ -183,9 +235,9 @@ export default function CheckOut() {
                 size="sm"
                 aria-label="Kembali ke Dashboard Kucing"
                 title="Kembali ke Dashboard Kucing"
-                className="h-9 w-9 p-0 rounded-xl border-hairline hover:bg-surface-soft cursor-pointer"
+                className="h-10 w-10 p-0 rounded-xl border-border hover:bg-surface-soft cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4 text-ink" />
+                <ArrowLeft className="w-4 h-4 text-foreground" />
               </Button>
             </Link>
             <div>
@@ -193,13 +245,13 @@ export default function CheckOut() {
                 <Sparkles className="w-3.5 h-3.5" />
                 Penjemputan & Pelunasan
               </div>
-              <h1 className="text-xl sm:text-2xl font-heading font-bold text-ink tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground tracking-tight">
                 Check-Out Penitipan 🏁
               </h1>
             </div>
           </div>
 
-          <div className="text-xs font-medium text-ink-muted bg-surface-soft px-3 py-1.5 rounded-xl border border-hairline">
+          <div className="text-xs font-medium text-muted-foreground bg-surface-soft px-3 py-1.5 rounded-xl border border-border">
             {activeBookings.length} Kucing Masih Menginap
           </div>
         </div>
@@ -220,23 +272,23 @@ export default function CheckOut() {
           <div className="space-y-4 max-w-4xl mx-auto">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Cari anabul atau nama owner yang akan di-checkout..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="pl-9.5 h-11 text-xs sm:text-sm bg-white border-border rounded-xl shadow-xs"
+                className="pl-9.5 h-11 text-xs sm:text-sm bg-card border-border rounded-xl shadow-xs"
               />
             </div>
 
             {filteredBookings.length === 0 ? (
-              <div className="p-12 text-center bg-white rounded-2xl border border-dashed border-hairline-strong">
+              <div className="p-12 text-center bg-card rounded-2xl border border-dashed border-border">
                 <div className="text-3xl mb-2">🐾</div>
-                <h3 className="text-sm font-bold text-ink">
+                <h3 className="text-sm font-bold text-foreground">
                   Tidak ada tamu menginap yang sesuai
                 </h3>
-                <p className="text-xs text-ink-muted mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Semua kucing telah di-checkout atau gunakan kata kunci lain.
                 </p>
               </div>
@@ -253,31 +305,31 @@ export default function CheckOut() {
                     <Card
                       key={booking.id}
                       onClick={() => setSelectedBooking(booking)}
-                      className={`p-4 bg-white hover:bg-surface-soft border transition-all cursor-pointer rounded-2xl flex flex-col justify-between group ${
+                      className={`p-4 bg-card hover:bg-surface-soft border transition-all cursor-pointer rounded-2xl flex flex-col justify-between group ${
                         isCheckoutToday
-                          ? 'border-rose-300 ring-2 ring-rose-100'
+                          ? 'border-rose-300 dark:border-rose-800/60 ring-2 ring-rose-100 dark:ring-rose-950/40'
                           : 'border-border hover:border-brand-orange/40'
                       }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-[11px] font-mono font-medium text-ink-muted bg-surface-soft px-2 py-0.5 rounded-md">
+                          <span className="text-[11px] font-mono font-medium text-muted-foreground bg-surface-soft px-2 py-0.5 rounded-md">
                             Paket {booking.paket}
                           </span>
                           {isCheckoutToday ? (
-                            <span className="text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60 px-2 py-0.5 rounded-full">
                               🔔 Jadwal Hari Ini
                             </span>
                           ) : (
-                            <span className="text-[11px] text-ink-muted flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-ink-subtle" />
+                            <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <Calendar className="w-3 h-3 text-muted-foreground/60" />
                               s/d {formatTanggalPendek(booking.tanggal_keluar_estimasi)}
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-start gap-3 mb-3">
-                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface-soft border border-hairline shrink-0">
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-surface-soft border border-border shrink-0">
                             {cat?.foto_url ? (
                               <img
                                 src={cat.foto_url}
@@ -285,22 +337,22 @@ export default function CheckOut() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xl bg-amber-50">
+                              <div className="w-full h-full flex items-center justify-center text-xl bg-amber-500/10">
                                 🐾
                               </div>
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="text-sm font-bold text-ink group-hover:text-brand-orange transition-colors truncate">
+                            <h3 className="text-sm font-bold text-foreground group-hover:text-brand-orange transition-colors truncate">
                               {cat?.nama}
                             </h3>
-                            <div className="text-xs text-ink-muted truncate">
+                            <div className="text-xs text-muted-foreground truncate">
                               {cat?.ras || 'Domestik'} • {cat?.jenis_kelamin}
                             </div>
                             <div className="text-xs text-primary font-medium mt-1 truncate flex items-center gap-1">
                               <span>{owner?.nama}</span>
-                              <span className="text-ink-subtle">•</span>
-                              <span className="font-mono text-[11px] text-ink-muted">
+                              <span className="text-muted-foreground">•</span>
+                              <span className="font-mono text-[11px] text-muted-foreground">
                                 {owner?.no_wa}
                               </span>
                             </div>
@@ -309,18 +361,18 @@ export default function CheckOut() {
                       </div>
 
                       {/* Billing Preview Footer */}
-                      <div className="pt-3 border-t border-hairline flex items-center justify-between">
+                      <div className="pt-3 border-t border-border flex items-center justify-between">
                         <div>
-                          <div className="text-[10px] text-ink-muted uppercase font-mono">
+                          <div className="text-[10px] text-muted-foreground uppercase font-mono">
                             Estimasi Sisa
                           </div>
-                          <div className="font-mono font-bold text-sm text-primary">
+                          <div className="font-mono font-bold text-sm text-primary tabular-nums">
                             Rp {formatRupiah(billing.sisa_bayar)}
                           </div>
                         </div>
                         <Button
                           size="sm"
-                          className="text-xs h-8 px-3 bg-primary hover:bg-primary-hover text-white font-medium cursor-pointer"
+                          className="text-xs h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium cursor-pointer rounded-xl shadow-xs"
                         >
                           Proses Check-Out <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
@@ -347,7 +399,7 @@ export default function CheckOut() {
             customerName={selectedBooking.owner?.nama || 'Pelanggan'}
             catName={selectedBooking.cat?.nama || 'Kucing'}
             itemSummary={`Pelunasan ${selectedBooking.paket} (${selectedBooking.cat?.nama})`}
-            pengaturan={store.pengaturan}
+            pengaturan={pengaturan}
             initialMethod={(pendingCheckoutData.metodeBayar as any) || 'QRIS'}
             onPaymentSuccess={handlePaymentSuccess}
             onPrintReceipt={() => setIsStrukOpen(true)}
@@ -361,7 +413,7 @@ export default function CheckOut() {
           onClose={() => setIsWaModalOpen(false)}
           type="checkout"
           data={completedBooking}
-          namaUsaha={store.pengaturan.nama_usaha}
+          namaUsaha={pengaturan.nama_usaha}
         />
 
         {/* STRUK PDF PRINT PREVIEW */}
@@ -369,7 +421,7 @@ export default function CheckOut() {
           isOpen={isStrukOpen}
           onClose={() => setIsStrukOpen(false)}
           booking={completedBooking}
-          pengaturan={store.pengaturan}
+          pengaturan={pengaturan}
         />
       </div>
     </AdminLayout>

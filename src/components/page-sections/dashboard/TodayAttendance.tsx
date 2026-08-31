@@ -41,12 +41,12 @@ export function TodayAttendance({
         <div className="flex items-center gap-6 mb-5">
           <div className="relative w-[100px] h-[100px] shrink-0">
             <svg width="100" height="100" viewBox="0 0 100 100" className="-rotate-90">
-              <circle cx="50" cy="50" r="40" fill="none" stroke="#F3EFE9" strokeWidth="10"/>
+              <circle cx="50" cy="50" r="40" fill="none" className="stroke-surface-soft dark:stroke-surface-muted" strokeWidth="10"/>
               <circle cx="50" cy="50" r="40" fill="none" stroke="#10B981" strokeWidth="10" strokeDasharray={`${dashPresent} 251`} strokeLinecap="round"/>
               <circle cx="50" cy="50" r="40" fill="none" stroke="#EF4444" strokeWidth="10" strokeDasharray={`${dashAbsent} 251`} strokeDashoffset={`-${dashPresent}`} strokeLinecap="round"/>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="font-heading text-[24px] font-bold leading-none text-foreground">{attendanceTodayStats.countPresent}</div>
+              <div className="font-mono text-[24px] font-bold leading-none text-foreground tabular-nums">{attendanceTodayStats.countPresent}</div>
               <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mt-1">hadir</div>
             </div>
           </div>

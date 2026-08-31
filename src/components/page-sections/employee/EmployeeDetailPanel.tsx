@@ -33,7 +33,7 @@ export function EmployeeDetailPanel({
 
         return (
           <Card className="rounded-xl border border-border shadow-xs overflow-hidden bg-card">
-            <div className="bg-primary p-6">
+            <div className="bg-surface-dark dark:bg-surface-dark-elevated text-white p-6 border-b border-white/10">
               <div className="flex items-center gap-3.5 mb-4">
                 <Avatar 
                   className="w-[52px] h-[52px] rounded-full shrink-0 flex items-center justify-center font-heading text-[18px] font-bold" 
@@ -43,13 +43,13 @@ export function EmployeeDetailPanel({
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="font-heading text-[17px] font-bold text-white truncate">{selectedEmployee.name}</div>
-                  <div className="text-[12px] text-white/50 font-mono mt-0.5 truncate">
+                  <div className="text-[12px] text-white/60 font-mono mt-0.5 truncate">
                     {selectedEmployee.emp_id} · {selectedEmployee.dept}
                   </div>
                 </div>
                 <div className="ml-auto shrink-0">
                   {selectedEmployee.status === 'active' ? (
-                    <Badge className="bg-[#E6F7F0] text-[#065F46] border border-[#A7F3D0] hover:bg-[#E6F7F0] shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 shadow-none font-semibold px-2.5 py-0.5 rounded-full text-[11px]">
                       Aktif
                     </Badge>
                   ) : (
@@ -60,18 +60,18 @@ export function EmployeeDetailPanel({
                 </div>
               </div>
               
-              <div className="grid grid-cols-3 gap-1 bg-white/10 rounded-lg overflow-hidden p-1">
-                <div className="bg-white/5 p-2 text-center rounded-md">
-                  <div className="font-heading text-[16px] font-bold text-white">{selectedEmployee.absen || 0}</div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Hari hadir</div>
+              <div className="grid grid-cols-3 gap-1 bg-white/10 rounded-xl overflow-hidden p-1 border border-white/10">
+                <div className="bg-white/5 p-2 text-center rounded-lg">
+                  <div className="font-mono text-[16px] font-bold text-white tabular-nums">{selectedEmployee.absen || 0}</div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Hari hadir</div>
                 </div>
-                <div className="bg-white/5 p-2 text-center rounded-md">
-                  <div className="font-mono text-[14px] font-bold text-[#FF5600]">{fmtCurrency(selectedEmployee.kasbon_used || 0)}</div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Kasbon</div>
+                <div className="bg-white/5 p-2 text-center rounded-lg">
+                  <div className="font-mono text-[13.5px] font-bold text-brand-orange tabular-nums">{fmtCurrency(selectedEmployee.kasbon_used || 0)}</div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Kasbon</div>
                 </div>
-                <div className="bg-white/5 p-2 text-center rounded-md">
-                  <div className="font-mono text-[14px] font-bold text-white">{fmtCurrency(selectedEmployee.salary)}</div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider font-mono mt-0.5">Gaji pokok</div>
+                <div className="bg-white/5 p-2 text-center rounded-lg">
+                  <div className="font-mono text-[13.5px] font-bold text-white tabular-nums">{fmtCurrency(selectedEmployee.salary)}</div>
+                  <div className="text-[10px] text-white/60 uppercase tracking-wider font-mono mt-0.5">Gaji pokok</div>
                 </div>
               </div>
             </div>

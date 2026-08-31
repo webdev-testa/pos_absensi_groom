@@ -31,10 +31,10 @@ export function AttentionNeeded({ attentionItems }: AttentionNeededProps) {
           attentionItems.map((a, i) => {
             const c = AV_COLORS[i % AV_COLORS.length];
             const badgeClasses = 
-              a.type === 'red' ? 'bg-[#FEE2E2] text-[#991B1B] border border-[#FECACA]' :
-              a.type === 'amber' ? 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]' :
-              a.type === 'purple' ? 'bg-[#F5F3FF] text-[#5B21B6] border border-[#DDD6FE]' :
-              'bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]';
+              a.type === 'red' ? 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60' :
+              a.type === 'amber' ? 'bg-amber-50 text-amber-900 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/60' :
+              a.type === 'purple' ? 'bg-purple-50 text-purple-900 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/60' :
+              'bg-blue-50 text-blue-900 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/60';
 
             return (
               <Link to={a.link} key={i} className="flex items-center gap-3 px-5 py-[11px] border-b border-border/60 last:border-b-0 hover:bg-surface-soft/60 transition-colors cursor-pointer block">

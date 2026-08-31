@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react'
-import { usePosStore } from '@/data/pos-store'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { posService } from '@/services/posService'
 import {
   NAFSU_MAKAN_OPTIONS,
   MINUM_OPTIONS,
   FESES_OPTIONS,
   URINASI_OPTIONS,
 } from '@/constants/pos.constants'
-import type { Booking, DailyReport } from '@/types/pos'
+import type { Booking, DailyReport, Pengaturan } from '@/types/pos'
+import { toast } from 'sonner'
 
 export interface DailyReportFormData {
   nafsu_makan: string
@@ -18,8 +20,19 @@ export interface DailyReportFormData {
   foto_url: string
 }
 
+const DEFAULT_PENGATURAN: Pengaturan = {
+  id: 1,
+  nama_usaha: 'Dr. Meow Cat Hotel & Care',
+  no_wa_usaha: '081234567890',
+  alamat_usaha: 'Jl. Ahmad Yani No. 45, Jakarta Selatan',
+  nama_bank: 'BCA (Bank Central Asia)',
+  no_rekening: '8735091234',
+  atas_nama_rekening: 'Dr. Meow Cat Clinic',
+  qris_nmid: 'ID1020304050607',
+}
+
 export function useDailyReport() {
-  const store = usePosStore()
+  const queryClient = useQueryClient()
   const today = new Date().toISOString().split('T')[0]
 
   const [filter, setFilter] = useState<'all' | 'unreported' | 'reported'>('all')
@@ -40,10 +53,23 @@ export function useDailyReport() {
     foto_url: '',
   })
 
-  // Full active bookings with today's report
+  // Fetch active bookings from Supabase
+  const { data: allBookings = [], isLoading } = useQuery<Booking[]>({
+    queryKey: ['pos_bookings'],
+    queryFn: () => posService.fetchBookings(),
+    staleTime: 1000 * 30,
+  })
+
+  // Fetch settings from Supabase
+  const { data: pengaturan = DEFAULT_PENGATURAN } = useQuery<Pengaturan>({
+    queryKey: ['pos_pengaturan'],
+    queryFn: () => posService.fetchPengaturan(),
+    staleTime: 1000 * 60 * 5,
+  })
+
   const activeBookings = useMemo(() => {
-    return store.getFullBookings().filter(b => b.status === 'aktif')
-  }, [store.bookings, store.cats, store.owners, store.dailyReports])
+    return allBookings.filter(b => b.status === 'aktif')
+  }, [allBookings])
 
   const filteredBookings = useMemo(() => {
     if (filter === 'unreported') {
@@ -89,30 +115,44 @@ export function useDailyReport() {
     setIsFormOpen(false)
   }
 
-  // Save report
-  const saveReport = (): DailyReport | null => {
-    if (!selectedBooking) return null
+  // Mutation for saving daily report
+  const saveReportMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedBooking) throw new Error('Tidak ada booking yang dipilih')
 
-    const report: DailyReport = {
-      id: `rep-${Date.now()}`,
-      booking_id: selectedBooking.id,
-      cat_id: selectedBooking.cat_id,
-      tanggal: today,
-      nafsu_makan: formData.nafsu_makan,
-      minum: formData.minum,
-      feses: formData.feses,
-      urinasi: formData.urinasi,
-      kondisi_umum: formData.kondisi_umum || undefined,
-      keterangan: formData.keterangan || undefined,
-      foto_url: formData.foto_url || undefined,
-      created_at: new Date().toISOString(),
-    }
+      const reportPayload = {
+        booking_id: selectedBooking.id,
+        cat_id: selectedBooking.cat_id,
+        tanggal: today,
+        nafsu_makan: formData.nafsu_makan,
+        minum: formData.minum,
+        feses: formData.feses,
+        urinasi: formData.urinasi,
+        kondisi_umum: formData.kondisi_umum || undefined,
+        keterangan: formData.keterangan || undefined,
+        foto_url: formData.foto_url || undefined,
+      }
 
-    store.upsertDailyReport(report)
-    setSavedReport(report)
-    setIsFormOpen(false)
-    setIsWaModalOpen(true)
-    return report
+      return posService.upsertDailyReport(reportPayload)
+    },
+    onSuccess: (saved) => {
+      setSavedReport(saved)
+      queryClient.invalidateQueries({ queryKey: ['pos_bookings'] })
+      if (selectedBooking) {
+        queryClient.invalidateQueries({ queryKey: ['pos_booking', selectedBooking.id] })
+      }
+      setIsFormOpen(false)
+      setIsWaModalOpen(true)
+      toast.success(`Laporan harian untuk ${selectedBooking?.cat?.nama || 'kucing'} berhasil disimpan!`)
+    },
+    onError: (err: any) => {
+      console.error('Error saving daily report:', err)
+      toast.error(err.message || 'Gagal menyimpan laporan harian')
+    },
+  })
+
+  const saveReport = async () => {
+    return saveReportMutation.mutateAsync()
   }
 
   return {
@@ -131,6 +171,8 @@ export function useDailyReport() {
     savedReport,
     isWaModalOpen,
     setIsWaModalOpen,
-    pengaturan: store.pengaturan,
+    pengaturan,
+    isLoading,
+    isSaving: saveReportMutation.isPending,
   }
 }

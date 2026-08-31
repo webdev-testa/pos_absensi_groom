@@ -43,7 +43,7 @@ export function AttendanceTable({
         </div>
         <button 
           onClick={onExportClick}
-          className="bg-card border border-border hover:border-[#C8C2B8] hover:text-foreground text-muted-foreground rounded-lg px-3.5 py-1.5 text-[13px] font-medium flex items-center gap-2 transition-all shadow-xs cursor-pointer"
+          className="bg-card border border-border hover:border-foreground/20 hover:text-foreground text-muted-foreground rounded-xl px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all shadow-xs cursor-pointer h-10"
         >
           <Download className="w-4 h-4" />
           Export
@@ -51,7 +51,7 @@ export function AttendanceTable({
       </div>
 
       {/* FILTERS */}
-      <div className="flex flex-wrap gap-2 items-center p-3.5 px-5 border-b border-border bg-surface-soft">
+      <div className="flex flex-wrap gap-2.5 items-center p-3.5 px-5 border-b border-border bg-surface-soft">
         <div className="relative flex-1 min-w-[160px] max-w-[260px]">
           <Search className="w-4 h-4 text-muted-foreground/60 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -59,18 +59,13 @@ export function AttendanceTable({
             placeholder="Cari karyawan..."
             value={searchQ}
             onChange={(e) => setSearchQ(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-card border border-border rounded-lg text-[13px] outline-none focus:border-primary text-foreground placeholder:text-muted-foreground/50 transition-colors"
+            className="w-full pl-9 pr-3 h-10 bg-card border border-border rounded-xl text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 text-foreground placeholder:text-muted-foreground/50 transition-colors shadow-xs"
           />
         </div>
         <select
           value={deptFilter}
           onChange={(e) => setDeptFilter(e.target.value)}
-          className="bg-card border border-border rounded-lg pl-3 pr-8 py-2 text-[13px] text-foreground outline-none appearance-none cursor-pointer focus:border-primary transition-colors"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235C6B73' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "right 8px center",
-          }}
+          className="bg-card border border-border rounded-xl pl-3 pr-8 h-10 text-sm text-foreground outline-none cursor-pointer focus:border-ring focus:ring-2 focus:ring-ring/20 transition-colors shadow-xs"
         >
           <option value="all">Semua posisi</option>
           <option value="dokter">Dokter Hewan</option>
@@ -79,22 +74,22 @@ export function AttendanceTable({
           <option value="kasir">Kasir</option>
           <option value="admin">Admin</option>
         </select>
-        <div className="flex bg-surface-soft p-[3px] rounded-lg ml-auto border border-border/60">
+        <div className="flex bg-card p-[3px] rounded-xl ml-auto border border-border shadow-xs">
           <button
             onClick={() => setActiveTab("today")}
-            className={`px-3 py-1.5 rounded-md text-[12.5px] transition-all cursor-pointer ${activeTab === "today" ? "bg-card text-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-sans transition-all cursor-pointer ${activeTab === "today" ? "bg-primary text-primary-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-surface-soft"}`}
           >
             Hari ini
           </button>
           <button
             onClick={() => setActiveTab("week")}
-            className={`px-3 py-1.5 rounded-md text-[12.5px] transition-all cursor-pointer ${activeTab === "week" ? "bg-card text-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-sans transition-all cursor-pointer ${activeTab === "week" ? "bg-primary text-primary-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-surface-soft"}`}
           >
             Minggu ini
           </button>
           <button
             onClick={() => setActiveTab("month")}
-            className={`px-3 py-1.5 rounded-md text-[12.5px] transition-all cursor-pointer ${activeTab === "month" ? "bg-card text-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-sans transition-all cursor-pointer ${activeTab === "month" ? "bg-primary text-primary-foreground font-semibold shadow-xs" : "text-muted-foreground hover:text-foreground hover:bg-surface-soft"}`}
           >
             Bulan ini
           </button>
@@ -239,7 +234,7 @@ export function AttendanceTable({
                     </td>
                     <td className="px-4 py-3">
                       {record.clock_in_time ? (
-                        <div className="w-8 h-8 rounded-lg bg-surface-soft border border-border flex items-center justify-center text-muted-foreground hover:border-[#C8C2B8] hover:scale-105 transition-all">
+                        <div className="w-8 h-8 rounded-lg bg-surface-soft border border-border flex items-center justify-center text-muted-foreground hover:border-foreground/30 hover:scale-105 transition-all">
                           <ImageIcon className="w-4 h-4" />
                         </div>
                       ) : (
@@ -252,10 +247,10 @@ export function AttendanceTable({
                           e.stopPropagation();
                           toggleFlag(record.id, record.is_flagged);
                         }}
-                        className={`px-2.5 py-1 rounded-md text-[11.5px] font-medium border transition-colors whitespace-nowrap cursor-pointer ${
+                        className={`px-2.5 py-1 rounded-lg text-[11.5px] font-medium border transition-colors whitespace-nowrap cursor-pointer ${
                           record.is_flagged
-                            ? "bg-[#FEE2E2] border-[#FECACA] text-[#991B1B]"
-                            : "bg-card border-border text-muted-foreground hover:bg-[#FEE2E2] hover:border-[#FECACA] hover:text-[#991B1B] opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            ? "bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/60 dark:border-rose-800/60 dark:text-rose-300"
+                            : "bg-card border-border text-muted-foreground hover:bg-rose-50 hover:border-rose-200 hover:text-rose-800 dark:hover:bg-rose-950/60 dark:hover:border-rose-800/60 dark:hover:text-rose-300 opacity-0 group-hover:opacity-100 focus:opacity-100"
                         }`}
                       >
                         {record.is_flagged ? "⚑ Flagged" : "⚐ Flag"}

@@ -39,9 +39,9 @@ export function PayrollFilters({
   return (
     <div className="flex items-center gap-[10px] flex-wrap">
       <div className="relative flex-1 min-w-[200px] max-w-[300px]">
-        <Search className="absolute left-[11px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/60" />
+        <Search className="absolute left-[11px] top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60" />
         <Input 
-          className="pl-[34px] bg-card border-border rounded-lg text-[13px] h-[38px] text-foreground placeholder:text-muted-foreground/50 shadow-xs" 
+          className="pl-[34px] bg-card border-border rounded-xl text-sm h-10 text-foreground placeholder:text-muted-foreground/50 shadow-xs" 
           placeholder="Cari nama atau ID staf..." 
           value={searchQ}
           onChange={e => setSearchQ(e.target.value)}
@@ -49,7 +49,7 @@ export function PayrollFilters({
       </div>
 
       <Select value={deptFilter} onValueChange={setDeptFilter}>
-        <SelectTrigger className="w-[160px] bg-card border-border rounded-lg h-[38px] text-[13px] text-foreground shadow-xs">
+        <SelectTrigger className="w-[160px] bg-card border-border rounded-xl h-10 text-sm text-foreground shadow-xs">
           <SelectValue placeholder="Semua Divisi" />
         </SelectTrigger>
         <SelectContent>
@@ -60,12 +60,12 @@ export function PayrollFilters({
         </SelectContent>
       </Select>
 
-      <div className="flex gap-[3px] bg-card border border-border rounded-lg p-[3px] shadow-xs">
+      <div className="flex gap-[3px] bg-card border border-border rounded-xl p-[3px] shadow-xs">
         {(['all', 'draft', 'paid', 'not_generated'] as const).map(s => (
           <button
             key={s}
             type="button"
-            className={`px-3 py-1.5 rounded-md text-[12px] transition-all font-sans border-none cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs transition-all font-sans border-none cursor-pointer ${
               statusFilter === s 
                 ? 'bg-primary text-primary-foreground font-semibold shadow-xs' 
                 : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft'
@@ -81,7 +81,7 @@ export function PayrollFilters({
         <Button 
           onClick={() => markAllPaidMutation.mutate()}
           disabled={markAllPaidMutation.isPending}
-          className="ml-auto bg-[#10B981] hover:bg-[#059669] text-white border-none rounded-lg h-[38px] text-[13px] font-semibold cursor-pointer shadow-xs"
+          className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white border-none rounded-xl h-10 text-sm font-semibold cursor-pointer shadow-xs"
         >
           {markAllPaidMutation.isPending ? (
             <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />

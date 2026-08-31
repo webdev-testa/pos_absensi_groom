@@ -27,7 +27,12 @@ export default function LoginPage() {
       navigate(from, { replace: true })
       return
     }
-    navigate('/admin/dashboard', { replace: true })
+    // POS staff (admin) lands on POS dashboard, superadmin on HR dashboard
+    if (user?.role === 'admin') {
+      navigate('/admin/pos', { replace: true })
+    } else {
+      navigate('/admin/dashboard', { replace: true })
+    }
   }
 
   const handleLogin = async (e?: React.FormEvent) => {
@@ -90,7 +95,7 @@ export default function LoginPage() {
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
-              className="w-full h-11 px-3.5 rounded-xl border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary transition-all"
+              className="w-full h-11 px-3.5 rounded-xl border border-input bg-card text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus:border-ring transition-all"
             />
           </div>
 
@@ -106,13 +111,13 @@ export default function LoginPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full h-11 pl-3.5 pr-10 rounded-xl border border-border bg-white text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus:border-primary transition-all"
+                className="w-full h-11 pl-3.5 pr-10 rounded-xl border border-input bg-card text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus:border-ring transition-all"
               />
               <button 
                 type="button"
                 aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary rounded p-1 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-1 transition-colors cursor-pointer"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -120,7 +125,7 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-xs text-[#991B1B]">
+            <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-xs text-destructive dark:text-rose-400 font-medium">
               {error}
             </div>
           )}
@@ -128,7 +133,7 @@ export default function LoginPage() {
           <button 
             type="submit" 
             disabled={loading || !email || !password}
-            className="w-full h-11 mt-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer shadow-xs"
+            className="w-full h-11 mt-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : 'Masuk'}
           </button>

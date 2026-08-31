@@ -40,12 +40,12 @@ export function StrukPdf({
 
   return (
     <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-white border border-border shadow-2xl p-6 rounded-2xl">
+      <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] bg-card text-foreground border border-border shadow-2xl p-6 rounded-2xl">
         <DialogHeader className="text-center pb-2 border-b border-border/60">
-          <DialogTitle className="text-base font-heading font-bold text-ink">
+          <DialogTitle className="text-base font-heading font-bold text-foreground">
             Pratinjau Struk Penitipan
           </DialogTitle>
-          <DialogDescription className="text-xs text-ink-muted">
+          <DialogDescription className="text-xs text-muted-foreground">
             Struk resmi Dr. Meow Cat Hotel untuk pelanggan
           </DialogDescription>
         </DialogHeader>
@@ -53,38 +53,38 @@ export function StrukPdf({
         {/* Printable Struk Body */}
         <div
           id="struk-print-area"
-          className="p-5 bg-[#FAF8F5] border border-hairline rounded-xl text-xs font-mono text-ink space-y-3 shadow-inner"
+          className="p-5 bg-surface-soft border border-border rounded-xl text-xs font-mono text-foreground space-y-3 shadow-inner"
         >
           {/* Clinic Header */}
-          <div className="text-center pb-3 border-b border-dashed border-ink/20">
+          <div className="text-center pb-3 border-b border-dashed border-border">
             <div className="text-lg">🐾</div>
             <div className="font-bold text-sm uppercase tracking-wide">
               {pengaturan.nama_usaha}
             </div>
-            <div className="text-[10px] text-ink-muted">
+            <div className="text-[10px] text-muted-foreground">
               {pengaturan.alamat_usaha || 'Jakarta'}
             </div>
-            <div className="text-[10px] text-ink-muted">
+            <div className="text-[10px] text-muted-foreground">
               WA: {pengaturan.no_wa_usaha || '-'}
             </div>
           </div>
 
           {/* Struk Metadata */}
-          <div className="text-[11px] space-y-1 pb-2 border-b border-dashed border-ink/20">
+          <div className="text-[11px] space-y-1 pb-2 border-b border-dashed border-border">
             <div className="flex justify-between">
-              <span className="text-ink-muted">No. Booking:</span>
+              <span className="text-muted-foreground">No. Booking:</span>
               <span className="font-bold">{booking.id}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Tanggal Cetak:</span>
+              <span className="text-muted-foreground">Tanggal Cetak:</span>
               <span>{formatTanggal(todayStr)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Owner:</span>
+              <span className="text-muted-foreground">Owner:</span>
               <span className="font-bold">{booking.owner?.nama}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Kucing:</span>
+              <span className="text-muted-foreground">Kucing:</span>
               <span className="font-bold">
                 {booking.cat?.nama} ({booking.cat?.ras || 'Domestik'})
               </span>
@@ -92,17 +92,17 @@ export function StrukPdf({
           </div>
 
           {/* Stay Info */}
-          <div className="text-[11px] space-y-1 pb-2 border-b border-dashed border-ink/20">
+          <div className="text-[11px] space-y-1 pb-2 border-b border-dashed border-border">
             <div className="flex justify-between">
-              <span className="text-ink-muted">Paket:</span>
+              <span className="text-muted-foreground">Paket:</span>
               <span>{booking.paket}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Check-In:</span>
+              <span className="text-muted-foreground">Check-In:</span>
               <span>{formatTanggal(booking.tanggal_masuk)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Check-Out:</span>
+              <span className="text-muted-foreground">Check-Out:</span>
               <span>
                 {formatTanggal(
                   booking.tanggal_keluar_aktual || booking.tanggal_keluar_estimasi
@@ -110,7 +110,7 @@ export function StrukPdf({
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-ink-muted">Durasi:</span>
+              <span className="text-muted-foreground">Durasi:</span>
               <span className="font-bold">{billing.jumlah_malam} Malam</span>
             </div>
           </div>
@@ -121,34 +121,34 @@ export function StrukPdf({
               <span>
                 Sewa Kamar ({billing.jumlah_malam}x Rp {formatRupiah(booking.harga_per_hari)})
               </span>
-              <span>Rp {formatRupiah(billing.subtotal)}</span>
+              <span className="tabular-nums">Rp {formatRupiah(billing.subtotal)}</span>
             </div>
 
             {billing.total_biaya_tambahan > 0 && (
-              <div className="flex justify-between text-amber-900">
+              <div className="flex justify-between text-amber-900 dark:text-amber-300">
                 <span>Biaya Tambahan</span>
-                <span>+ Rp {formatRupiah(billing.total_biaya_tambahan)}</span>
+                <span className="tabular-nums">+ Rp {formatRupiah(billing.total_biaya_tambahan)}</span>
               </div>
             )}
 
-            <div className="flex justify-between font-bold pt-1 border-t border-ink/20 text-xs">
+            <div className="flex justify-between font-bold pt-1 border-t border-border text-xs">
               <span>TOTAL</span>
-              <span>Rp {formatRupiah(billing.total)}</span>
+              <span className="tabular-nums">Rp {formatRupiah(billing.total)}</span>
             </div>
 
-            <div className="flex justify-between text-emerald-700">
+            <div className="flex justify-between text-emerald-800 dark:text-emerald-300 font-semibold">
               <span>DP Dibayar</span>
-              <span>- Rp {formatRupiah(billing.total_dp)}</span>
+              <span className="tabular-nums">- Rp {formatRupiah(billing.total_dp)}</span>
             </div>
 
-            <div className="flex justify-between font-bold text-xs pt-1 border-t border-dashed border-ink/20">
+            <div className="flex justify-between font-bold text-xs pt-1 border-t border-dashed border-border">
               <span>SISA / LUNAS</span>
-              <span>Rp {formatRupiah(billing.sisa_bayar)}</span>
+              <span className="tabular-nums">Rp {formatRupiah(billing.sisa_bayar)}</span>
             </div>
           </div>
 
           {/* Footer Note */}
-          <div className="text-center pt-3 border-t border-dashed border-ink/20 text-[10px] text-ink-muted">
+          <div className="text-center pt-3 border-t border-dashed border-border text-[10px] text-muted-foreground">
             <p>Terima kasih atas kepercayaan Anda!</p>
             <p className="mt-0.5">Semoga anabul selalu sehat & ceria 🐱</p>
           </div>
@@ -159,14 +159,14 @@ export function StrukPdf({
             type="button"
             variant="outline"
             onClick={onClose}
-            className="text-xs h-9 cursor-pointer flex-1"
+            className="text-xs h-10 cursor-pointer flex-1 rounded-xl border-border"
           >
             Tutup
           </Button>
           <Button
             type="button"
             onClick={handlePrint}
-            className="text-xs h-9 px-4 bg-primary hover:bg-primary-hover text-white font-medium cursor-pointer flex-1 gap-1.5"
+            className="text-xs h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium cursor-pointer flex-1 gap-1.5 rounded-xl shadow-xs"
           >
             <Printer className="w-3.5 h-3.5" />
             Cetak / Download
