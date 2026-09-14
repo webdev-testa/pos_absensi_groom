@@ -96,3 +96,52 @@ export interface BillingCalculation {
   total: number
   sisa_bayar: number
 }
+
+// ─── Grooming Module Types ───
+
+export type GroomingStep = 'check_in' | 'bathing' | 'drying' | 'styling' | 'finishing' | 'done'
+export type GroomingStatus = 'antrian' | 'dikerjakan' | 'selesai' | 'dibatalkan' | 'dijemput'
+
+export interface GroomingSession {
+  id: string
+  owner_id: string
+  cat_id: string
+  paket: string
+  harga: number
+  kondisi_awal?: string
+  catatan?: string
+  tanggal: string
+  waktu_masuk: string
+  waktu_selesai?: string
+  estimasi_selesai?: string
+  status: GroomingStatus
+  current_step: GroomingStep
+  public_token: string
+  sudah_bayar: boolean
+  metode_bayar?: string
+  groomer_user_id?: string
+  groomer_name?: string
+  created_at: string
+  owner?: Owner
+  cat?: Cat
+  progress?: GroomingProgress[]
+}
+
+export interface GroomingProgress {
+  id: string
+  session_id: string
+  step: GroomingStep
+  catatan?: string
+  foto_url?: string
+  created_at: string
+}
+
+export interface PaketGrooming {
+  id: string
+  nama: string
+  harga: number
+  deskripsi?: string
+  durasi_estimasi?: number
+  aktif: boolean
+}
+

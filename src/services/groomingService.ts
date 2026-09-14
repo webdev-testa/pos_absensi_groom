@@ -1,0 +1,529 @@
+import { supabase } from '@/lib/supabase'
+import type {
+  GroomingSession,
+  GroomingProgress,
+  GroomingStep,
+  GroomingStatus,
+  PaketGrooming,
+} from '@/types/pos'
+import {
+  DEFAULT_PAKET_GROOMING,
+  DEMO_GROOMING_SESSIONS,
+} from '@/constants/grooming.constants'
+
+const posDb = () => supabase.schema('pos')
+
+const STORAGE_KEY_SESSIONS = 'dr_meow_grooming_sessions_cache'
+const STORAGE_KEY_PACKAGES = 'dr_meow_grooming_packages_cache'
+
+// Local storage fallback helpers for testing before SQL is executed in Supabase
+const getCachedSessions = (): GroomingSession[] => {
+  if (typeof window === 'undefined') return DEMO_GROOMING_SESSIONS
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_SESSIONS)
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(DEMO_GROOMING_SESSIONS))
+      return DEMO_GROOMING_SESSIONS
+    }
+    return JSON.parse(raw)
+  } catch {
+    return DEMO_GROOMING_SESSIONS
+  }
+}
+
+const saveCachedSessions = (sessions: GroomingSession[]) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessions))
+  } catch (e) {
+    console.error('Failed to cache grooming sessions:', e)
+  }
+}
+
+const getCachedPackages = (): PaketGrooming[] => {
+  if (typeof window === 'undefined') return DEFAULT_PAKET_GROOMING
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PACKAGES)
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_PACKAGES, JSON.stringify(DEFAULT_PAKET_GROOMING))
+      return DEFAULT_PAKET_GROOMING
+    }
+    return JSON.parse(raw)
+  } catch {
+    return DEFAULT_PAKET_GROOMING
+  }
+}
+
+const saveCachedPackages = (pkgs: PaketGrooming[]) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY_PACKAGES, JSON.stringify(pkgs))
+  } catch (e) {
+    console.error('Failed to cache grooming packages:', e)
+  }
+}
+
+export const groomingService = {
+  /**
+   * Fetch list of grooming sessions with optional date/status filter.
+   * Gracefully falls back to local cache/demo if Supabase tables haven't been created yet.
+   */
+  async fetchSessions(filter?: { date?: string; status?: string }): Promise<GroomingSession[]> {
+    try {
+      let query = posDb()
+        .from('grooming_sessions')
+        .select(`
+          *,
+          owner:owners(*),
+          cat:cats(*),
+          progress:grooming_progress(*)
+        `)
+        .order('created_at', { ascending: false })
+
+      if (filter?.date) query = query.eq('tanggal', filter.date)
+      if (filter?.status && filter.status !== 'all') query = query.eq('status', filter.status)
+
+      const { data, error } = await query
+
+      if (error) {
+        // Table not created yet or schema issue -> fallback to cache
+        console.warn('Supabase grooming_sessions not ready, using local state:', error.message)
+        let local = getCachedSessions()
+        if (filter?.status && filter.status !== 'all') {
+          local = local.filter(s => s.status === filter.status)
+        }
+        return local
+      }
+
+      const formatted = (data || []).map((s: any) => ({
+        ...s,
+        harga: Number(s.harga || 0),
+        progress: (s.progress || []).sort(
+          (a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        ),
+      }))
+
+      // Keep cache synced
+      saveCachedSessions(formatted)
+      return formatted
+    } catch (err) {
+      console.warn('fetchSessions fallback triggered:', err)
+      return getCachedSessions()
+    }
+  },
+
+  /**
+   * Fetch single session by ID
+   */
+  async fetchSessionById(id: string): Promise<GroomingSession | null> {
+    try {
+      const { data, error } = await posDb()
+        .from('grooming_sessions')
+        .select(`
+          *,
+          owner:owners(*),
+          cat:cats(*),
+          progress:grooming_progress(*)
+        `)
+        .eq('id', id)
+        .single()
+
+      if (error || !data) {
+        const cached = getCachedSessions().find(s => s.id === id)
+        return cached || null
+      }
+
+      return {
+        ...data,
+        harga: Number(data.harga || 0),
+        progress: (data.progress || []).sort(
+          (a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        ),
+      }
+    } catch {
+      const cached = getCachedSessions().find(s => s.id === id)
+      return cached || null
+    }
+  },
+
+  /**
+   * Fetch session report by public_token (Used by Customer Live Report).
+   * First tries RPC `pos.get_grooming_report`, then direct select, then local cache fallback.
+   */
+  async fetchReportByToken(token: string): Promise<{
+    session: GroomingSession
+    cat: any
+    progress: GroomingProgress[]
+  } | null> {
+    if (!token) return null
+
+    // 1. Try secure RPC function
+    try {
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_grooming_report', {
+        p_token: token,
+      })
+
+      if (!rpcError && rpcData?.session) {
+        return {
+          session: {
+            ...rpcData.session,
+            harga: Number(rpcData.session.harga || 0),
+          },
+          cat: rpcData.cat,
+          progress: rpcData.progress || [],
+        }
+      }
+    } catch (e) {
+      // Ignore and fallback
+    }
+
+    // 2. Try direct select from pos schema
+    try {
+      const { data: session, error } = await posDb()
+        .from('grooming_sessions')
+        .select(`
+          *,
+          cat:cats(*),
+          owner:owners(nama, no_wa),
+          progress:grooming_progress(*)
+        `)
+        .eq('public_token', token)
+        .single()
+
+      if (!error && session) {
+        return {
+          session: {
+            ...session,
+            harga: Number(session.harga || 0),
+          },
+          cat: session.cat,
+          progress: (session.progress || []).sort(
+            (a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          ),
+        }
+      }
+    } catch (e) {
+      // Ignore and fallback
+    }
+
+    // 3. Fallback to local demo cache (so user can view live report interface immediately)
+    const cached = getCachedSessions().find(s => s.public_token === token)
+    if (cached) {
+      return {
+        session: cached,
+        cat: cached.cat,
+        progress: cached.progress || [],
+      }
+    }
+
+    // Default to first demo if token contains 'demo'
+    if (token.includes('demo')) {
+      const first = DEMO_GROOMING_SESSIONS[0]
+      return {
+        session: first,
+        cat: first.cat,
+        progress: first.progress || [],
+      }
+    }
+
+    return null
+  },
+
+  /**
+   * Create a new grooming session at check-in
+   */
+  async createSession(payload: {
+    owner_id: string
+    cat_id: string
+    paket: string
+    harga: number
+    kondisi_awal?: string
+    catatan?: string
+    groomer_name?: string
+    estimasi_selesai?: string
+    sudah_bayar?: boolean
+    metode_bayar?: string
+  }): Promise<GroomingSession> {
+    const publicToken = 'grm-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36)
+    const today = new Date().toISOString().split('T')[0]
+
+    try {
+      const { data, error } = await posDb()
+        .from('grooming_sessions')
+        .insert({
+          owner_id: payload.owner_id,
+          cat_id: payload.cat_id,
+          paket: payload.paket,
+          harga: payload.harga,
+          kondisi_awal: payload.kondisi_awal || null,
+          catatan: payload.catatan || null,
+          tanggal: today,
+          waktu_masuk: new Date().toISOString(),
+          estimasi_selesai: payload.estimasi_selesai || null,
+          status: 'antrian',
+          current_step: 'check_in',
+          public_token: publicToken,
+          sudah_bayar: payload.sudah_bayar ?? false,
+          metode_bayar: payload.metode_bayar || null,
+          groomer_name: payload.groomer_name || null,
+        })
+        .select(`
+          *,
+          owner:owners(*),
+          cat:cats(*)
+        `)
+        .single()
+
+      if (!error && data) {
+        // Automatically insert the initial check-in progress
+        await posDb().from('grooming_progress').insert({
+          session_id: data.id,
+          step: 'check_in',
+          catatan: payload.kondisi_awal
+            ? `Check-in grooming. Kondisi awal: ${payload.kondisi_awal}`
+            : 'Check-in grooming.',
+        })
+
+        const full = await this.fetchSessionById(data.id)
+        if (full) return full
+      }
+    } catch (err) {
+      console.warn('Database write failed, storing session in local cache:', err)
+    }
+
+    // Local fallback creation
+    const newSession: GroomingSession = {
+      id: 'grm-local-' + Date.now(),
+      owner_id: payload.owner_id,
+      cat_id: payload.cat_id,
+      paket: payload.paket,
+      harga: payload.harga,
+      kondisi_awal: payload.kondisi_awal,
+      catatan: payload.catatan,
+      tanggal: today,
+      waktu_masuk: new Date().toISOString(),
+      estimasi_selesai: payload.estimasi_selesai,
+      status: 'antrian',
+      current_step: 'check_in',
+      public_token: publicToken,
+      sudah_bayar: payload.sudah_bayar ?? false,
+      metode_bayar: payload.metode_bayar,
+      groomer_name: payload.groomer_name,
+      created_at: new Date().toISOString(),
+      progress: [
+        {
+          id: 'prog-init-' + Date.now(),
+          session_id: 'grm-local-' + Date.now(),
+          step: 'check_in',
+          catatan: payload.kondisi_awal
+            ? `Check-in grooming. Kondisi awal: ${payload.kondisi_awal}`
+            : 'Check-in grooming.',
+          created_at: new Date().toISOString(),
+        },
+      ],
+    }
+
+    const current = getCachedSessions()
+    saveCachedSessions([newSession, ...current])
+    return newSession
+  },
+
+  /**
+   * Advance grooming step & status
+   */
+  async updateStep(
+    sessionId: string,
+    step: GroomingStep,
+    extra?: {
+      status?: GroomingStatus
+      catatan?: string
+      foto_url?: string
+    }
+  ): Promise<void> {
+    const isDone = step === 'done'
+    const newStatus: GroomingStatus = extra?.status
+      ? extra.status
+      : isDone
+      ? 'selesai'
+      : step === 'check_in'
+      ? 'antrian'
+      : 'dikerjakan'
+
+    const updatePayload: any = {
+      current_step: step,
+      status: newStatus,
+    }
+
+    if (isDone) {
+      updatePayload.waktu_selesai = new Date().toISOString()
+    }
+
+    try {
+      await posDb()
+        .from('grooming_sessions')
+        .update(updatePayload)
+        .eq('id', sessionId)
+
+      // Add progress history row
+      await posDb().from('grooming_progress').insert({
+        session_id: sessionId,
+        step,
+        catatan: extra?.catatan || null,
+        foto_url: extra?.foto_url || null,
+      })
+    } catch (e) {
+      console.warn('Update step db error, updating local cache:', e)
+    }
+
+    // Always update local cache so UI reacts instantly
+    const sessions = getCachedSessions().map(s => {
+      if (s.id === sessionId) {
+        const newProgress: GroomingProgress = {
+          id: 'prog-' + Date.now(),
+          session_id: sessionId,
+          step,
+          catatan: extra?.catatan,
+          foto_url: extra?.foto_url,
+          created_at: new Date().toISOString(),
+        }
+        return {
+          ...s,
+          current_step: step,
+          status: newStatus,
+          waktu_selesai: isDone ? new Date().toISOString() : s.waktu_selesai,
+          progress: [...(s.progress || []), newProgress],
+        }
+      }
+      return s
+    })
+    saveCachedSessions(sessions)
+  },
+
+  /**
+   * Mark pet as picked up by owner
+   */
+  async markPickedUp(sessionId: string): Promise<void> {
+    try {
+      await posDb()
+        .from('grooming_sessions')
+        .update({ status: 'dijemput' })
+        .eq('id', sessionId)
+    } catch (e) {
+      console.warn('DB error, updating local cache:', e)
+    }
+
+    const sessions = getCachedSessions().map(s =>
+      s.id === sessionId ? { ...s, status: 'dijemput' as GroomingStatus } : s
+    )
+    saveCachedSessions(sessions)
+  },
+
+  /**
+   * Upload grooming photo to Supabase Storage 'cat-photos' in 'grooming/{sessionId}/' folder.
+   * If storage fails (e.g. bucket config not yet updated), creates an inline data URL fallback.
+   */
+  async uploadGroomingPhoto(
+    file: File,
+    sessionId: string,
+    step: GroomingStep
+  ): Promise<string> {
+    try {
+      const ext = file.name.split('.').pop() || 'jpg'
+      const filePath = `grooming/${sessionId}/${step}-${Date.now()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('cat-photos')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+        })
+
+      if (!uploadError) {
+        const { data } = supabase.storage.from('cat-photos').getPublicUrl(filePath)
+        if (data?.publicUrl) return data.publicUrl
+      }
+    } catch (e) {
+      console.warn('Storage upload error, using local FileReader URL:', e)
+    }
+
+    // Fallback: Read file as Base64 Data URL so user can preview immediately
+    return new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.readAsDataURL(file)
+    })
+  },
+
+  /**
+   * Fetch grooming packages
+   */
+  async fetchPaketGrooming(): Promise<PaketGrooming[]> {
+    try {
+      const { data, error } = await posDb()
+        .from('paket_grooming')
+        .select('*')
+        .eq('aktif', true)
+        .order('harga', { ascending: true })
+
+      if (!error && data && data.length > 0) {
+        const formatted = data.map((p: any) => ({
+          ...p,
+          harga: Number(p.harga),
+        }))
+        saveCachedPackages(formatted)
+        return formatted
+      }
+    } catch (e) {
+      // Fallback
+    }
+
+    return getCachedPackages()
+  },
+
+  /**
+   * Add package
+   */
+  async addPaketGrooming(pkg: Omit<PaketGrooming, 'id'>): Promise<PaketGrooming> {
+    try {
+      const { data, error } = await posDb()
+        .from('paket_grooming')
+        .insert({
+          nama: pkg.nama,
+          harga: pkg.harga,
+          deskripsi: pkg.deskripsi || null,
+          durasi_estimasi: pkg.durasi_estimasi || 60,
+          aktif: true,
+        })
+        .select()
+        .single()
+
+      if (!error && data) {
+        return { ...data, harga: Number(data.harga) }
+      }
+    } catch (e) {
+      // Fallback
+    }
+
+    const newPkg: PaketGrooming = {
+      ...pkg,
+      id: 'pkg-local-' + Date.now(),
+    }
+    const current = getCachedPackages()
+    saveCachedPackages([...current, newPkg])
+    return newPkg
+  },
+
+  /**
+   * Update package
+   */
+  async updatePaketGrooming(id: string, partial: Partial<PaketGrooming>): Promise<void> {
+    try {
+      await posDb().from('paket_grooming').update(partial).eq('id', id)
+    } catch (e) {
+      // Fallback
+    }
+
+    const current = getCachedPackages().map(p => (p.id === id ? { ...p, ...partial } : p))
+    saveCachedPackages(current)
+  },
+}

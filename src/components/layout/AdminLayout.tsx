@@ -14,7 +14,9 @@ import {
   Cat,
   PlusCircle,
   ClipboardList,
-  Settings
+  Settings,
+  Scissors,
+  Sparkles
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { supabase } from '@/lib/supabase'
@@ -153,6 +155,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <NavItem to="/admin/pos/laporan" icon={ClipboardList} label="Laporan Harian" onClick={() => setMobileOpen(false)} />
         <NavItem to="/admin/pos/check-out" icon={LogOut} label="Check-Out" onClick={() => setMobileOpen(false)} />
         <NavItem to="/admin/pos/pengaturan" icon={Settings} label="Pengaturan POS" onClick={() => setMobileOpen(false)} />
+
+        <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-brand-orange font-semibold shrink-0">
+          Grooming Kucing
+        </div>
+        <NavItem 
+          to="/admin/grooming" 
+          icon={Scissors} 
+          label="Dashboard Grooming" 
+          activeMatcher={pathname => pathname === '/admin/grooming' || pathname.startsWith('/admin/grooming/')} 
+          onClick={() => setMobileOpen(false)} 
+        />
+        <NavItem to="/admin/grooming/new" icon={PlusCircle} label="Grooming Baru" onClick={() => setMobileOpen(false)} />
+        <NavItem to="/groomer" icon={Sparkles} label="Workstation HP" onClick={() => setMobileOpen(false)} />
+        <NavItem to="/admin/grooming/pengaturan" icon={Settings} label="Paket Grooming" onClick={() => setMobileOpen(false)} />
 
         <div className="mt-auto px-6 pt-5 border-t border-sidebar-border shrink-0">
           <button

@@ -8,7 +8,6 @@ import { PosPaymentModal } from '@/components/pos/PosPaymentModal'
 import { WaTemplateModal } from '@/components/pos/WaTemplateModal'
 import { StrukPdf } from '@/components/pos/StrukPdf'
 import { ArrowLeft, Sparkles, RefreshCw } from 'lucide-react'
-import { toast } from 'sonner'
 import type { PaymentSuccessResult } from '@/components/pos/PosPaymentModal'
 
 export default function CheckIn() {
