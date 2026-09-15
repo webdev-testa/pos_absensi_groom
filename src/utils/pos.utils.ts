@@ -50,20 +50,28 @@ export const hitungMalam = (masuk: string, keluar: string): number => {
   return diffDays > 0 ? diffDays : 1
 }
 
-// Copy text to clipboard
 export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
-    await navigator.clipboard.writeText(text)
-    return true
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
   } catch {
-    // Fallback for older browsers
+    // Continue to textarea fallback
+  }
+
+  try {
     const textarea = document.createElement('textarea')
     textarea.value = text
     document.body.appendChild(textarea)
     textarea.select()
-    const successful = document.execCommand('copy')
-    document.body.removeChild(textarea)
+    const successful = typeof document.execCommand === 'function' ? document.execCommand('copy') : false
+    if (textarea.parentNode) {
+      document.body.removeChild(textarea)
+    }
     return successful
+  } catch {
+    return false
   }
 }
 

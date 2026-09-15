@@ -787,16 +787,19 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
               </Button>
               <Button
                 type="button"
+                disabled={checkIn.isSubmitting}
                 onClick={() => {
+                  if (checkIn.isSubmitting) return
                   if (onInitiateCheckIn) {
                     onInitiateCheckIn()
                   } else {
                     submitCheckIn()
                   }
                 }}
-                className="text-xs h-11 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer rounded-xl"
+                className="text-xs h-11 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer rounded-xl disabled:opacity-50"
               >
-                <CheckCircle2 className="w-4 h-4 mr-1.5" /> Konfirmasi & Simpan Check-In
+                <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                {checkIn.isSubmitting ? 'Menyimpan...' : 'Konfirmasi & Simpan Check-In'}
               </Button>
             </div>
           </Card>

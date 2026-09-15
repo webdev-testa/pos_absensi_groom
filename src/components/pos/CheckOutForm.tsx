@@ -249,8 +249,12 @@ export function CheckOutForm({
                   <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="number"
+                    min={0}
                     value={pelunasanAmount}
-                    onChange={e => setCustomPelunasan(Number(e.target.value))}
+                    onChange={e => {
+                      const val = Number(e.target.value)
+                      setCustomPelunasan(val < 0 ? 0 : val)
+                    }}
                     className="pl-8 h-10 text-xs sm:text-sm font-mono font-bold text-primary bg-card border-input rounded-xl tabular-nums"
                   />
                 </div>
@@ -292,13 +296,14 @@ export function CheckOutForm({
             extraCharges={extraCharges}
           />
 
+          {/* Tombol Aksi Check-Out */}
           <Button
             type="button"
             onClick={() =>
               onConfirmCheckout({
                 checkoutDate,
                 extraCharges,
-                pelunasanAmount,
+                pelunasanAmount: Math.max(0, pelunasanAmount),
                 metodeBayar,
               })
             }

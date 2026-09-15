@@ -11,6 +11,7 @@ export interface PayrollItem {
     kasbon_limit: number;
     shift: string;
     address: string;
+    jabatan?: string | null;
   };
   payrollId: string | null;
   basicSalary: number;

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { posService } from '@/services/posService'
 import { groomingService } from '@/services/groomingService'
+import { supabase } from '@/lib/supabase'
 import type { Owner, Cat, PaketGrooming, GroomingSession } from '@/types/pos'
 import { toast } from 'sonner'
 
@@ -148,17 +149,61 @@ export function useGroomingForm() {
           throw new Error('Nama pemilik dan Nomor WhatsApp wajib diisi!')
         }
         try {
-          const owner = await posService.searchOwners(newOwnerData.no_wa)
-          if (owner.length > 0) {
-            ownerId = owner[0].id
+          const { data: ownerRecord, error: ownerErr } = await supabase
+            .schema('pos')
+            .from('owners')
+            .upsert(
+              {
+                nama: newOwnerData.nama.trim(),
+                no_wa: newOwnerData.no_wa.trim(),
+                email: newOwnerData.email || null,
+                alamat: newOwnerData.alamat || null,
+              },
+              { onConflict: 'no_wa' }
+            )
+            .select()
+            .single()
+
+          if (!ownerErr && ownerRecord) {
+            ownerId = ownerRecord.id
           }
         } catch {
-          // ignore
+          // If offline/table not ready, fall back
         }
       }
 
       // 2. Resolve or create Cat
       let catId = selectedCat?.id
+      if (!catId) {
+        if (!newCatData.nama.trim()) {
+          throw new Error('Nama kucing wajib diisi!')
+        }
+        try {
+          if (ownerId && !ownerId.startsWith('own-new-')) {
+            const { data: catRecord, error: catErr } = await supabase
+              .schema('pos')
+              .from('cats')
+              .insert({
+                owner_id: ownerId,
+                nama: newCatData.nama.trim(),
+                ras: newCatData.ras || null,
+                jenis_kelamin: newCatData.jenis_kelamin || null,
+                warna: newCatData.warna || null,
+                umur_estimasi: newCatData.umur_estimasi || null,
+                catatan_kesehatan: newCatData.catatan_kesehatan || null,
+                foto_url: newCatData.foto_url || null,
+              })
+              .select()
+              .single()
+
+            if (!catErr && catRecord) {
+              catId = catRecord.id
+            }
+          }
+        } catch {
+          // If offline/table not ready, fall back
+        }
+      }
 
       // Calculate estimated finish time
       const estTime = new Date(Date.now() + (formData.estimasiMenit || 60) * 60 * 1000).toISOString()

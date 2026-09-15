@@ -1,5 +1,6 @@
 import type { GroomingSession, GroomingStep, GroomingStatus } from '@/types/pos'
 import {
+  GROOMING_STEPS,
   GROOMING_STEP_LABELS,
   GROOMING_STEP_EMOJI,
   GROOMING_STATUS_LABELS,
@@ -99,6 +100,47 @@ Pantau foto & live report terbaru di sini:
 }
 
 /**
+ * Helper to determine the next step in the grooming process.
+ */
+export const getNextGroomingStep = (currentStep: GroomingStep): GroomingStep | null => {
+  const idx = GROOMING_STEPS.indexOf(currentStep)
+  if (idx === -1 || idx === GROOMING_STEPS.length - 1) return null
+  return GROOMING_STEPS[idx + 1]
+}
+
+/**
+ * Calculates progress percentage based on current step.
+ */
+export const getGroomingProgressPercent = (step: GroomingStep): number => {
+  switch (step) {
+    case 'check_in':
+      return 15
+    case 'bathing':
+      return 35
+    case 'drying':
+      return 60
+    case 'styling':
+      return 80
+    case 'finishing':
+      return 95
+    case 'done':
+      return 100
+    default:
+      return 0
+  }
+}
+
+/**
+ * Checks if a step has already been completed relative to the current step.
+ */
+export const isStepCompleted = (targetStep: GroomingStep, currentStep: GroomingStep): boolean => {
+  const targetIdx = GROOMING_STEPS.indexOf(targetStep)
+  const currentIdx = GROOMING_STEPS.indexOf(currentStep)
+  if (targetIdx === -1 || currentIdx === -1) return false
+  return targetIdx <= currentIdx
+}
+
+/**
  * Get step badge color scheme and icon indicator
  */
 export const getStepBadgeConfig = (step: GroomingStep) => {
@@ -139,6 +181,12 @@ export const getStepBadgeConfig = (step: GroomingStep) => {
         color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900',
         dot: 'bg-emerald-500',
       }
+    default:
+      return {
+        label: (step && GROOMING_STEP_LABELS[step]) || 'Unknown',
+        color: 'bg-neutral-500/10 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800',
+        dot: 'bg-neutral-500',
+      }
   }
 }
 
@@ -172,6 +220,11 @@ export const getStatusBadgeConfig = (status: GroomingStatus) => {
         label: GROOMING_STATUS_LABELS.dibatalkan,
         color: 'bg-destructive/15 text-destructive border-destructive/30',
       }
+    default:
+      return {
+        label: (status && GROOMING_STATUS_LABELS[status]) || 'Unknown',
+        color: 'bg-neutral-500/15 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-800',
+      }
   }
 }
 
@@ -179,9 +232,18 @@ export const getStatusBadgeConfig = (status: GroomingStatus) => {
  * Helper to open WhatsApp directly using wa.me link
  */
 export const openWhatsApp = (phone: string, text: string) => {
+  if (!phone) {
+    console.warn('Nomor WhatsApp tidak disediakan.')
+    return
+  }
   const cleanPhone = phone.replace(/\D/g, '')
+  if (cleanPhone.length < 8) {
+    console.warn('Nomor WhatsApp tidak valid (terlalu pendek):', phone)
+    return
+  }
   const formattedPhone = cleanPhone.startsWith('0') ? `62${cleanPhone.slice(1)}` : cleanPhone
   const encodedText = encodeURIComponent(text)
   const url = `https://wa.me/${formattedPhone}?text=${encodedText}`
-  window.open(url, '_blank')
+  window.open(url, '_blank', 'noopener,noreferrer')
 }
+

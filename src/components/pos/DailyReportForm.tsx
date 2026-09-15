@@ -56,6 +56,9 @@ export function DailyReportForm({
   const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (photoPreview && photoPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(photoPreview)
+      }
       const localUrl = URL.createObjectURL(file)
       setPhotoPreview(localUrl)
       try {
@@ -124,6 +127,10 @@ export function DailyReportForm({
         <form
           onSubmit={e => {
             e.preventDefault()
+            if (isUploading) {
+              toast.error('Harap tunggu hingga proses unggah foto selesai.')
+              return
+            }
             onSave()
           }}
           className="space-y-5 pt-1"
@@ -324,10 +331,11 @@ export function DailyReportForm({
             </Button>
             <Button
               type="submit"
-              className="text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer gap-1.5 rounded-xl"
+              disabled={isUploading}
+              className="text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer gap-1.5 rounded-xl disabled:opacity-50"
             >
               <Save className="w-3.5 h-3.5" />
-              Simpan & Buka WhatsApp Modal
+              {isUploading ? 'Mengunggah foto...' : 'Simpan & Buka WhatsApp Modal'}
             </Button>
           </div>
         </form>

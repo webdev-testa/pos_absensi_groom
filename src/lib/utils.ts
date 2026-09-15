@@ -11,6 +11,14 @@ export function fmtCurrency(n: number) {
   return `Rp ${n}`
 }
 
+export function formatRupiahExact(amount: number): string {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(amount || 0)
+}
+
 export function fmtDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })

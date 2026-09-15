@@ -169,8 +169,9 @@ export function usePayroll() {
       // 5. Get kasbon deduction (use database value if generated, otherwise sum approved)
       const kasbonDeduction = payrollRecord ? (payrollRecord.kasbon_deduction || 0) : totalKasbon;
       
-      // 6. Gaji Bersih calculation
-      const netSalary = basicSalary + incentives - kasbonDeduction;
+      // 6. Gaji Bersih calculation (clamped at 0 to prevent negative net salary)
+      const calculatedNet = basicSalary + incentives - kasbonDeduction;
+      const netSalary = Math.max(0, calculatedNet);
       
       // 7. Get attendance count
       const presentDays = attendanceCounts[emp.id] || 0;
@@ -250,7 +251,7 @@ export function usePayroll() {
         basic_salary: item.basicSalary,
         incentives: item.incentives,
         kasbon_deduction: item.kasbonDeduction,
-        net_salary: item.basicSalary + item.incentives - item.kasbonDeduction,
+        net_salary: Math.max(0, item.basicSalary + item.incentives - item.kasbonDeduction),
         status: item.status === 'not_generated' ? 'draft' : item.status
       }));
       
@@ -280,7 +281,7 @@ export function usePayroll() {
         basic_salary: item.basicSalary,
         incentives: item.incentives,
         kasbon_deduction: item.kasbonDeduction,
-        net_salary: item.basicSalary + item.incentives - item.kasbonDeduction,
+        net_salary: Math.max(0, item.basicSalary + item.incentives - item.kasbonDeduction),
         status: 'paid'
       };
       
@@ -324,7 +325,7 @@ export function usePayroll() {
         basic_salary: item.basicSalary,
         incentives: item.incentives,
         kasbon_deduction: item.kasbonDeduction,
-        net_salary: item.basicSalary + item.incentives - item.kasbonDeduction,
+        net_salary: Math.max(0, item.basicSalary + item.incentives - item.kasbonDeduction),
         status: 'paid'
       }));
       

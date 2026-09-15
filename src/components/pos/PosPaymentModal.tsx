@@ -86,6 +86,8 @@ export function PosPaymentModal({
   const [isSimulatingQris, setIsSimulatingQris] = useState(false)
   const [qrisTimer, setQrisTimer] = useState(300) // 5 minutes countdown
 
+  const [isConfirming, setIsConfirming] = useState(false)
+
   // Reset state when opening
   useEffect(() => {
     if (isOpen) {
@@ -96,6 +98,7 @@ export function PosPaymentModal({
       setIsSuccess(false)
       setSuccessDetails(null)
       setQrisTimer(300)
+      setIsConfirming(false)
     }
   }, [isOpen, totalAmount, initialMethod])
 
@@ -140,10 +143,14 @@ export function PosPaymentModal({
 
   // Confirm Payment
   const handleConfirmPayment = (method: PaymentMethod) => {
+    if (isConfirming) return
+    setIsConfirming(true)
+
     let result: PaymentSuccessResult
 
     if (method === 'Tunai') {
       if (!isCashSufficient) {
+        setIsConfirming(false)
         toast.error('Uang tunai yang diterima kurang dari total tagihan!')
         return
       }
@@ -173,6 +180,7 @@ export function PosPaymentModal({
     toast.success(`Pembayaran ${method} sebesar Rp ${formatRupiah(totalAmount)} berhasil diterima!`, {
       description: 'Transaksi telah tercatat dan status pembayaran lunas.',
     })
+    setIsConfirming(false)
   }
 
   // Simulate Instant QRIS Check
@@ -367,8 +375,9 @@ export function PosPaymentModal({
                   </Button>
                   <Button
                     type="button"
+                    disabled={isConfirming || isSimulatingQris}
                     onClick={() => handleConfirmPayment('QRIS')}
-                    className="flex-1 text-xs h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-1.5 rounded-xl"
+                    className="flex-1 text-xs h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-1.5 rounded-xl disabled:opacity-50"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Konfirmasi Lunas (QRIS)
@@ -505,7 +514,7 @@ export function PosPaymentModal({
                 {/* Cash Confirm Button */}
                 <Button
                   type="button"
-                  disabled={!isCashSufficient}
+                  disabled={!isCashSufficient || isConfirming}
                   onClick={() => handleConfirmPayment('Tunai')}
                   className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold shadow-xs cursor-pointer gap-2 rounded-xl"
                 >
@@ -599,8 +608,9 @@ export function PosPaymentModal({
                 {/* Transfer Confirm Button */}
                 <Button
                   type="button"
+                  disabled={isConfirming}
                   onClick={() => handleConfirmPayment('Transfer')}
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-2 rounded-xl"
+                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer gap-2 rounded-xl disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Konfirmasi Transfer Diterima & Selesai

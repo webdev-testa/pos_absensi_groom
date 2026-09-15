@@ -25,7 +25,8 @@ const getCachedSessions = (): GroomingSession[] => {
       localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(DEMO_GROOMING_SESSIONS))
       return DEMO_GROOMING_SESSIONS
     }
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : DEMO_GROOMING_SESSIONS
   } catch {
     return DEMO_GROOMING_SESSIONS
   }
@@ -48,7 +49,8 @@ const getCachedPackages = (): PaketGrooming[] => {
       localStorage.setItem(STORAGE_KEY_PACKAGES, JSON.stringify(DEFAULT_PAKET_GROOMING))
       return DEFAULT_PAKET_GROOMING
     }
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : DEFAULT_PAKET_GROOMING
   } catch {
     return DEFAULT_PAKET_GROOMING
   }
@@ -216,13 +218,13 @@ export const groomingService = {
       }
     }
 
-    // Default to first demo if token contains 'demo'
-    if (token.includes('demo')) {
-      const first = DEMO_GROOMING_SESSIONS[0]
+    // Only allow demo fallback if token strictly matches a predefined demo session token
+    const demoMatch = DEMO_GROOMING_SESSIONS.find(d => d.public_token === token)
+    if (demoMatch) {
       return {
-        session: first,
-        cat: first.cat,
-        progress: first.progress || [],
+        session: demoMatch,
+        cat: demoMatch.cat,
+        progress: demoMatch.progress || [],
       }
     }
 
@@ -244,7 +246,10 @@ export const groomingService = {
     sudah_bayar?: boolean
     metode_bayar?: string
   }): Promise<GroomingSession> {
-    const publicToken = 'grm-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36)
+    const randomHex = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID().replace(/-/g, '').slice(0, 16)
+      : Math.random().toString(36).substring(2, 10) + Date.now().toString(36)
+    const publicToken = `grm-${randomHex}`
     const today = new Date().toISOString().split('T')[0]
 
     try {
@@ -340,6 +345,12 @@ export const groomingService = {
       foto_url?: string
     }
   ): Promise<void> {
+    // Check terminal status guard
+    const currentSession = await this.fetchSessionById(sessionId)
+    if (currentSession && (currentSession.status === 'dijemput' || currentSession.status === 'dibatalkan')) {
+      throw new Error(`Sesi grooming sudah dalam status '${currentSession.status}' dan tidak dapat diubah lagi.`)
+    }
+
     const isDone = step === 'done'
     const newStatus: GroomingStatus = extra?.status
       ? extra.status
@@ -364,13 +375,22 @@ export const groomingService = {
         .update(updatePayload)
         .eq('id', sessionId)
 
-      // Add progress history row
-      await posDb().from('grooming_progress').insert({
-        session_id: sessionId,
-        step,
-        catatan: extra?.catatan || null,
-        foto_url: extra?.foto_url || null,
-      })
+      // Guard against duplicate progress inserts for the same session and step
+      const { data: existingProgress } = await posDb()
+        .from('grooming_progress')
+        .select('id')
+        .eq('session_id', sessionId)
+        .eq('step', step)
+        .maybeSingle()
+
+      if (!existingProgress) {
+        await posDb().from('grooming_progress').insert({
+          session_id: sessionId,
+          step,
+          catatan: extra?.catatan || null,
+          foto_url: extra?.foto_url || null,
+        })
+      }
     } catch (e) {
       console.warn('Update step db error, updating local cache:', e)
     }
@@ -378,6 +398,8 @@ export const groomingService = {
     // Always update local cache so UI reacts instantly
     const sessions = getCachedSessions().map(s => {
       if (s.id === sessionId) {
+        // Prevent duplicate step in local cache progress if already present
+        const hasStep = (s.progress || []).some(p => p.step === step && !extra?.foto_url && !extra?.catatan)
         const newProgress: GroomingProgress = {
           id: 'prog-' + Date.now(),
           session_id: sessionId,
@@ -391,7 +413,7 @@ export const groomingService = {
           current_step: step,
           status: newStatus,
           waktu_selesai: isDone ? new Date().toISOString() : s.waktu_selesai,
-          progress: [...(s.progress || []), newProgress],
+          progress: hasStep ? s.progress : [...(s.progress || []), newProgress],
         }
       }
       return s
@@ -427,10 +449,22 @@ export const groomingService = {
     sessionId: string,
     step: GroomingStep
   ): Promise<string> {
-    try {
-      const ext = file.name.split('.').pop() || 'jpg'
-      const filePath = `grooming/${sessionId}/${step}-${Date.now()}.${ext}`
+    const ALLOWED_MIME_TYPES: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
 
+    const mime = (file.type || '').toLowerCase()
+    const safeExt = ALLOWED_MIME_TYPES[mime]
+    if (!safeExt) {
+      throw new Error('Format file tidak didukung. Harap unggah foto format JPEG, PNG, atau WebP.')
+    }
+
+    const filePath = `grooming/${sessionId}/${step}-${Date.now()}.${safeExt}`
+
+    try {
       const { error: uploadError } = await supabase.storage
         .from('cat-photos')
         .upload(filePath, file, {
@@ -447,9 +481,11 @@ export const groomingService = {
     }
 
     // Fallback: Read file as Base64 Data URL so user can preview immediately
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = () => resolve(reader.result as string)
+      reader.onerror = () => reject(new Error('Gagal membaca data gambar dari perangkat'))
+      reader.onabort = () => reject(new Error('Pembacaan gambar dibatalkan'))
       reader.readAsDataURL(file)
     })
   },

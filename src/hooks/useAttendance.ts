@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { toast } from "sonner";
 import type { AttendanceRecord, CutiRecord, CutiGroup, Holiday } from "@/types/attendance";
 
 export function useAttendance() {
@@ -200,14 +201,21 @@ export function useAttendance() {
     const ids = group.dates.map((d) => d.id);
     setActionLoading(`approve_${group.userId}_${group.status}`);
 
-    await supabaseAdmin
-      .schema("hr")
-      .from("attendance")
-      .update({ status: newStatus, is_flagged: false })
-      .in("id", ids);
+    try {
+      const { error } = await supabaseAdmin
+        .schema("hr")
+        .from("attendance")
+        .update({ status: newStatus, is_flagged: false })
+        .in("id", ids);
 
-    await fetchCutiRequests();
-    setActionLoading(null);
+      if (error) throw error;
+      await fetchCutiRequests();
+      toast.success(`Cuti ${group.userName} disetujui`);
+    } catch (err: any) {
+      toast.error(`Gagal menyetujui cuti: ${err.message || 'Terjadi kesalahan'}`);
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   // Reject: cuti_pending → cuti_rejected
@@ -216,30 +224,40 @@ export function useAttendance() {
     const ids = group.dates.map((d) => d.id);
     setActionLoading(`reject_${group.userId}_${group.status}`);
 
-    await supabaseAdmin
-      .schema("hr")
-      .from("attendance")
-      .update({ status: newStatus, is_flagged: false })
-      .in("id", ids);
+    try {
+      const { error } = await supabaseAdmin
+        .schema("hr")
+        .from("attendance")
+        .update({ status: newStatus, is_flagged: false })
+        .in("id", ids);
 
-    await fetchCutiRequests();
-    setActionLoading(null);
+      if (error) throw error;
+      await fetchCutiRequests();
+      toast.success(`Cuti ${group.userName} ditolak`);
+    } catch (err: any) {
+      toast.error(`Gagal menolak cuti: ${err.message || 'Terjadi kesalahan'}`);
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   /* ──── HOLIDAY EFFECTS & HANDLERS ──── */
 
   const fetchHolidays = async () => {
     setHolidayLoading(true);
-    const { data, error } = await supabaseAdmin
-      .schema("hr")
-      .from("holidays")
-      .select("*")
-      .order("date", { ascending: true });
+    try {
+      const { data, error } = await supabaseAdmin
+        .schema("hr")
+        .from("holidays")
+        .select("*")
+        .order("date", { ascending: true });
 
-    if (!error && data) {
-      setHolidays(data as any);
+      if (!error && data) {
+        setHolidays(data as any);
+      }
+    } finally {
+      setHolidayLoading(false);
     }
-    setHolidayLoading(false);
   };
 
   useEffect(() => {
@@ -251,35 +269,41 @@ export function useAttendance() {
     if (!newHolidayName.trim() || !newHolidayDate) return;
     setHolidayLoading(true);
 
-    const { error } = await supabaseAdmin
-      .schema("hr")
-      .from("holidays")
-      .insert({
-        date: newHolidayDate,
-        name: newHolidayName.trim(),
-        type: newHolidayType,
-      });
+    try {
+      const { error } = await supabaseAdmin
+        .schema("hr")
+        .from("holidays")
+        .insert({
+          date: newHolidayDate,
+          name: newHolidayName.trim(),
+          type: newHolidayType,
+        });
 
-    if (!error) {
-      setNewHolidayName("");
-      setNewHolidayDate("");
-      setNewHolidayType("holiday");
-      await fetchHolidays();
+      if (!error) {
+        setNewHolidayName("");
+        setNewHolidayDate("");
+        setNewHolidayType("holiday");
+        await fetchHolidays();
+      }
+    } finally {
+      setHolidayLoading(false);
     }
-    setHolidayLoading(false);
   };
 
   const handleDeleteHoliday = async (id: string) => {
     setActionLoading(`del_${id}`);
 
-    await supabaseAdmin
-      .schema("hr")
-      .from("holidays")
-      .delete()
-      .eq("id", id);
+    try {
+      await supabaseAdmin
+        .schema("hr")
+        .from("holidays")
+        .delete()
+        .eq("id", id);
 
-    await fetchHolidays();
-    setActionLoading(null);
+      await fetchHolidays();
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   /* ──── ATTENDANCE COMPUTED (existing) ──── */

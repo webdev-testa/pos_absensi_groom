@@ -3,15 +3,15 @@ import { ChevronRight } from 'lucide-react';
 import { fmtCurrency } from '@/lib/utils';
 
 interface AlertBannerProps {
-  pastKasbonAlert: {
+  pastKasbonAlert?: {
     pastCount: number;
     pastTotal: number;
     uniqueNames: string;
-  };
+  } | null;
 }
 
 export function AlertBanner({ pastKasbonAlert }: AlertBannerProps) {
-  if (pastKasbonAlert.pastCount === 0) return null;
+  if (!pastKasbonAlert || pastKasbonAlert.pastCount === 0) return null;
 
   return (
     <Link to="/admin/kasbon" className="flex items-center gap-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl px-5 py-3.5 mb-7 hover:border-amber-400 dark:hover:border-amber-600 transition-all group shadow-xs">

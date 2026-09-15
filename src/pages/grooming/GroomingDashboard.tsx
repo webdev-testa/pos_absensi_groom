@@ -57,6 +57,7 @@ export default function GroomingDashboard() {
     refetch,
     updateStep,
     markPickedUp,
+    isUpdating,
   } = useGroomingSessions()
 
   // WA Modal state
@@ -404,10 +405,11 @@ export default function GroomingDashboard() {
                     {session.status === 'antrian' && (
                       <Button
                         size="sm"
+                        disabled={isUpdating}
                         onClick={() => updateStep({ sessionId: session.id, step: 'bathing' })}
-                        className="w-full text-xs h-8.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl cursor-pointer"
+                        className="w-full text-xs h-8.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl cursor-pointer disabled:opacity-50"
                       >
-                        Mulai Mandi / Bathing 🛁
+                        {isUpdating ? 'Memproses...' : 'Mulai Mandi / Bathing 🛁'}
                       </Button>
                     )}
 
@@ -416,17 +418,19 @@ export default function GroomingDashboard() {
                         <Button
                           size="sm"
                           variant="outline"
+                          disabled={isUpdating}
                           onClick={() => setAdvancingSession(session)}
-                          className="flex-1 text-xs h-8.5 border-border font-medium hover:bg-surface-soft rounded-xl cursor-pointer"
+                          className="flex-1 text-xs h-8.5 border-border font-medium hover:bg-surface-soft rounded-xl cursor-pointer disabled:opacity-50"
                         >
                           Lanjut Step Berikutnya <ChevronRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
                         <Button
                           size="sm"
+                          disabled={isUpdating}
                           onClick={() => updateStep({ sessionId: session.id, step: 'done' })}
-                          className="text-xs h-8.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl cursor-pointer shrink-0"
+                          className="text-xs h-8.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl cursor-pointer shrink-0 disabled:opacity-50"
                         >
-                          Selesai ✨
+                          {isUpdating ? '...' : 'Selesai ✨'}
                         </Button>
                       </div>
                     )}
@@ -434,10 +438,11 @@ export default function GroomingDashboard() {
                     {session.status === 'selesai' && (
                       <Button
                         size="sm"
+                        disabled={isUpdating}
                         onClick={() => markPickedUp(session.id)}
-                        className="w-full text-xs h-8.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer"
+                        className="w-full text-xs h-8.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer disabled:opacity-50"
                       >
-                        Tandai Sudah Dijemput Owner 🐾
+                        {isUpdating ? 'Menyimpan...' : 'Tandai Sudah Dijemput Owner 🐾'}
                       </Button>
                     )}
 
@@ -592,10 +597,11 @@ export default function GroomingDashboard() {
               </Button>
               <Button
                 size="sm"
+                disabled={isUpdating}
                 onClick={handleAdvanceStep}
-                className="text-xs h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer"
+                className="text-xs h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer disabled:opacity-50"
               >
-                Simpan & Lanjut Step
+                {isUpdating ? 'Menyimpan...' : 'Simpan & Lanjut Step'}
               </Button>
             </DialogFooter>
           </DialogContent>

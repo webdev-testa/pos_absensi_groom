@@ -84,13 +84,14 @@ export function WaTemplateModal({
   }
 
   const handleOpenWhatsApp = () => {
-    if (!formattedWaForLink) {
+    if (!cleanWa || cleanWa.length < 8) {
+      toast.error('Nomor WhatsApp pemilik tidak valid atau kurang dari 8 digit.')
       handleCopy()
       return
     }
     const encoded = encodeURIComponent(messageText)
     const url = `https://wa.me/${formattedWaForLink}?text=${encoded}`
-    window.open(url, '_blank')
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   if (!data) return null

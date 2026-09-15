@@ -178,11 +178,12 @@ export default function CheckOut() {
     pelunasanAmount: number,
     paymentDetails?: PaymentSuccessResult
   ) => {
+    if (checkoutMutation.isPending) return
     checkoutMutation.mutate({
       bookingToCheckout,
       checkoutDate,
       extraCharges,
-      pelunasanAmount,
+      pelunasanAmount: Math.max(0, pelunasanAmount),
       paymentDetails,
     })
   }
@@ -195,6 +196,11 @@ export default function CheckOut() {
     metodeBayar: string
   }) => {
     if (!selectedBooking) return
+
+    if (data.pelunasanAmount < 0) {
+      toast.error('Nominal pelunasan tidak boleh bernilai negatif!')
+      return
+    }
 
     setPendingCheckoutData(data)
 
@@ -212,7 +218,7 @@ export default function CheckOut() {
 
   // Handle Payment Modal Success
   const handlePaymentSuccess = (result: PaymentSuccessResult) => {
-    if (!selectedBooking || !pendingCheckoutData) return
+    if (!selectedBooking || !pendingCheckoutData || checkoutMutation.isPending) return
 
     executeCheckout(
       selectedBooking,

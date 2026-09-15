@@ -383,12 +383,13 @@ export default function GroomerWorkstation() {
                   { step: 'finishing' as GroomingStep, label: 'Finishing Touch & Parfum', icon: '✨', color: 'bg-pink-600 hover:bg-pink-700' },
                 ].map(item => {
                   const isCurrent = selectedSession.current_step === item.step
+                  const isTerminal = selectedSession.status === 'selesai' || selectedSession.status === 'dijemput' || selectedSession.status === 'dibatalkan'
                   return (
                     <Button
                       key={item.step}
-                      disabled={isUploading}
+                      disabled={isUploading || isTerminal}
                       onClick={() => handleAdvanceStepWithPhoto(item.step)}
-                      className={`h-12 rounded-xl text-xs font-bold text-white shadow-xs cursor-pointer flex items-center justify-between px-4 ${
+                      className={`h-12 rounded-xl text-xs font-bold text-white shadow-xs cursor-pointer flex items-center justify-between px-4 disabled:opacity-50 ${
                         item.color
                       } ${isCurrent ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
                     >
@@ -407,14 +408,16 @@ export default function GroomerWorkstation() {
               </div>
 
               {/* Big Selesai Button */}
-              <Button
-                disabled={isUploading}
-                onClick={() => handleAdvanceStepWithPhoto('done')}
-                className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-xs cursor-pointer mt-3 gap-2"
-              >
-                <span className="text-xl">🎉</span>
-                <span>GROOMING SELESAI & SIAP DIJEMPUT!</span>
-              </Button>
+              {selectedSession.status !== 'dijemput' && (
+                <Button
+                  disabled={isUploading || selectedSession.status === 'selesai'}
+                  onClick={() => handleAdvanceStepWithPhoto('done')}
+                  className="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-xs cursor-pointer mt-3 gap-2 disabled:opacity-50"
+                >
+                  <span className="text-xl">🎉</span>
+                  <span>{selectedSession.status === 'selesai' ? 'GROOMING SUDAH SELESAI' : 'GROOMING SELESAI & SIAP DIJEMPUT!'}</span>
+                </Button>
+              )}
             </div>
 
             {/* TIMELINE OF PROGRESS PHOTOS TAKEN */}
