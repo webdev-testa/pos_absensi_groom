@@ -1,6 +1,4 @@
 import {
-  Search,
-  UserPlus,
   Cat as CatIcon,
   CheckCircle2,
   Calendar,
@@ -14,6 +12,8 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { formatRupiah, hitungMalam } from '@/utils/pos.utils'
+import { OwnerContactPicker } from '@/components/pos/OwnerContactPicker'
+import { toast } from 'sonner'
 import type { useCheckIn } from '@/hooks/pos/useCheckIn'
 
 type CheckInHookReturn = ReturnType<typeof useCheckIn>
@@ -31,11 +31,12 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
     searchOwnerQuery,
     setSearchOwnerQuery,
     searchResults,
+    isSearchingOwners,
     selectedOwner,
+    setSelectedOwner,
     selectOwner,
     isNewOwner,
     setIsNewOwner,
-    chooseNewOwner,
     newOwnerData,
     setNewOwnerData,
     // Step 2
@@ -109,236 +110,41 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
         })}
       </div>
 
-      {/* STEP 1: OWNER SELECTION */}
+      {/* STEP 1: OWNER SELECTION (DIRECT CONTACT DIRECTORY + SEARCH) */}
       {step === 1 && (
-        <Card className="max-w-2xl mx-auto bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
-          <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/80">
-            <div>
-              <h2 className="text-base font-heading font-bold text-foreground">
-                Langkah 1: Pilih atau Daftarkan Owner
-              </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Cari data pelanggan lama berdasarkan Nama / No WA, atau buat baru.
-              </p>
-            </div>
-            {!isNewOwner && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={chooseNewOwner}
-                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer rounded-xl"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                + Owner Baru
-              </Button>
-            )}
-          </div>
-
-          {!isNewOwner ? (
-            <div className="space-y-4">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Ketik nama atau nomor WhatsApp owner (cth: Fara / 0812...)"
-                  value={searchOwnerQuery}
-                  onChange={e => setSearchOwnerQuery(e.target.value)}
-                  className="pl-9.5 h-11 text-xs sm:text-sm bg-card border-input focus-visible:ring-ring/40 rounded-xl"
-                  autoFocus
-                />
-              </div>
-
-              {/* Search Results */}
-              {searchOwnerQuery.trim() !== '' && (
-                <div className="space-y-2 mt-3">
-                  <div className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
-                    Hasil Pencarian ({searchResults.length})
-                  </div>
-                  {searchResults.length === 0 ? (
-                    <div className="p-6 text-center bg-surface-soft rounded-xl border border-border">
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Tidak ditemukan data owner dengan kata kunci &quot;{searchOwnerQuery}&quot;
-                      </p>
-                      <Button
-                        type="button"
-                        onClick={chooseNewOwner}
-                        size="sm"
-                        className="text-xs bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl"
-                      >
-                        <UserPlus className="w-3.5 h-3.5 mr-1" />
-                        Buat Data Owner Baru
-                      </Button>
-                    </div>
-                  ) : (
-                    searchResults.map(owner => (
-                      <div
-                        key={owner.id}
-                        onClick={() => selectOwner(owner)}
-                        className="p-3.5 bg-surface-soft hover:bg-surface-muted/80 border border-border hover:border-brand-orange/40 rounded-xl transition-all cursor-pointer flex items-center justify-between group"
-                      >
-                        <div>
-                          <div className="text-sm font-semibold text-foreground group-hover:text-brand-orange transition-colors">
-                            {owner.nama}
-                          </div>
-                          <div className="text-xs text-muted-foreground font-mono flex items-center gap-2 mt-0.5">
-                            <span>📞 {owner.no_wa}</span>
-                            {owner.email && <span>• {owner.email}</span>}
-                          </div>
-                          {owner.cats && owner.cats.length > 0 && (
-                            <div className="mt-1.5 flex flex-wrap gap-1">
-                              {owner.cats.map(c => (
-                                <span
-                                  key={c.id}
-                                  className="inline-flex items-center text-[10px] bg-card border border-border px-2 py-0.5 rounded-md text-muted-foreground"
-                                >
-                                  🐱 {c.nama} ({c.ras || 'Domestik'})
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-xs text-brand-orange group-hover:translate-x-1 transition-transform"
-                        >
-                          Pilih <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-
-              {searchOwnerQuery.trim() === '' && (
-                <div className="p-8 text-center bg-surface-soft border border-dashed border-border rounded-2xl">
-                  <div className="w-12 h-12 rounded-full bg-amber-500/10 text-brand-orange flex items-center justify-center mx-auto mb-3 text-xl">
-                    🔍
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground">Cari Data Pelanggan</h3>
-                  <p className="text-xs text-muted-foreground max-w-sm mx-auto mt-1 mb-4">
-                    Ketik nama atau nomor WA di kolom pencarian di atas untuk memilih owner yang sudah terdaftar.
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={chooseNewOwner}
-                    size="sm"
-                    className="text-xs border-border font-medium hover:bg-card cursor-pointer rounded-xl"
-                  >
-                    Atau Klik untuk Buat Owner Baru
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            /* New Owner Input Form */
-            <div className="space-y-4">
-              <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-center justify-between">
-                <span>📝 Mengisi formulir pelanggan baru</span>
-                <button
-                  type="button"
-                  onClick={() => setIsNewOwner(false)}
-                  className="text-[11px] underline font-medium text-amber-900 hover:text-amber-700 cursor-pointer"
-                >
-                  Kembali ke pencarian
-                </button>
-              </div>
-
-              <div>
-                <label htmlFor="owner-fullname" className="block text-xs font-semibold text-foreground mb-1">
-                  Nama Lengkap Owner *
-                </label>
-                <Input
-                  id="owner-fullname"
-                  type="text"
-                  placeholder="Contoh: Ibu Rina Kartika"
-                  value={newOwnerData.nama}
-                  onChange={e =>
-                    setNewOwnerData(prev => ({ ...prev, nama: e.target.value }))
-                  }
-                  className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="owner-phone" className="block text-xs font-semibold text-foreground mb-1">
-                    Nomor WhatsApp *
-                  </label>
-                  <Input
-                    id="owner-phone"
-                    type="tel"
-                    placeholder="Contoh: 081234567890"
-                    value={newOwnerData.no_wa}
-                    onChange={e =>
-                      setNewOwnerData(prev => ({ ...prev, no_wa: e.target.value }))
-                    }
-                    className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="owner-email" className="block text-xs font-semibold text-foreground mb-1">
-                    Email (Opsional)
-                  </label>
-                  <Input
-                    id="owner-email"
-                    type="email"
-                    placeholder="Contoh: rina@gmail.com"
-                    value={newOwnerData.email}
-                    onChange={e =>
-                      setNewOwnerData(prev => ({ ...prev, email: e.target.value }))
-                    }
-                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="owner-address" className="block text-xs font-semibold text-foreground mb-1">
-                  Alamat Tempat Tinggal
-                </label>
-                <textarea
-                  id="owner-address"
-                  placeholder="Contoh: Jl. Cipete Raya No. 10, Jakarta Selatan"
-                  value={newOwnerData.alamat}
-                  onChange={e =>
-                    setNewOwnerData(prev => ({ ...prev, alamat: e.target.value }))
-                  }
-                  rows={2}
-                  className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
-                />
-              </div>
-
-              <div className="pt-3 border-t border-border flex justify-end gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsNewOwner(false)}
-                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
-                >
-                  Batal
-                </Button>
-                <Button
-                  type="button"
-                  disabled={!newOwnerData.nama.trim() || !newOwnerData.no_wa.trim()}
-                  onClick={() => {
-                    setSelectedCat(null)
-                    setIsNewCat(true)
-                    setStep(2)
-                  }}
-                  className="text-xs h-10 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl shadow-xs"
-                >
-                  Lanjut ke Data Kucing <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </Card>
+        <div className="max-w-3xl mx-auto">
+          <OwnerContactPicker
+            selectedOwner={selectedOwner}
+            onSelectOwner={selectOwner}
+            onClearOwner={() => {
+              setSelectedOwner(null)
+              setSelectedCat(null)
+            }}
+            isNewOwner={isNewOwner}
+            onToggleNewOwner={setIsNewOwner}
+            newOwnerData={newOwnerData}
+            onChangeNewOwnerData={setNewOwnerData}
+            searchQuery={searchOwnerQuery}
+            onSearchChange={setSearchOwnerQuery}
+            owners={searchResults}
+            isLoading={isSearchingOwners}
+            onProceedNext={() => {
+              if (!selectedOwner && (!isNewOwner || !newOwnerData.nama || !newOwnerData.no_wa)) {
+                toast.error('Pilih owner atau isi formulir owner baru terlebih dahulu!')
+                return
+              }
+              if (isNewOwner || !selectedOwner || ownerCats.length === 0) {
+                setIsNewCat(true)
+              } else {
+                setIsNewCat(false)
+              }
+              setStep(2)
+            }}
+            accentColor="orange"
+            title="Langkah 1: Identitas Pemilik Kucing"
+            description="Pilih dari daftar kontak owner terdaftar atau daftarkan pelanggan baru untuk penitipan."
+          />
+        </div>
       )}
 
       {/* STEP 2: CAT SELECTION */}

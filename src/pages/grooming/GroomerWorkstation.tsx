@@ -308,9 +308,6 @@ export default function GroomerWorkstation() {
                     Jepret Foto Kamera HP
                   </span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  Otomatis tampil di HP customer ✨
-                </span>
               </div>
 
               {/* Hidden file input with direct camera capture */}

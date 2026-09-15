@@ -106,16 +106,22 @@ export function useAttendance() {
   }, []);
 
   const toggleFlag = async (id: string, currentFlag: boolean) => {
+    const originalList = [...attendanceList];
     // Optimistic UI update
     setAttendanceList((prev) =>
       prev.map((r) => (r.id === id ? { ...r, is_flagged: !currentFlag } : r))
     );
-    // Real update
-    await supabaseAdmin
-      .schema("hr")
-      .from("attendance")
-      .update({ is_flagged: !currentFlag })
-      .eq("id", id);
+    try {
+      const { error } = await supabaseAdmin
+        .schema("hr")
+        .from("attendance")
+        .update({ is_flagged: !currentFlag })
+        .eq("id", id);
+      if (error) throw error;
+    } catch (err: any) {
+      setAttendanceList(originalList);
+      toast.error(`Gagal mengubah flag absensi: ${err.message || "Terjadi kesalahan"}`);
+    }
   };
 
   /* ──── CUTI EFFECTS & HANDLERS ──── */
@@ -197,6 +203,7 @@ export function useAttendance() {
 
   // Approve: cuti_pending → cuti
   const handleApproveCuti = async (group: CutiGroup) => {
+    if (actionLoading) return;
     const newStatus = group.type;
     const ids = group.dates.map((d) => d.id);
     setActionLoading(`approve_${group.userId}_${group.status}`);
@@ -220,6 +227,7 @@ export function useAttendance() {
 
   // Reject: cuti_pending → cuti_rejected
   const handleRejectCuti = async (group: CutiGroup) => {
+    if (actionLoading) return;
     const newStatus = `${group.type}_rejected`;
     const ids = group.dates.map((d) => d.id);
     setActionLoading(`reject_${group.userId}_${group.status}`);
@@ -266,6 +274,7 @@ export function useAttendance() {
 
   const handleAddHoliday = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (holidayLoading) return;
     if (!newHolidayName.trim() || !newHolidayDate) return;
     setHolidayLoading(true);
 
@@ -279,28 +288,35 @@ export function useAttendance() {
           type: newHolidayType,
         });
 
-      if (!error) {
-        setNewHolidayName("");
-        setNewHolidayDate("");
-        setNewHolidayType("holiday");
-        await fetchHolidays();
-      }
+      if (error) throw error;
+      setNewHolidayName("");
+      setNewHolidayDate("");
+      setNewHolidayType("holiday");
+      await fetchHolidays();
+      toast.success("Hari libur berhasil ditambahkan");
+    } catch (err: any) {
+      toast.error(`Gagal menambahkan hari libur: ${err.message || 'Terjadi kesalahan'}`);
     } finally {
       setHolidayLoading(false);
     }
   };
 
   const handleDeleteHoliday = async (id: string) => {
+    if (actionLoading) return;
     setActionLoading(`del_${id}`);
 
     try {
-      await supabaseAdmin
+      const { error } = await supabaseAdmin
         .schema("hr")
         .from("holidays")
         .delete()
         .eq("id", id);
 
+      if (error) throw error;
       await fetchHolidays();
+      toast.success("Hari libur berhasil dihapus");
+    } catch (err: any) {
+      toast.error(`Gagal menghapus hari libur: ${err.message || 'Terjadi kesalahan'}`);
     } finally {
       setActionLoading(null);
     }

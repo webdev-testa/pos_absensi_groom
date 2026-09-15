@@ -17,14 +17,22 @@ export function AttendanceStats({
   statAbsent,
   statOut,
 }: AttendanceStatsProps) {
-  const safeTotal = Math.max(1, totalEmployees);
+  const safeTotal = Number.isFinite(totalEmployees) ? Math.max(0, totalEmployees) : 0;
+  const divisor = Math.max(1, safeTotal);
+
+  const calcPct = (val: number) => {
+    if (!Number.isFinite(val) || divisor <= 0) return 0;
+    return Math.min(100, Math.max(0, (val / divisor) * 100));
+  };
+
+  const safeVal = (v: number) => (Number.isFinite(v) ? Math.max(0, v) : 0);
 
   const stats = [
-    { key: "all", title: "Total staf", value: totalEmployees, sub: "hari ini", color: "text-foreground", bar: "bg-primary", pct: 100 },
-    { key: "ontime", title: "Tepat waktu", value: statOntime, sub: "sebelum 08.00", color: "text-[#10B981]", bar: "bg-[#10B981]", pct: (statOntime / safeTotal) * 100 },
-    { key: "late", title: "Terlambat", value: statLate, sub: "setelah 08.00", color: "text-[#F59E0B]", bar: "bg-[#F59E0B]", pct: (statLate / safeTotal) * 100 },
-    { key: "absent", title: "Tidak hadir", value: statAbsent, sub: "belum absen", color: "text-[#EF4444]", bar: "bg-[#EF4444]", pct: (statAbsent / safeTotal) * 100 },
-    { key: "out", title: "Sudah pulang", value: statOut, sub: "clock-out tercatat", color: "text-[#3B82F6]", bar: "bg-[#3B82F6]", pct: (statOut / safeTotal) * 100 },
+    { key: "all", title: "Total staf", value: safeTotal, sub: "hari ini", color: "text-foreground", bar: "bg-primary", pct: safeTotal > 0 ? 100 : 0 },
+    { key: "ontime", title: "Tepat waktu", value: safeVal(statOntime), sub: "sebelum 08.00", color: "text-emerald-600 dark:text-emerald-400", bar: "bg-emerald-500", pct: calcPct(statOntime) },
+    { key: "late", title: "Terlambat", value: safeVal(statLate), sub: "setelah 08.00", color: "text-amber-600 dark:text-amber-400", bar: "bg-amber-500", pct: calcPct(statLate) },
+    { key: "absent", title: "Tidak hadir", value: safeVal(statAbsent), sub: "belum absen", color: "text-rose-600 dark:text-rose-400", bar: "bg-rose-500", pct: calcPct(statAbsent) },
+    { key: "out", title: "Sudah pulang", value: safeVal(statOut), sub: "clock-out tercatat", color: "text-blue-600 dark:text-blue-400", bar: "bg-blue-500", pct: calcPct(statOut) },
   ];
 
   return (

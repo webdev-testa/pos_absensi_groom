@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { posService } from '@/services/posService'
 import { groomingService } from '@/services/groomingService'
@@ -37,6 +37,7 @@ export interface GroomingBookingForm {
 
 export function useGroomingForm() {
   const queryClient = useQueryClient()
+  const isSubmittingRef = useRef(false)
   const [step, setStep] = useState<1 | 2 | 3>(1)
 
   // Step 1: Owner
@@ -80,11 +81,10 @@ export function useGroomingForm() {
   const [createdSession, setCreatedSession] = useState<GroomingSession | null>(null)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
 
-  // Query: Owners search
+  // Query: Owners search / directory
   const { data: ownerSearchResults = [], isLoading: isSearchingOwners } = useQuery<Owner[]>({
     queryKey: ['pos_search_owners', searchOwnerQuery],
     queryFn: () => posService.searchOwners(searchOwnerQuery),
-    enabled: searchOwnerQuery.length >= 2,
     staleTime: 1000 * 15,
   })
 
@@ -106,6 +106,12 @@ export function useGroomingForm() {
   const handleSelectOwner = (owner: Owner) => {
     setSelectedOwner(owner)
     setIsNewOwner(false)
+    setSelectedCat(null)
+    setIsNewCat(false)
+  }
+
+  const handleClearOwner = () => {
+    setSelectedOwner(null)
     setSelectedCat(null)
     setIsNewCat(false)
   }
@@ -142,115 +148,130 @@ export function useGroomingForm() {
   // Submit Mutation
   const createMutation = useMutation({
     mutationFn: async () => {
-      // 1. Resolve or create Owner
-      let ownerId = selectedOwner?.id
-      if (!ownerId) {
-        if (!newOwnerData.nama.trim() || !newOwnerData.no_wa.trim()) {
-          throw new Error('Nama pemilik dan Nomor WhatsApp wajib diisi!')
-        }
-        try {
-          const { data: ownerRecord, error: ownerErr } = await supabase
-            .schema('pos')
-            .from('owners')
-            .upsert(
-              {
-                nama: newOwnerData.nama.trim(),
-                no_wa: newOwnerData.no_wa.trim(),
-                email: newOwnerData.email || null,
-                alamat: newOwnerData.alamat || null,
-              },
-              { onConflict: 'no_wa' }
-            )
-            .select()
-            .single()
-
-          if (!ownerErr && ownerRecord) {
-            ownerId = ownerRecord.id
-          }
-        } catch {
-          // If offline/table not ready, fall back
-        }
+      if (isSubmittingRef.current) {
+        throw new Error('Permintaan sedang diproses. Mohon tunggu sejenak.')
       }
+      isSubmittingRef.current = true
 
-      // 2. Resolve or create Cat
-      let catId = selectedCat?.id
-      if (!catId) {
-        if (!newCatData.nama.trim()) {
-          throw new Error('Nama kucing wajib diisi!')
-        }
-        try {
-          if (ownerId && !ownerId.startsWith('own-new-')) {
-            const { data: catRecord, error: catErr } = await supabase
+      try {
+        // 1. Resolve or create Owner
+        let ownerId = selectedOwner?.id
+        if (!ownerId) {
+          if (!newOwnerData.nama.trim() || !newOwnerData.no_wa.trim()) {
+            throw new Error('Nama pemilik dan Nomor WhatsApp wajib diisi!')
+          }
+          try {
+            const { data: ownerRecord, error: ownerErr } = await supabase
               .schema('pos')
-              .from('cats')
-              .insert({
-                owner_id: ownerId,
-                nama: newCatData.nama.trim(),
-                ras: newCatData.ras || null,
-                jenis_kelamin: newCatData.jenis_kelamin || null,
-                warna: newCatData.warna || null,
-                umur_estimasi: newCatData.umur_estimasi || null,
-                catatan_kesehatan: newCatData.catatan_kesehatan || null,
-                foto_url: newCatData.foto_url || null,
-              })
+              .from('owners')
+              .upsert(
+                {
+                  nama: newOwnerData.nama.trim(),
+                  no_wa: newOwnerData.no_wa.trim(),
+                  email: newOwnerData.email || null,
+                  alamat: newOwnerData.alamat || null,
+                },
+                { onConflict: 'no_wa' }
+              )
               .select()
               .single()
 
-            if (!catErr && catRecord) {
-              catId = catRecord.id
+            if (ownerErr) {
+              console.warn('Supabase owners upsert warning:', ownerErr.message)
+            } else if (ownerRecord) {
+              ownerId = ownerRecord.id
             }
+          } catch {
+            // If offline/table not ready, fall back
           }
-        } catch {
-          // If offline/table not ready, fall back
         }
-      }
 
-      // Calculate estimated finish time
-      const estTime = new Date(Date.now() + (formData.estimasiMenit || 60) * 60 * 1000).toISOString()
+        // 2. Resolve or create Cat
+        let catId = selectedCat?.id
+        if (!catId) {
+          if (!newCatData.nama.trim()) {
+            throw new Error('Nama kucing wajib diisi!')
+          }
+          try {
+            if (ownerId && !ownerId.startsWith('own-new-')) {
+              const { data: catRecord, error: catErr } = await supabase
+                .schema('pos')
+                .from('cats')
+                .insert({
+                  owner_id: ownerId,
+                  nama: newCatData.nama.trim(),
+                  ras: newCatData.ras || null,
+                  jenis_kelamin: newCatData.jenis_kelamin || null,
+                  warna: newCatData.warna || null,
+                  umur_estimasi: newCatData.umur_estimasi || null,
+                  catatan_kesehatan: newCatData.catatan_kesehatan || null,
+                  foto_url: newCatData.foto_url || null,
+                })
+                .select()
+                .single()
 
-      // Create session payload
-      const session = await groomingService.createSession({
-        owner_id: ownerId || 'own-new-' + Date.now(),
-        cat_id: catId || 'cat-new-' + Date.now(),
-        paket: formData.paketNama,
-        harga: formData.harga,
-        kondisi_awal: formData.kondisiAwal || undefined,
-        catatan: formData.catatan || undefined,
-        groomer_name: formData.groomerName || undefined,
-        estimasi_selesai: estTime,
-        sudah_bayar: formData.sudahBayar,
-        metode_bayar: formData.metodeBayar,
-      })
-
-      // Attach temporary owner/cat info if created freshly in cache
-      if (!session.owner && (selectedOwner || newOwnerData.nama)) {
-        session.owner = selectedOwner || {
-          id: session.owner_id,
-          nama: newOwnerData.nama,
-          no_wa: newOwnerData.no_wa,
-          created_at: new Date().toISOString(),
+              if (catErr) {
+                console.warn('Supabase cats insert warning:', catErr.message)
+              } else if (catRecord) {
+                catId = catRecord.id
+              }
+            }
+          } catch {
+            // If offline/table not ready, fall back
+          }
         }
-      }
 
-      if (!session.cat && (selectedCat || newCatData.nama)) {
-        session.cat = selectedCat || {
-          id: session.cat_id,
-          owner_id: session.owner_id,
-          nama: newCatData.nama,
-          ras: newCatData.ras,
-          jenis_kelamin: newCatData.jenis_kelamin,
-          warna: newCatData.warna,
-          foto_url: newCatData.foto_url,
-          created_at: new Date().toISOString(),
+        // Calculate estimated finish time
+        const estTime = new Date(Date.now() + (formData.estimasiMenit || 60) * 60 * 1000).toISOString()
+
+        // Create session payload
+        const session = await groomingService.createSession({
+          owner_id: ownerId || 'own-new-' + Date.now(),
+          cat_id: catId || 'cat-new-' + Date.now(),
+          paket: formData.paketNama,
+          harga: formData.harga,
+          kondisi_awal: formData.kondisiAwal || undefined,
+          catatan: formData.catatan || undefined,
+          groomer_name: formData.groomerName || undefined,
+          estimasi_selesai: estTime,
+          sudah_bayar: formData.sudahBayar,
+          metode_bayar: formData.metodeBayar,
+        })
+
+        // Attach temporary owner/cat info if created freshly in cache
+        if (!session.owner && (selectedOwner || newOwnerData.nama)) {
+          session.owner = selectedOwner || {
+            id: session.owner_id,
+            nama: newOwnerData.nama,
+            no_wa: newOwnerData.no_wa,
+            created_at: new Date().toISOString(),
+          }
         }
-      }
 
-      return session
+        if (!session.cat && (selectedCat || newCatData.nama)) {
+          session.cat = selectedCat || {
+            id: session.cat_id,
+            owner_id: session.owner_id,
+            nama: newCatData.nama,
+            ras: newCatData.ras,
+            jenis_kelamin: newCatData.jenis_kelamin,
+            warna: newCatData.warna,
+            foto_url: newCatData.foto_url,
+            created_at: new Date().toISOString(),
+          }
+        }
+
+        return session
+      } finally {
+        isSubmittingRef.current = false
+      }
     },
     onSuccess: (session) => {
       setCreatedSession(session)
       setIsSuccessModalOpen(true)
       queryClient.invalidateQueries({ queryKey: ['grooming_sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['pos_search_owners'] })
+      queryClient.invalidateQueries({ queryKey: ['pos_owners_search'] })
       toast.success('Check-in Grooming berhasil disimpan!')
     },
     onError: (err: any) => {
@@ -303,6 +324,7 @@ export function useGroomingForm() {
     ownerSearchResults,
     isSearchingOwners,
     handleSelectOwner,
+    handleClearOwner,
     handleChooseNewOwner,
     // Cat
     selectedCat,

@@ -20,7 +20,7 @@ export function AttentionNeeded({ attentionItems }: AttentionNeededProps) {
           <div className="font-heading text-[14.5px] font-bold text-foreground">Perlu perhatian</div>
           <div className="text-[12px] text-muted-foreground mt-0.5">Anomali & tindakan yang tertunda</div>
         </div>
-        <Link to="/admin/karyawan" className="text-[12.5px] text-[#3B82F6] font-medium hover:underline whitespace-nowrap">Lihat semua →</Link>
+        <Link to="/admin/karyawan" className="text-[12.5px] text-primary font-medium hover:underline whitespace-nowrap">Lihat semua →</Link>
       </div>
       <div className="py-1.5">
         {attentionItems.length === 0 ? (

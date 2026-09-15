@@ -152,6 +152,7 @@ export function useDailyReport() {
   })
 
   const saveReport = async () => {
+    if (saveReportMutation.isPending) return
     return saveReportMutation.mutateAsync()
   }
 

@@ -89,7 +89,7 @@ export default function AbsenEmployee() {
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
             {mainTab === "absensi" && (
               <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-3.5 py-2 text-xs text-muted-foreground shadow-xs">
-                <div className="w-2 h-2 rounded-full bg-[#10B981] shrink-0 animate-pulse"></div>
+                <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
                 <span>Live · <strong className="text-foreground font-semibold font-mono">
                   {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
                 </strong></span>
@@ -100,7 +100,7 @@ export default function AbsenEmployee() {
                 type="button"
                 aria-label="Refresh data pengajuan cuti"
                 onClick={() => fetchCutiRequests()}
-                className="bg-card border border-border hover:border-[#C8C2B8] hover:text-foreground text-muted-foreground rounded-lg px-3.5 py-2 text-xs font-semibold flex items-center gap-2 transition-all shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="bg-card border border-border hover:border-foreground/25 hover:text-foreground text-muted-foreground rounded-xl px-3.5 py-2 text-xs font-semibold flex items-center gap-2 transition-all shadow-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Clock className="w-4 h-4" />
                 Refresh
@@ -140,7 +140,7 @@ export default function AbsenEmployee() {
               {tab.label}
               {"badge" in tab && tab.badge > 0 && (
                 <span className={`ml-1 min-w-[18px] h-[18px] flex items-center justify-center text-[11px] font-bold rounded-full px-1 ${
-                  mainTab === tab.key ? "bg-white text-primary" : "bg-[#FF5600] text-white"
+                  mainTab === tab.key ? "bg-white text-primary" : "bg-brand-orange text-white"
                 }`}>
                   {tab.badge}
                 </span>

@@ -23,14 +23,14 @@ export default function GroomingReport() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] dark:bg-neutral-950 flex flex-col items-center justify-center p-6 text-center font-sans">
-        <div className="w-16 h-16 rounded-full bg-brand-orange/15 text-brand-orange flex items-center justify-center text-3xl animate-bounce mb-4">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="w-16 h-16 rounded-2xl bg-brand-orange/15 text-brand-orange flex items-center justify-center text-3xl mb-4 shadow-xs">
           🐱
         </div>
-        <div className="text-base font-bold font-heading text-[#1D262C] dark:text-neutral-100">
+        <div className="text-base font-bold font-heading text-foreground">
           Menghubungkan ke Live Report...
         </div>
-        <p className="text-xs text-neutral-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           Memuat data progres pengerjaan grooming Dr. Meow secara realtime.
         </p>
       </div>
@@ -39,7 +39,7 @@ export default function GroomingReport() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#FAF8F5] dark:bg-neutral-950 flex flex-col items-center justify-center p-6 text-center font-sans">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center font-sans">
         <div className="w-14 h-14 rounded-2xl bg-surface-soft border border-border flex items-center justify-center text-2xl mb-3">
           🔍
         </div>
@@ -58,9 +58,9 @@ export default function GroomingReport() {
   const currentStepIdx = GROOMING_STEPS.indexOf(session.current_step)
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] dark:bg-neutral-950 text-[#1D262C] dark:text-neutral-100 font-sans pb-16">
+    <div className="min-h-screen bg-background text-foreground font-sans pb-16">
       {/* TOP CLINIC BRANDING BAR */}
-      <header className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-[#E2DDD5] dark:border-neutral-800 px-4 py-3 sticky top-0 z-30 shadow-2xs">
+      <header className="bg-card/85 backdrop-blur-md border-b border-border px-4 py-3 sticky top-0 z-30 shadow-2xs">
         <div className="max-w-md mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="text-xl">🐾</span>
@@ -115,7 +115,7 @@ export default function GroomingReport() {
         )}
 
         {/* HERO CARD */}
-        <Card className="bg-white dark:bg-neutral-900 border-[#E2DDD5] dark:border-neutral-800 rounded-3xl overflow-hidden shadow-xs">
+        <Card className="bg-card border-border rounded-2xl overflow-hidden shadow-xs">
           <div className="p-5 flex items-center gap-4">
             <div className="w-20 h-20 rounded-2xl bg-surface-soft border border-border overflow-hidden shrink-0 flex items-center justify-center shadow-inner">
               {cat?.foto_url ? (
@@ -143,7 +143,7 @@ export default function GroomingReport() {
           </div>
 
           {/* ACTIVE STATUS STRIP */}
-          <div className="px-5 py-3 bg-[#FAF8F5] dark:bg-neutral-800/50 border-t border-[#E2DDD5] dark:border-neutral-800 flex items-center justify-between text-xs">
+          <div className="px-5 py-3 bg-surface-soft/60 border-t border-border flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <span className="text-base">{GROOMING_STEP_EMOJI[session.current_step]}</span>
               <div>
@@ -164,7 +164,7 @@ export default function GroomingReport() {
         </Card>
 
         {/* MILESTONE STEPPER */}
-        <Card className="bg-white dark:bg-neutral-900 border-[#E2DDD5] dark:border-neutral-800 rounded-3xl p-5 shadow-xs space-y-4">
+        <Card className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold font-heading uppercase text-foreground tracking-wider font-mono">
               Tahap Pengerjaan Grooming
@@ -267,7 +267,7 @@ export default function GroomingReport() {
 
         {/* INITIAL HEALTH & CARE CARD */}
         {session.kondisi_awal && (
-          <Card className="bg-white dark:bg-neutral-900 border-[#E2DDD5] dark:border-neutral-800 rounded-3xl p-4 shadow-xs space-y-2">
+          <Card className="bg-card border border-border rounded-2xl p-4 shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
               <ShieldCheck className="w-4 h-4 shrink-0" />
               <h3 className="text-xs font-bold font-heading">
@@ -281,7 +281,7 @@ export default function GroomingReport() {
         )}
 
         {/* BILLING & SERVICE SUMMARY */}
-        <Card className="bg-white dark:bg-neutral-900 border-[#E2DDD5] dark:border-neutral-800 rounded-3xl p-4 shadow-xs space-y-2.5">
+        <Card className="bg-card border border-border rounded-2xl p-4 shadow-xs space-y-2.5">
           <div className="flex items-center justify-between text-xs border-b border-border/60 pb-2">
             <span className="text-muted-foreground font-mono uppercase text-[10px]">
               Ringkasan Layanan

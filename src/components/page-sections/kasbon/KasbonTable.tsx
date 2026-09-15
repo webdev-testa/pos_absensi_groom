@@ -123,11 +123,11 @@ export function KasbonTable({
                   </TableCell>
                   <TableCell className="py-3.5 px-[18px]">
                     {row.status === 'pending' ? (
-                      <div className="flex gap-1.5">
+                      <div className="flex gap-2">
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-lg bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 dark:hover:bg-emerald-900/60 font-semibold cursor-pointer disabled:opacity-50"
+                          className="h-[34px] min-h-[34px] text-[12px] px-3.5 rounded-xl bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/60 dark:hover:bg-emerald-900/60 font-semibold cursor-pointer disabled:opacity-50 shadow-2xs"
                           onClick={() => onApprove(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -136,7 +136,7 @@ export function KasbonTable({
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="h-[28px] text-[12px] px-3 rounded-lg bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60 dark:hover:bg-rose-900/60 font-semibold cursor-pointer disabled:opacity-50"
+                          className="h-[34px] min-h-[34px] text-[12px] px-3.5 rounded-xl bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/60 dark:hover:bg-rose-900/60 font-semibold cursor-pointer disabled:opacity-50 shadow-2xs"
                           onClick={() => onReject(row.id)}
                           disabled={approvePending || rejectPending}
                         >
@@ -147,7 +147,7 @@ export function KasbonTable({
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="h-[28px] text-[12px] px-3 rounded-lg border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft whitespace-nowrap cursor-pointer disabled:opacity-50"
+                        className="h-[34px] min-h-[34px] text-[12px] px-3.5 rounded-xl border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft whitespace-nowrap cursor-pointer disabled:opacity-50 shadow-2xs"
                         onClick={() => onMarkDeducted(row.id)}
                         disabled={deductPending}
                       >

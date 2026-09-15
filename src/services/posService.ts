@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { DEFAULT_OWNERS } from '@/constants/pos.constants'
 import type {
   Owner,
   Cat,
@@ -11,6 +12,32 @@ import type {
 
 // Target the 'pos' schema explicitly
 const posDb = () => supabase.schema('pos')
+
+const STORAGE_KEY_OWNERS = 'dr_meow_pos_owners_cache'
+
+export const getCachedOwners = (): Owner[] => {
+  if (typeof window === 'undefined') return DEFAULT_OWNERS
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_OWNERS)
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY_OWNERS, JSON.stringify(DEFAULT_OWNERS))
+      return DEFAULT_OWNERS
+    }
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_OWNERS
+  } catch {
+    return DEFAULT_OWNERS
+  }
+}
+
+export const saveCachedOwners = (owners: Owner[]) => {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.setItem(STORAGE_KEY_OWNERS, JSON.stringify(owners))
+  } catch (e) {
+    console.error('Failed to cache owners:', e)
+  }
+}
 
 export interface CreateCheckInPayload {
   owner: {
@@ -131,23 +158,63 @@ export const posService = {
   },
 
   /**
-   * Search owners by name or WA number, including their existing cats.
+   * Search owners by name, WA number, or cat name, including their existing cats.
+   * When query is empty or blank, returns the full/recent contact directory.
    */
-  async searchOwners(query: string): Promise<Owner[]> {
-    if (!query.trim()) return []
-
-    const { data, error } = await posDb()
-      .from('owners')
-      .select('*, cats(*)')
-      .or(`no_wa.ilike.%${query}%,nama.ilike.%${query}%`)
-      .limit(10)
-
-    if (error) {
-      console.error('Error searching owners:', error)
-      throw error
+  async searchOwners(query = ''): Promise<Owner[]> {
+    const cleanQuery = query.replace(/[,()"\\]/g, ' ').trim().toLowerCase()
+    if (!cleanQuery) {
+      return this.fetchOwners()
     }
 
-    return data || []
+    try {
+      const { data, error } = await posDb()
+        .from('owners')
+        .select('*, cats(*)')
+        .or(`no_wa.ilike.%${cleanQuery}%,nama.ilike.%${cleanQuery}%`)
+        .limit(20)
+
+      if (error || !data || data.length === 0) {
+        const cached = getCachedOwners()
+        return cached.filter(o => 
+          o.nama.toLowerCase().includes(cleanQuery) ||
+          o.no_wa.toLowerCase().includes(cleanQuery) ||
+          (o.cats && o.cats.some(c => c.nama.toLowerCase().includes(cleanQuery)))
+        )
+      }
+
+      return data
+    } catch {
+      const cached = getCachedOwners()
+      return cached.filter(o => 
+        o.nama.toLowerCase().includes(cleanQuery) ||
+        o.no_wa.toLowerCase().includes(cleanQuery) ||
+        (o.cats && o.cats.some(c => c.nama.toLowerCase().includes(cleanQuery)))
+      )
+    }
+  },
+
+  /**
+   * Fetch all/recent owners with their cats.
+   */
+  async fetchOwners(limit = 50): Promise<Owner[]> {
+    try {
+      const { data, error } = await posDb()
+        .from('owners')
+        .select('*, cats(*)')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (error || !data || data.length === 0) {
+        return getCachedOwners()
+      }
+
+      // Sync fresh owners to localStorage cache
+      saveCachedOwners(data)
+      return data
+    } catch {
+      return getCachedOwners()
+    }
   },
 
   /**
@@ -510,8 +577,23 @@ export const posService = {
    * Upload an image to Supabase Storage bucket 'cat-photos'.
    */
   async uploadPhoto(file: File, folder: 'cats' | 'reports' | 'qris' = 'cats'): Promise<string> {
-    const ext = file.name.split('.').pop() || 'jpg'
-    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`
+    const ALLOWED_MIME_TYPES: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/webp': 'webp',
+    }
+
+    const mime = (file.type || '').toLowerCase()
+    const safeExt = ALLOWED_MIME_TYPES[mime]
+    if (!safeExt) {
+      throw new Error('Format file tidak didukung. Harap unggah foto format JPEG, PNG, atau WebP.')
+    }
+
+    const uniqueToken = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID().replace(/-/g, '').substring(0, 12)
+      : Math.random().toString(36).substring(2, 10)
+    const fileName = `${folder}/${Date.now()}-${uniqueToken}.${safeExt}`
 
     const { error: uploadError } = await supabase.storage
       .from('cat-photos')

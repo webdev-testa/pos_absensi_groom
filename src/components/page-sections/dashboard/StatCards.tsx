@@ -33,11 +33,11 @@ export function StatCards({
   payrollStats,
 }: StatCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
-      <Link to="/admin/absensi" className="bg-card border border-border rounded-xl p-5 hover:border-foreground/20 hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-card border border-border rounded-xl divide-y sm:divide-y-0 sm:divide-x divide-border shadow-xs overflow-hidden mb-7">
+      <Link to="/admin/absensi" className="p-5 hover:bg-surface-soft/60 transition-all relative group block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Hadir hari ini</div>
-        <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-[#10B981] tabular-nums">
+        <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-emerald-600 dark:text-emerald-400 tabular-nums">
           {attendanceTodayStats.countPresent}
         </div>
         <div className="text-[12.5px] text-muted-foreground mt-2">dari {activeEmployeesCount} staf klinik</div>
@@ -52,10 +52,10 @@ export function StatCards({
         )}
       </Link>
 
-      <Link to="/admin/kasbon" className="bg-card border border-border rounded-xl p-5 hover:border-foreground/20 hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+      <Link to="/admin/kasbon" className="p-5 hover:bg-surface-soft/60 transition-all relative group block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Kasbon bulan ini</div>
-        <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-[#FF5600] tabular-nums">
+        <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-brand-orange tabular-nums">
           {fmtCurrency(kasbonStats.totalKasbonAmt)}
         </div>
         <div className="text-[12.5px] text-muted-foreground mt-2">{kasbonStats.countTransactions} pengajuan</div>
@@ -70,7 +70,7 @@ export function StatCards({
         )}
       </Link>
 
-      <Link to="/admin/payroll" className="bg-card border border-border rounded-xl p-5 hover:border-foreground/20 hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+      <Link to="/admin/payroll" className="p-5 hover:bg-surface-soft/60 transition-all relative group block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Gaji dibayarkan</div>
         <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-foreground tabular-nums">
@@ -92,7 +92,7 @@ export function StatCards({
         )}
       </Link>
 
-      <Link to="/admin/karyawan" className="bg-card border border-border rounded-xl p-5 hover:border-foreground/20 hover:-translate-y-[1px] hover:shadow-sm transition-all relative group overflow-hidden block">
+      <Link to="/admin/karyawan" className="p-5 hover:bg-surface-soft/60 transition-all relative group block">
         <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 opacity-0 group-hover:opacity-100 group-hover:right-3 transition-all" />
         <div className="stat-title mb-2.5">Total karyawan</div>
         <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight leading-none text-foreground tabular-nums">

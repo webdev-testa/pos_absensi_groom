@@ -76,11 +76,11 @@ export function PayrollDetailPanel({
               <span className="text-muted-foreground">Gaji Pokok</span>
               <span className="font-medium font-mono text-foreground">{fmtCurrency(selectedItem.basicSalary)}</span>
             </div>
-            <div className="flex justify-between py-1.5 text-[#10B981]">
+            <div className="flex justify-between py-1.5 text-emerald-600 dark:text-emerald-400">
               <span>Insentif / Tambahan</span>
               <span className="font-semibold font-mono">+{fmtCurrency(selectedItem.incentives)}</span>
             </div>
-            <div className="flex justify-between py-1.5 text-[#FF5600]">
+            <div className="flex justify-between py-1.5 text-brand-orange">
               <span>Potongan Kasbon</span>
               <span className="font-semibold font-mono">-{fmtCurrency(selectedItem.kasbonDeduction)}</span>
             </div>
@@ -122,7 +122,7 @@ export function PayrollDetailPanel({
               </div>
               <Progress 
                 value={Math.min(Math.round((selectedItem.presentDays / 26) * 100), 100)} 
-                indicatorClassName="bg-[#10B981]"
+                indicatorClassName="bg-emerald-500"
                 className="h-1.5 rounded-full bg-surface-soft"
               />
             </div>
@@ -142,8 +142,8 @@ export function PayrollDetailPanel({
                   100
                 )} 
                 indicatorClassName={(selectedItem.user.kasbon_limit > 0 ? (selectedItem.kasbonDeduction / selectedItem.user.kasbon_limit) : 0) > 0.8 
-                  ? 'bg-[#EF4444]' 
-                  : 'bg-[#F59E0B]'}
+                  ? 'bg-rose-500' 
+                  : 'bg-amber-500'}
                 className="h-1.5 rounded-full bg-surface-soft"
               />
             </div>
@@ -156,7 +156,7 @@ export function PayrollDetailPanel({
         <Button 
           onClick={() => openIncentiveModal(selectedItem)}
           variant="outline" 
-          className="flex-1 bg-card border-border hover:border-[#C8C2B8] text-muted-foreground hover:text-foreground h-[36px] text-[12.5px] rounded-lg font-semibold cursor-pointer shadow-xs"
+          className="flex-1 bg-card border-border hover:border-foreground/25 text-muted-foreground hover:text-foreground h-10 text-[12.5px] rounded-xl font-semibold cursor-pointer shadow-xs"
         >
           Edit Insentif
         </Button>
@@ -164,7 +164,7 @@ export function PayrollDetailPanel({
         {selectedItem.status !== 'not_generated' && (
           <Button 
             onClick={() => handlePrint(selectedItem)}
-            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-none h-[36px] text-[12.5px] rounded-lg font-semibold cursor-pointer shadow-xs"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-none h-10 text-[12.5px] rounded-xl font-semibold cursor-pointer shadow-xs"
           >
             <Printer className="w-4 h-4 mr-1.5" />
             Cetak Slip Gaji

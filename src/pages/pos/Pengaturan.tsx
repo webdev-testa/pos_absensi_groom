@@ -128,7 +128,7 @@ export default function Pengaturan() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-foreground space-y-6 pb-12 max-w-4xl">
+      <div className="font-sans text-foreground space-y-6 pb-12 max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">

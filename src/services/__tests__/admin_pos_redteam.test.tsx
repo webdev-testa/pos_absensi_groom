@@ -6,6 +6,8 @@ import { PrintPayslip } from '@/components/page-sections/payroll/PrintPayslip'
 import { AlertBanner } from '@/components/page-sections/dashboard/AlertBanner'
 import { WaTemplateModal } from '@/components/pos/WaTemplateModal'
 import { DailyReportForm } from '@/components/pos/DailyReportForm'
+import { AttendanceStats } from '@/components/page-sections/attendance/AttendanceStats'
+import { posService } from '@/services/posService'
 import { formatRupiahExact } from '@/lib/utils'
 import type { Booking } from '@/types/pos'
 import type { PayrollItem } from '@/types/payroll'
@@ -294,5 +296,89 @@ describe('Red-Team Verification Test Suite - POS & Admin Remediation Protections
       <AlertBanner pastKasbonAlert={{ pastCount: 0, pastTotal: 0, uniqueNames: '' }} />
     )
     expect(c2).toBeEmptyDOMElement()
+  })
+
+  /* ─── DEFECT 10: DAILY REPORT FORM DOUBLE-CLICK / MUTEX ─── */
+  it('Defect 10: DailyReportForm disables submit button when isSubmitting is true', () => {
+    const handleSave = vi.fn()
+    const mockBooking: Booking = {
+      id: 'b-report-1',
+      cat_id: 'c-1',
+      owner_id: 'o-1',
+      tanggal_masuk: '2026-03-24',
+      tanggal_keluar_estimasi: '2026-03-27',
+      paket: 'Standard Room',
+      harga_per_hari: 50000,
+      status: 'aktif',
+      created_at: '2026-01-01',
+      cat: { id: 'c-1', nama: 'Milo', ras: 'Anggora', owner_id: 'o-1', created_at: '2026-01-01' },
+      owner: { id: 'o-1', nama: 'Dewi', no_wa: '081234567890', created_at: '2026-01-01' },
+    }
+
+    render(
+      <DailyReportForm
+        isOpen={true}
+        onClose={vi.fn()}
+        booking={mockBooking}
+        today="2026-03-24"
+        formData={{
+          nafsu_makan: 'Baik',
+          minum: 'Normal',
+          feses: 'Normal',
+          urinasi: 'Normal',
+          kondisi_umum: 'Aktif',
+          keterangan: '',
+          foto_url: '',
+        }}
+        setFormData={vi.fn()}
+        onSave={handleSave}
+        isSaving={true}
+      />
+    )
+
+    const submitBtn = screen.getByRole('button', { name: /Menyimpan\.\.\./i })
+    expect(submitBtn).toBeDisabled()
+    fireEvent.click(submitBtn)
+    expect(handleSave).not.toHaveBeenCalled()
+  })
+
+  /* ─── DEFECT 11: ATTENDANCE STATS ZERO / NAN RESILIENCE ─── */
+  it('Defect 11: AttendanceStats handles NaN and zero employees without division-by-zero or crash', () => {
+    const setFilter = vi.fn()
+    const { container } = render(
+      <AttendanceStats
+        statusFilter="all"
+        setStatusFilter={setFilter}
+        totalEmployees={0}
+        statOntime={NaN}
+        statLate={-5}
+        statAbsent={0}
+        statOut={0}
+      />
+    )
+
+    expect(container).toBeInTheDocument()
+    expect(screen.getByText('Total staf')).toBeInTheDocument()
+    // Zero / NaN should be sanitized safely
+    expect(screen.queryByText(/NaN/i)).not.toBeInTheDocument()
+  })
+
+  /* ─── DEFECT 12: POS PHOTO UPLOAD MIME RESTRICTION & ENTROPY ─── */
+  it('Defect 12: posService.uploadPhoto rejects non-image formats', async () => {
+    const maliciousSvg = new File(['<svg onload="alert(1)"></svg>'], 'exploit.svg', {
+      type: 'image/svg+xml',
+    })
+
+    await expect(posService.uploadPhoto(maliciousSvg, 'cats')).rejects.toThrow(
+      /Format file tidak didukung/i
+    )
+
+    const exeFile = new File(['binary'], 'malware.exe', {
+      type: 'application/x-msdownload',
+    })
+
+    await expect(posService.uploadPhoto(exeFile, 'reports')).rejects.toThrow(
+      /Format file tidak didukung/i
+    )
   })
 })

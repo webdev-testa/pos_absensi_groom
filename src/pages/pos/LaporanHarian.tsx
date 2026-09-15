@@ -34,6 +34,7 @@ export default function LaporanHarian() {
     isWaModalOpen,
     setIsWaModalOpen,
     pengaturan,
+    isSaving,
   } = useDailyReport()
 
   const reportedCount = activeBookings.filter(b => b.sudah_laporan).length
@@ -280,6 +281,7 @@ export default function LaporanHarian() {
           formData={formData}
           setFormData={setFormData}
           onSave={saveReport}
+          isSaving={isSaving}
         />
 
         {/* WA TEMPLATE MODAL */}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -37,6 +37,7 @@ interface DailyReportFormProps {
   formData: DailyReportFormData
   setFormData: React.Dispatch<React.SetStateAction<DailyReportFormData>>
   onSave: () => void
+  isSaving?: boolean
 }
 
 export function DailyReportForm({
@@ -47,9 +48,18 @@ export function DailyReportForm({
   formData,
   setFormData,
   onSave,
+  isSaving = false,
 }: DailyReportFormProps) {
   const [photoPreview, setPhotoPreview] = useState<string>(formData.foto_url || '')
   const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    return () => {
+      if (photoPreview && photoPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(photoPreview)
+      }
+    }
+  }, [photoPreview])
 
   if (!booking) return null
 
@@ -331,11 +341,11 @@ export function DailyReportForm({
             </Button>
             <Button
               type="submit"
-              disabled={isUploading}
+              disabled={isUploading || isSaving}
               className="text-xs h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs cursor-pointer gap-1.5 rounded-xl disabled:opacity-50"
             >
               <Save className="w-3.5 h-3.5" />
-              {isUploading ? 'Mengunggah foto...' : 'Simpan & Buka WhatsApp Modal'}
+              {isUploading ? 'Mengunggah foto...' : isSaving ? 'Menyimpan...' : 'Simpan & Buka WhatsApp Modal'}
             </Button>
           </div>
         </form>

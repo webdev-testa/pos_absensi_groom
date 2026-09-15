@@ -78,10 +78,9 @@ export function useCheckIn() {
   })
 
   // Queries
-  const { data: searchResults = [] } = useQuery<Owner[]>({
+  const { data: searchResults = [], isLoading: isSearchingOwners } = useQuery<Owner[]>({
     queryKey: ['pos_owners_search', searchOwnerQuery],
     queryFn: () => posService.searchOwners(searchOwnerQuery),
-    enabled: Boolean(searchOwnerQuery.trim()),
     staleTime: 1000 * 10,
   })
 
@@ -138,7 +137,6 @@ export function useCheckIn() {
     } else {
       setIsNewCat(false)
     }
-    setStep(2)
   }
 
   // Choose to create new owner
@@ -264,6 +262,7 @@ export function useCheckIn() {
       setCreatedBooking(booking)
       queryClient.invalidateQueries({ queryKey: ['pos_bookings'] })
       queryClient.invalidateQueries({ queryKey: ['pos_owners_search'] })
+      queryClient.invalidateQueries({ queryKey: ['pos_search_owners'] })
       toast.success(`Check-In untuk ${booking.cat?.nama || 'Kucing'} berhasil!`, {
         description: 'Data tamu anabul berhasil disimpan ke database.',
       })
@@ -291,6 +290,7 @@ export function useCheckIn() {
     searchOwnerQuery,
     setSearchOwnerQuery,
     searchResults,
+    isSearchingOwners,
     selectedOwner,
     setSelectedOwner,
     selectOwner,

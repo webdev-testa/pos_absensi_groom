@@ -12,7 +12,10 @@ export function useGroomingRealtime(token?: string) {
 
   // Load report data
   const loadData = useCallback(async (showLoading = false) => {
-    if (!token) return
+    if (!token) {
+      setIsLoading(false)
+      return
+    }
     if (showLoading) setIsLoading(true)
 
     try {

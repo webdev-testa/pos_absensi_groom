@@ -126,14 +126,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         {showHR && (
           <>
-            <div className="px-6 py-2 pb-1 font-mono text-[10px] tracking-[1.5px] uppercase text-sidebar-foreground/50 font-semibold shrink-0">
+            <div className="px-6 py-2 pb-1 font-mono text-[10px] tracking-[1.5px] uppercase text-brand-cyan font-semibold shrink-0">
               Operasional
             </div>
             <NavItem to="/admin/dashboard" icon={Home} label="Dashboard" onClick={() => setMobileOpen(false)} />
             <NavItem to="/admin/karyawan" icon={Users} label="Karyawan" onClick={() => setMobileOpen(false)} />
             <NavItem to="/admin/absensi" icon={CalendarClock} label="Absensi" onClick={() => setMobileOpen(false)} />
 
-            <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-sidebar-foreground/50 font-semibold shrink-0">
+            <div className="px-6 pt-5 pb-2 font-mono text-[10px] tracking-[1.5px] uppercase text-emerald-400 font-semibold shrink-0">
               Keuangan & Gaji
             </div>
             <NavItem to="/admin/kasbon" icon={Wallet} label="Kasbon" onClick={() => setMobileOpen(false)} />
@@ -148,7 +148,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           to="/admin/pos" 
           icon={Cat} 
           label="Dashboard Kucing" 
-          activeMatcher={pathname => pathname === '/admin/pos' || pathname.startsWith('/admin/pos/kucing')} 
+          activeMatcher={pathname => {
+            const clean = pathname.replace(/\/$/, '')
+            return clean === '/admin/pos' || clean.startsWith('/admin/pos/kucing')
+          }} 
           onClick={() => setMobileOpen(false)} 
         />
         <NavItem to="/admin/pos/check-in" icon={PlusCircle} label="Check-In Kucing" onClick={() => setMobileOpen(false)} />
@@ -163,7 +166,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           to="/admin/grooming" 
           icon={Scissors} 
           label="Dashboard Grooming" 
-          activeMatcher={pathname => pathname === '/admin/grooming' || pathname.startsWith('/admin/grooming/')} 
+          activeMatcher={pathname => pathname.replace(/\/$/, '') === '/admin/grooming'} 
           onClick={() => setMobileOpen(false)} 
         />
         <NavItem to="/admin/grooming/new" icon={PlusCircle} label="Grooming Baru" onClick={() => setMobileOpen(false)} />

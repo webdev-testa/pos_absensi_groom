@@ -30,7 +30,7 @@ export default function Dashboard() {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px] w-full">
-          <Loader2 className="w-8 h-8 animate-spin text-[#C84B2F]" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
         </div>
       </AdminLayout>
     );

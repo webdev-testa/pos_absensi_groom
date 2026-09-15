@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AdminLayout } from '@/components/layout/AdminLayout'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useActiveBookings } from '@/hooks/pos/useActiveBookings'
 import { useDailyReport } from '@/hooks/pos/useDailyReport'
@@ -32,6 +31,7 @@ export default function PosDashboard() {
     isWaModalOpen,
     setIsWaModalOpen,
     pengaturan,
+    isSaving,
   } = useDailyReport()
 
   const [activeTab, setActiveTab] = useState<'all' | 'unreported' | 'today_checkout'>('all')
@@ -83,14 +83,14 @@ export default function PosDashboard() {
         </div>
 
         {/* STAT METRICS CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-card border border-border rounded-xl divide-y sm:divide-y-0 sm:divide-x divide-border shadow-xs overflow-hidden">
           {/* Total Aktif */}
-          <Card className="bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
+          <div className="p-4 sm:p-5">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Kucing Menginap
               </span>
-              <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-brand-orange flex items-center justify-center text-base">
+              <div className="w-8 h-8 rounded-xl bg-surface-soft text-brand-orange flex items-center justify-center text-sm">
                 🐾
               </div>
             </div>
@@ -98,60 +98,56 @@ export default function PosDashboard() {
               {stats.totalActive}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">Total anabul aktif saat ini</p>
-          </Card>
+          </div>
 
           {/* Belum Laporan */}
-          <Card
+          <div
             onClick={() => setActiveTab('unreported')}
-            className={`border rounded-2xl p-4 sm:p-5 shadow-xs cursor-pointer transition-all ${
-              stats.notReportedToday > 0
-                ? 'bg-amber-50/60 dark:bg-amber-950/40 border-amber-300/80 dark:border-amber-800/60 hover:bg-amber-50 dark:hover:bg-amber-950/60'
-                : 'bg-card border-border'
+            className={`p-4 sm:p-5 cursor-pointer transition-all hover:bg-surface-soft/60 ${
+              activeTab === 'unreported' ? 'bg-amber-500/5' : ''
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-amber-900 dark:text-amber-200 uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-amber-700 dark:text-amber-400 uppercase tracking-wider font-semibold">
                 Belum Laporan
               </span>
-              <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center justify-center">
                 <AlertCircle className="w-4 h-4" />
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-amber-900 dark:text-amber-200 tabular-nums">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-amber-700 dark:text-amber-400 tabular-nums">
               {stats.notReportedToday}
             </div>
-            <p className="text-[11px] text-amber-800 dark:text-amber-300/80 mt-1">
+            <p className="text-[11px] text-muted-foreground mt-1">
               {stats.notReportedToday === 0
                 ? 'Semua kucing sudah dilaporkan hari ini! 🎉'
                 : 'Perlu dicatat kondisinya hari ini'}
             </p>
-          </Card>
+          </div>
 
           {/* Checkout Hari Ini */}
-          <Card
+          <div
             onClick={() => setActiveTab('today_checkout')}
-            className={`border rounded-2xl p-4 sm:p-5 shadow-xs cursor-pointer transition-all ${
-              stats.checkoutToday > 0
-                ? 'bg-rose-50/60 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/60'
-                : 'bg-card border-border'
+            className={`p-4 sm:p-5 cursor-pointer transition-all hover:bg-surface-soft/60 ${
+              activeTab === 'today_checkout' ? 'bg-rose-500/5' : ''
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono text-rose-800 dark:text-rose-200 uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-rose-700 dark:text-rose-400 uppercase tracking-wider font-semibold">
                 Checkout Hari Ini
               </span>
-              <div className="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-700 dark:text-rose-400 flex items-center justify-center">
                 <LogOut className="w-4 h-4" />
               </div>
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-rose-800 dark:text-rose-200 tabular-nums">
+            <div className="font-mono text-2xl sm:text-3xl font-bold text-rose-700 dark:text-rose-400 tabular-nums">
               {stats.checkoutToday}
             </div>
-            <p className="text-[11px] text-rose-700 dark:text-rose-300/80 mt-1">Dijadwalkan pulang hari ini</p>
-          </Card>
+            <p className="text-[11px] text-muted-foreground mt-1">Dijadwalkan pulang hari ini</p>
+          </div>
 
           {/* Checkout Besok */}
-          <Card className="bg-card border border-border rounded-2xl p-4 sm:p-5 shadow-xs">
+          <div className="p-4 sm:p-5">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                 Checkout Besok
@@ -164,7 +160,7 @@ export default function PosDashboard() {
               {stats.checkoutTomorrow}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">Dijadwalkan pulang besok</p>
-          </Card>
+          </div>
         </div>
 
         {/* SECTION: ACTIVE BOOKINGS GRID */}
@@ -258,6 +254,7 @@ export default function PosDashboard() {
         formData={formData}
         setFormData={setFormData}
         onSave={saveReport}
+        isSaving={isSaving}
       />
 
       {/* WHATSAPP TEMPLATE MODAL */}
