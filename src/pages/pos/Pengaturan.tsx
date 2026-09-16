@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { usePengaturan } from '@/hooks/pos/usePengaturan'
@@ -79,19 +80,28 @@ export default function Pengaturan() {
 
   const handleSavePaketSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!paketFormData.nama.trim()) return
+    if (!paketFormData.nama.trim()) {
+      toast.error('Nama paket wajib diisi!')
+      return
+    }
+
+    const hargaNum = Number(paketFormData.harga_per_hari)
+    if (isNaN(hargaNum) || hargaNum <= 0) {
+      toast.error('Harga per hari harus lebih dari Rp 0')
+      return
+    }
 
     if (editingPaket) {
       handleUpdatePaket(editingPaket.id, {
         nama: paketFormData.nama.trim(),
-        harga_per_hari: Number(paketFormData.harga_per_hari),
+        harga_per_hari: Math.max(0, hargaNum),
         deskripsi: paketFormData.deskripsi.trim() || undefined,
         aktif: paketFormData.aktif,
       })
     } else {
       handleAddPaket({
         nama: paketFormData.nama.trim(),
-        harga_per_hari: Number(paketFormData.harga_per_hari),
+        harga_per_hari: Math.max(0, hargaNum),
         deskripsi: paketFormData.deskripsi.trim() || undefined,
         aktif: paketFormData.aktif,
       })
@@ -128,7 +138,7 @@ export default function Pengaturan() {
 
   return (
     <AdminLayout>
-      <div className="font-sans text-foreground space-y-6 pb-12 max-w-4xl mx-auto">
+      <div className="font-sans text-foreground space-y-6 pb-12">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
@@ -153,7 +163,14 @@ export default function Pengaturan() {
               </h1>
             </div>
           </div>
+
+          <div className="text-xs font-medium text-muted-foreground bg-surface-soft px-3 py-1.5 rounded-xl border border-border self-start sm:self-auto">
+            {paketList.length} Paket Kamar Terdaftar
+          </div>
         </div>
+
+        {/* CENTERED CONTENT CONTAINER */}
+        <div className="max-w-4xl mx-auto space-y-6">
 
         {/* SECTION A: INFO USAHA */}
         <Card className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
@@ -473,6 +490,7 @@ export default function Pengaturan() {
             ))}
           </div>
         </Card>
+        </div>
 
         {/* MODAL ADD / EDIT PAKET */}
         <Dialog open={isPaketModalOpen} onOpenChange={setIsPaketModalOpen}>
@@ -481,6 +499,9 @@ export default function Pengaturan() {
               <DialogTitle className="text-base font-heading font-bold text-foreground">
                 {editingPaket ? 'Edit Paket Penitipan' : 'Tambah Paket Baru'}
               </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Konfigurasi nama paket penitipan, tarif harian, dan rincian fasilitas.
+              </DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSavePaketSubmit} className="space-y-4 pt-2">
@@ -508,11 +529,12 @@ export default function Pengaturan() {
                   <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     type="number"
+                    min="1"
                     value={paketFormData.harga_per_hari}
                     onChange={e =>
                       setPaketFormData(prev => ({
                         ...prev,
-                        harga_per_hari: Number(e.target.value),
+                        harga_per_hari: Math.max(0, Number(e.target.value)),
                       }))
                     }
                     className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl tabular-nums"

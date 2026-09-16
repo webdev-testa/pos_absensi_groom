@@ -184,4 +184,209 @@ describe('src/pages/grooming/GroomingCheckIn.tsx - Component Tests', () => {
     expect(setIsNewCat).toHaveBeenCalledWith(true)
     expect(setStep).toHaveBeenCalledWith(2)
   })
+
+  it('calls resetForm when Reset Form button in header is clicked', () => {
+    const resetForm = vi.fn()
+    vi.spyOn(useGroomingFormModule, 'useGroomingForm').mockReturnValue({
+      step: 1,
+      setStep: vi.fn(),
+      searchOwnerQuery: '',
+      setSearchOwnerQuery: vi.fn(),
+      selectedOwner: null,
+      isNewOwner: false,
+      setIsNewOwner: vi.fn(),
+      newOwnerData: { nama: '', no_wa: '', email: '', alamat: '' },
+      setNewOwnerData: vi.fn(),
+      ownerSearchResults: mockOwners,
+      isSearchingOwners: false,
+      handleSelectOwner,
+      handleClearOwner: vi.fn(),
+      handleChooseNewOwner: vi.fn(),
+      selectedCat: null,
+      isNewCat: false,
+      setIsNewCat: vi.fn(),
+      newCatData: {
+        nama: '',
+        ras: 'Domestic',
+        jenis_kelamin: 'Jantan',
+        warna: '',
+        umur_estimasi: '',
+        catatan_kesehatan: '',
+        foto_url: '',
+      },
+      setNewCatData: vi.fn(),
+      ownerCats: [],
+      isLoadingCats: false,
+      handleSelectCat: vi.fn(),
+      handleChooseNewCat: vi.fn(),
+      formData: {
+        paketId: 'pkg-1',
+        paketNama: 'Mandi Sehat',
+        harga: 65000,
+        kondisiAwal: '',
+        catatan: '',
+        groomerName: 'Budi',
+        estimasiMenit: 60,
+        sudahBayar: false,
+        metodeBayar: 'QRIS',
+      },
+      setFormData: vi.fn(),
+      packages: [],
+      handleSelectPackage: vi.fn(),
+      submitCheckIn: vi.fn(),
+      isSubmitting: false,
+      createdSession: null,
+      isSuccessModalOpen: false,
+      setIsSuccessModalOpen: vi.fn(),
+      resetForm,
+    } as any)
+
+    render(
+      <MemoryRouter>
+        <GroomingCheckIn />
+      </MemoryRouter>
+    )
+
+    const resetBtn = screen.getByRole('button', { name: /Reset Form/i })
+    expect(resetBtn).toBeDefined()
+    fireEvent.click(resetBtn)
+    expect(resetForm).toHaveBeenCalledTimes(1)
+  })
+
+  it('disables Reset Form button when isSubmitting is true', () => {
+    vi.spyOn(useGroomingFormModule, 'useGroomingForm').mockReturnValue({
+      step: 1,
+      setStep: vi.fn(),
+      searchOwnerQuery: '',
+      setSearchOwnerQuery: vi.fn(),
+      selectedOwner: null,
+      isNewOwner: false,
+      setIsNewOwner: vi.fn(),
+      newOwnerData: { nama: '', no_wa: '', email: '', alamat: '' },
+      setNewOwnerData: vi.fn(),
+      ownerSearchResults: mockOwners,
+      isSearchingOwners: false,
+      handleSelectOwner,
+      handleClearOwner: vi.fn(),
+      handleChooseNewOwner: vi.fn(),
+      selectedCat: null,
+      isNewCat: false,
+      setIsNewCat: vi.fn(),
+      newCatData: {
+        nama: '',
+        ras: 'Domestic',
+        jenis_kelamin: 'Jantan',
+        warna: '',
+        umur_estimasi: '',
+        catatan_kesehatan: '',
+        foto_url: '',
+      },
+      setNewCatData: vi.fn(),
+      ownerCats: [],
+      isLoadingCats: false,
+      handleSelectCat: vi.fn(),
+      handleChooseNewCat: vi.fn(),
+      formData: {
+        paketId: 'pkg-1',
+        paketNama: 'Mandi Sehat',
+        harga: 65000,
+        kondisiAwal: '',
+        catatan: '',
+        groomerName: 'Budi',
+        estimasiMenit: 60,
+        sudahBayar: false,
+        metodeBayar: 'QRIS',
+      },
+      setFormData: vi.fn(),
+      packages: [],
+      handleSelectPackage: vi.fn(),
+      submitCheckIn: vi.fn(),
+      isSubmitting: true,
+      createdSession: null,
+      isSuccessModalOpen: false,
+      setIsSuccessModalOpen: vi.fn(),
+      resetForm: vi.fn(),
+    } as any)
+
+    render(
+      <MemoryRouter>
+        <GroomingCheckIn />
+      </MemoryRouter>
+    )
+
+    const resetBtn = screen.getByRole('button', { name: /Reset Form/i })
+    expect(resetBtn).toBeDisabled()
+  })
+
+  it('prompts confirmation before reset when user has selected an owner', () => {
+    const resetForm = vi.fn()
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+
+    vi.spyOn(useGroomingFormModule, 'useGroomingForm').mockReturnValue({
+      step: 1,
+      setStep: vi.fn(),
+      searchOwnerQuery: '',
+      setSearchOwnerQuery: vi.fn(),
+      selectedOwner: mockOwners[0],
+      isNewOwner: false,
+      setIsNewOwner: vi.fn(),
+      newOwnerData: { nama: '', no_wa: '', email: '', alamat: '' },
+      setNewOwnerData: vi.fn(),
+      ownerSearchResults: mockOwners,
+      isSearchingOwners: false,
+      handleSelectOwner,
+      handleClearOwner: vi.fn(),
+      handleChooseNewOwner: vi.fn(),
+      selectedCat: null,
+      isNewCat: false,
+      setIsNewCat: vi.fn(),
+      newCatData: {
+        nama: '',
+        ras: 'Domestic',
+        jenis_kelamin: 'Jantan',
+        warna: '',
+        umur_estimasi: '',
+        catatan_kesehatan: '',
+        foto_url: '',
+      },
+      setNewCatData: vi.fn(),
+      ownerCats: [],
+      isLoadingCats: false,
+      handleSelectCat: vi.fn(),
+      handleChooseNewCat: vi.fn(),
+      formData: {
+        paketId: 'pkg-1',
+        paketNama: 'Mandi Sehat',
+        harga: 65000,
+        kondisiAwal: '',
+        catatan: '',
+        groomerName: 'Budi',
+        estimasiMenit: 60,
+        sudahBayar: false,
+        metodeBayar: 'QRIS',
+      },
+      setFormData: vi.fn(),
+      packages: [],
+      handleSelectPackage: vi.fn(),
+      submitCheckIn: vi.fn(),
+      isSubmitting: false,
+      createdSession: null,
+      isSuccessModalOpen: false,
+      setIsSuccessModalOpen: vi.fn(),
+      resetForm,
+    } as any)
+
+    render(
+      <MemoryRouter>
+        <GroomingCheckIn />
+      </MemoryRouter>
+    )
+
+    const resetBtn = screen.getByRole('button', { name: /Reset Form/i })
+    fireEvent.click(resetBtn)
+
+    expect(confirmSpy).toHaveBeenCalled()
+    expect(resetForm).not.toHaveBeenCalled()
+    confirmSpy.mockRestore()
+  })
 })

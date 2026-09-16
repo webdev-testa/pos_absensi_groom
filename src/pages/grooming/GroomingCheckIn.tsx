@@ -17,6 +17,7 @@ import {
   Clock,
   AlertCircle,
   Copy,
+  RefreshCw,
 } from 'lucide-react'
 import {
   Dialog,
@@ -78,17 +79,35 @@ export default function GroomingCheckIn() {
   const [quickTags, setQuickTags] = useState<string[]>([])
 
   const toggleQuickTag = (tag: string) => {
-    let next: string[]
-    if (quickTags.includes(tag)) {
-      next = quickTags.filter(t => t !== tag)
-    } else {
-      next = [...quickTags, tag]
-    }
+    const isRemoving = quickTags.includes(tag)
+    const next = isRemoving ? quickTags.filter(t => t !== tag) : [...quickTags, tag]
     setQuickTags(next)
-    setFormData(prev => ({
-      ...prev,
-      kondisiAwal: next.join(', '),
-    }))
+    setFormData(prev => {
+      const current = prev.kondisiAwal || ''
+      if (isRemoving) {
+        const cleaned = current
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s && s.toLowerCase() !== tag.toLowerCase())
+          .join(', ')
+        return { ...prev, kondisiAwal: cleaned }
+      } else {
+        if (!current.trim()) return { ...prev, kondisiAwal: tag }
+        const existingTags = current.split(',').map(s => s.trim().toLowerCase())
+        if (existingTags.includes(tag.toLowerCase())) return prev
+        return { ...prev, kondisiAwal: `${current.trim()}, ${tag}` }
+      }
+    })
+  }
+
+  const handleReset = () => {
+    if (isSubmitting) return
+    const hasData = selectedOwner || isNewOwner || selectedCat || isNewCat || step > 1
+    if (hasData) {
+      if (!window.confirm('Apakah Anda yakin ingin mereset formulir check-in ini?')) return
+    }
+    setQuickTags([])
+    resetForm()
   }
 
   const handleSendWa = () => {
@@ -116,57 +135,88 @@ export default function GroomingCheckIn() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 pb-12 font-sans text-foreground max-w-4xl mx-auto">
-        {/* HEADER & NAVIGATION */}
-        <div className="flex items-center justify-between pb-4 border-b border-border">
+      <div className="space-y-6 pb-12 font-sans text-foreground">
+        {/* HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
             <Link to="/admin/grooming">
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 w-9 p-0 rounded-xl border-border bg-card hover:bg-surface-soft cursor-pointer"
+                aria-label="Kembali ke Dashboard Grooming"
+                title="Kembali ke Dashboard Grooming"
+                className="h-10 w-10 p-0 rounded-xl border-border hover:bg-surface-soft cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 text-foreground" />
               </Button>
             </Link>
             <div>
               <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase text-brand-orange">
                 <Scissors className="w-3.5 h-3.5" />
-                Check-In Grooming
+                Registrasi Tamu Grooming
               </div>
-              <h1 className="text-xl font-bold font-heading text-foreground tracking-tight">
-                Pendaftaran Kucing Masuk
+              <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground tracking-tight">
+                Pendaftaran Kucing Masuk ✂️
               </h1>
             </div>
           </div>
 
-          {/* STEP INDICATOR */}
-          <div className="flex items-center gap-2">
-            {[
-              { num: 1, label: 'Owner' },
-              { num: 2, label: 'Kucing' },
-              { num: 3, label: 'Layanan' },
-            ].map(s => (
-              <div key={s.num} className="flex items-center gap-1.5">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isSubmitting}
+            onClick={handleReset}
+            className="text-xs h-10 gap-1.5 border-border hover:bg-surface-soft cursor-pointer rounded-xl disabled:opacity-50"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Reset Form
+          </Button>
+        </div>
+
+        {/* STEPPER PROGRESS BAR (CENTERED) */}
+        <div className="flex items-center justify-between max-w-2xl mx-auto px-4">
+          {[
+            { num: 1, title: 'Owner / Pemilik' },
+            { num: 2, title: 'Data Kucing' },
+            { num: 3, title: 'Paket & Layanan' },
+          ].map((s, idx) => {
+            const isCurrent = step === s.num
+            const isDone = step > s.num
+            return (
+              <div key={s.num} className="flex items-center gap-3">
                 <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    step === s.num
-                      ? 'bg-primary text-primary-foreground shadow-xs'
-                      : step > s.num
+                  className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all ${
+                    isCurrent
+                      ? 'bg-brand-orange text-white ring-4 ring-brand-orange/20 shadow-xs'
+                      : isDone
                       ? 'bg-emerald-600 text-white'
-                      : 'bg-surface-soft text-muted-foreground'
+                      : 'bg-surface-soft text-muted-foreground border border-border'
                   }`}
                 >
-                  {step > s.num ? <Check className="w-3.5 h-3.5" /> : s.num}
+                  {isDone ? <Check className="w-4 h-4" /> : s.num}
                 </div>
-                <span className="text-xs font-medium hidden sm:inline text-muted-foreground">
-                  {s.label}
-                </span>
-                {s.num < 3 && <span className="text-muted-foreground/40 hidden sm:inline">•</span>}
+                <div className="hidden sm:block">
+                  <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
+                    Langkah {s.num}
+                  </div>
+                  <div
+                    className={`text-xs font-semibold ${
+                      isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                    }`}
+                  >
+                    {s.title}
+                  </div>
+                </div>
+                {idx < 2 && (
+                  <div className="hidden md:block w-12 h-0.5 bg-border mx-2" />
+                )}
               </div>
-            ))}
-          </div>
+            )
+          })}
         </div>
+
+        {/* CENTERED CONTENT CONTAINER */}
+        <div className="max-w-4xl mx-auto space-y-6">
 
         {/* STEP 1: OWNER SELECTION (DIRECT DIRECTORY + SEARCH) */}
         {step === 1 && (
@@ -382,43 +432,54 @@ export default function GroomingCheckIn() {
               <label className="text-xs font-bold font-heading text-foreground">
                 Pilih Paket Grooming *
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {packages.map(pkg => {
-                  const isSelected = formData.paketNama === pkg.nama
-                  return (
-                    <div
-                      key={pkg.id}
-                      onClick={() => handleSelectPackage(pkg)}
-                      className={`p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
-                        isSelected
-                          ? 'bg-primary/5 border-primary shadow-xs ring-1 ring-primary'
-                          : 'bg-card border-border hover:border-border/80'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="text-xs font-bold text-foreground">{pkg.nama}</div>
-                          {pkg.deskripsi && (
-                            <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                              {pkg.deskripsi}
-                            </div>
+              {packages.length === 0 ? (
+                <div className="p-6 text-center text-xs text-muted-foreground bg-card border border-dashed border-border rounded-xl">
+                  Belum ada paket grooming aktif yang terdaftar di sistem.
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {packages.map(pkg => {
+                    const isSelected = formData.paketNama === pkg.nama
+                    return (
+                      <div
+                        key={pkg.id}
+                        onClick={() => handleSelectPackage(pkg)}
+                        className={`p-3.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
+                          isSelected
+                            ? 'bg-primary/5 border-primary shadow-xs ring-1 ring-primary'
+                            : 'bg-card border-border hover:border-border/80'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="text-xs font-bold text-foreground">{pkg.nama}</div>
+                            {pkg.deskripsi && (
+                              <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                                {pkg.deskripsi}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-xs font-mono font-bold text-foreground shrink-0 bg-surface-soft px-2 py-0.5 rounded-md border border-border">
+                            Rp {formatRupiah(pkg.harga)}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-border/60 text-[11px] text-muted-foreground">
+                          <span className="flex items-center gap-1 font-mono">
+                            <Clock className="w-3 h-3 text-muted-foreground" /> ±
+                            {pkg.durasi_estimasi || 60} menit
+                          </span>
+                          {isSelected && (
+                            <span className="text-primary font-bold flex items-center gap-1">
+                              <Check className="w-3.5 h-3.5" /> Dipilih
+                            </span>
                           )}
                         </div>
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />}
                       </div>
-
-                      <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-border/50 text-xs">
-                        <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> ±{pkg.durasi_estimasi || 60} menit
-                        </span>
-                        <span className="font-bold text-foreground">
-                          Rp {formatRupiah(pkg.harga)}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Initial Condition Checklist & Notes */}
@@ -556,9 +617,19 @@ export default function GroomingCheckIn() {
             </div>
           </div>
         )}
+        </div>
 
         {/* DIALOG: CHECK-IN SUCCESS & 1-CLICK WA SHARE */}
-        <Dialog open={isSuccessModalOpen} onOpenChange={open => !open && setIsSuccessModalOpen(false)}>
+        <Dialog
+          open={isSuccessModalOpen}
+          onOpenChange={open => {
+            if (!open) {
+              setQuickTags([])
+              resetForm()
+              setIsSuccessModalOpen(false)
+            }
+          }}
+        >
           <DialogContent className="sm:max-w-xl max-w-[calc(100%-2rem)] w-full bg-card text-foreground border border-border shadow-2xl p-6 sm:p-7 rounded-2xl max-h-[92vh] overflow-y-auto min-w-0">
             <DialogHeader className="text-left space-y-1 pb-2 border-b border-border/60">
               <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase text-emerald-600 dark:text-emerald-400">

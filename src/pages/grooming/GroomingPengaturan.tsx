@@ -77,19 +77,27 @@ export default function GroomingPengaturan() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!pkgForm.nama.trim()) throw new Error('Nama paket wajib diisi')
+      const hargaNum = Number(pkgForm.harga)
+      if (isNaN(hargaNum) || hargaNum <= 0) {
+        throw new Error('Harga paket harus lebih dari Rp 0')
+      }
+      const durasiNum = Number(pkgForm.durasi_estimasi)
+      if (isNaN(durasiNum) || durasiNum <= 0) {
+        throw new Error('Estimasi durasi minimal 1 menit')
+      }
       if (editingId) {
         await groomingService.updatePaketGrooming(editingId, {
-          nama: pkgForm.nama,
-          harga: Number(pkgForm.harga),
-          deskripsi: pkgForm.deskripsi,
-          durasi_estimasi: Number(pkgForm.durasi_estimasi),
+          nama: pkgForm.nama.trim(),
+          harga: Math.max(0, hargaNum),
+          deskripsi: pkgForm.deskripsi.trim() || undefined,
+          durasi_estimasi: Math.max(1, durasiNum),
         })
       } else {
         await groomingService.addPaketGrooming({
-          nama: pkgForm.nama,
-          harga: Number(pkgForm.harga),
-          deskripsi: pkgForm.deskripsi,
-          durasi_estimasi: Number(pkgForm.durasi_estimasi),
+          nama: pkgForm.nama.trim(),
+          harga: Math.max(0, hargaNum),
+          deskripsi: pkgForm.deskripsi.trim() || undefined,
+          durasi_estimasi: Math.max(1, durasiNum),
           aktif: true,
         })
       }
@@ -108,17 +116,19 @@ export default function GroomingPengaturan() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 pb-12 font-sans text-foreground max-w-4xl mx-auto">
+      <div className="space-y-6 pb-12 font-sans text-foreground">
         {/* HEADER */}
-        <div className="flex items-center justify-between pb-4 border-b border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/80">
           <div className="flex items-center gap-3">
             <Link to="/admin/grooming">
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 w-9 p-0 rounded-xl border-border bg-card hover:bg-surface-soft cursor-pointer"
+                aria-label="Kembali ke Dashboard Grooming"
+                title="Kembali ke Dashboard Grooming"
+                className="h-10 w-10 p-0 rounded-xl border-border hover:bg-surface-soft cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4 text-foreground" />
               </Button>
             </Link>
             <div>
@@ -126,8 +136,8 @@ export default function GroomingPengaturan() {
                 <Settings className="w-3.5 h-3.5" />
                 Pengaturan Grooming
               </div>
-              <h1 className="text-xl font-bold font-heading text-foreground tracking-tight">
-                Kelola Paket & Layanan Grooming
+              <h1 className="text-xl sm:text-2xl font-heading font-bold text-foreground tracking-tight">
+                Kelola Paket & Layanan Grooming ✂️
               </h1>
             </div>
           </div>
@@ -135,18 +145,21 @@ export default function GroomingPengaturan() {
           <Button
             onClick={openAddModal}
             size="sm"
-            className="gap-1.5 text-xs h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer shadow-xs"
+            className="gap-1.5 text-xs h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4" />
             Tambah Paket Baru
           </Button>
         </div>
 
+        {/* CENTERED CONTENT CONTAINER */}
+        <div className="max-w-4xl mx-auto space-y-6">
+
         {/* PACKAGES LIST */}
         <div className="space-y-3">
-          <div className="text-xs font-bold font-heading text-foreground uppercase tracking-wider font-mono">
+          <h2 className="text-xs font-bold font-heading text-foreground uppercase tracking-wider font-mono">
             Daftar Paket Grooming Aktif ({packages.length})
-          </div>
+          </h2>
 
           {isLoading ? (
             <div className="py-12 text-center text-xs font-mono text-muted-foreground">
@@ -212,6 +225,7 @@ export default function GroomingPengaturan() {
             Pada versi ini, seluruh notifikasi WhatsApp menggunakan protokol tautan langsung <strong>`wa.me`</strong>. Saat staf menekan tombol "Kirim WhatsApp", sistem secara otomatis memformat pesan dengan detail kucing, nama paket, dan <strong>tautan live report unik</strong> untuk disalin atau dikirim langsung ke chat owner.
           </p>
         </Card>
+        </div>
 
         {/* DIALOG: ADD/EDIT PACKAGE */}
         <Dialog open={isModalOpen} onOpenChange={open => !open && setIsModalOpen(false)}>
@@ -245,9 +259,10 @@ export default function GroomingPengaturan() {
                   <label className="font-medium text-foreground">Harga (Rp) *</label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder="Cth: 120000"
                     value={pkgForm.harga}
-                    onChange={e => setPkgForm(p => ({ ...p, harga: Number(e.target.value) }))}
+                    onChange={e => setPkgForm(p => ({ ...p, harga: Math.max(0, Number(e.target.value)) }))}
                     className="text-xs h-9 rounded-xl border-border bg-background font-mono"
                   />
                 </div>
@@ -255,10 +270,11 @@ export default function GroomingPengaturan() {
                   <label className="font-medium text-foreground">Estimasi Waktu (Menit)</label>
                   <Input
                     type="number"
+                    min="1"
                     placeholder="Cth: 60"
                     value={pkgForm.durasi_estimasi}
                     onChange={e =>
-                      setPkgForm(p => ({ ...p, durasi_estimasi: Number(e.target.value) }))
+                      setPkgForm(p => ({ ...p, durasi_estimasi: Math.max(1, Number(e.target.value)) }))
                     }
                     className="text-xs h-9 rounded-xl border-border bg-background font-mono"
                   />

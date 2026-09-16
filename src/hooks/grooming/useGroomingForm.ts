@@ -154,6 +154,10 @@ export function useGroomingForm() {
       isSubmittingRef.current = true
 
       try {
+        if (!formData.paketNama || !formData.paketNama.trim()) {
+          throw new Error('Pilih salah satu paket grooming terlebih dahulu!')
+        }
+
         // 1. Resolve or create Owner
         let ownerId = selectedOwner?.id
         if (!ownerId) {
