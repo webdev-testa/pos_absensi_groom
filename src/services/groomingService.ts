@@ -67,10 +67,15 @@ const saveCachedPackages = (pkgs: PaketGrooming[]) => {
 
 export const groomingService = {
   /**
-   * Fetch list of grooming sessions with optional date/status filter.
+   * Fetch list of grooming sessions with optional date/status/range filter.
    * Gracefully falls back to local cache/demo if Supabase tables haven't been created yet.
    */
-  async fetchSessions(filter?: { date?: string; status?: string }): Promise<GroomingSession[]> {
+  async fetchSessions(filter?: {
+    date?: string
+    startDate?: string
+    endDate?: string
+    status?: string
+  }): Promise<GroomingSession[]> {
     try {
       let query = posDb()
         .from('grooming_sessions')
@@ -82,7 +87,21 @@ export const groomingService = {
         `)
         .order('created_at', { ascending: false })
 
-      if (filter?.date) query = query.eq('tanggal', filter.date)
+      let sDate = filter?.startDate
+      let eDate = filter?.endDate
+      if (sDate && eDate && sDate > eDate) {
+        ;[sDate, eDate] = [eDate, sDate]
+      }
+
+      if (sDate && eDate) {
+        query = query.gte('tanggal', sDate).lte('tanggal', eDate)
+      } else if (sDate) {
+        query = query.gte('tanggal', sDate)
+      } else if (eDate) {
+        query = query.lte('tanggal', eDate)
+      } else if (filter?.date) {
+        query = query.eq('tanggal', filter.date)
+      }
       if (filter?.status && filter.status !== 'all') query = query.eq('status', filter.status)
 
       const { data, error } = await query
@@ -91,6 +110,15 @@ export const groomingService = {
         // Table not created yet or schema issue -> fallback to cache
         console.warn('Supabase grooming_sessions not ready, using local state:', error.message)
         let local = getCachedSessions()
+        if (sDate && eDate) {
+          local = local.filter(s => s.tanggal >= sDate! && s.tanggal <= eDate!)
+        } else if (sDate) {
+          local = local.filter(s => s.tanggal >= sDate!)
+        } else if (eDate) {
+          local = local.filter(s => s.tanggal <= eDate!)
+        } else if (filter?.date) {
+          local = local.filter(s => s.tanggal === filter.date)
+        }
         if (filter?.status && filter.status !== 'all') {
           local = local.filter(s => s.status === filter.status)
         }
@@ -105,12 +133,33 @@ export const groomingService = {
         ),
       }))
 
-      // Keep cache synced
-      saveCachedSessions(formatted)
+      // Keep cache synced by merging so historical records are not wiped out
+      const currentCache = getCachedSessions()
+      const sessionMap = new Map(currentCache.map(s => [s.id, s]))
+      formatted.forEach(s => sessionMap.set(s.id, s))
+      saveCachedSessions(Array.from(sessionMap.values()))
       return formatted
     } catch (err) {
       console.warn('fetchSessions fallback triggered:', err)
-      return getCachedSessions()
+      let local = getCachedSessions()
+      let sDate = filter?.startDate
+      let eDate = filter?.endDate
+      if (sDate && eDate && sDate > eDate) {
+        ;[sDate, eDate] = [eDate, sDate]
+      }
+      if (sDate && eDate) {
+        local = local.filter(s => s.tanggal >= sDate! && s.tanggal <= eDate!)
+      } else if (sDate) {
+        local = local.filter(s => s.tanggal >= sDate!)
+      } else if (eDate) {
+        local = local.filter(s => s.tanggal <= eDate!)
+      } else if (filter?.date) {
+        local = local.filter(s => s.tanggal === filter.date)
+      }
+      if (filter?.status && filter.status !== 'all') {
+        local = local.filter(s => s.status === filter.status)
+      }
+      return local
     }
   },
 

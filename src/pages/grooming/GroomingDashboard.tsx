@@ -4,7 +4,18 @@ import { AdminLayout } from '@/components/layout/AdminLayout'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useGroomingSessions } from '@/hooks/grooming/useGroomingSessions'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  useGroomingSessions,
+  type GroomingPeriodPreset,
+} from '@/hooks/grooming/useGroomingSessions'
 import type { GroomingSession } from '@/types/pos'
 import {
   GROOMING_STEPS,
@@ -19,7 +30,7 @@ import {
   generateGroomingDoneWa,
   openWhatsApp,
 } from '@/utils/grooming.utils'
-import { formatRupiah } from '@/utils/pos.utils'
+import { formatRupiah, formatTanggalPendek } from '@/utils/pos.utils'
 import {
   Scissors,
   PlusCircle,
@@ -32,6 +43,12 @@ import {
   User,
   ChevronRight,
   AlertCircle,
+  Calendar,
+  CalendarDays,
+  History,
+  Sun,
+  LayoutGrid,
+  Table as TableIcon,
 } from 'lucide-react'
 import {
   Dialog,
@@ -45,8 +62,17 @@ import { toast } from 'sonner'
 
 export default function GroomingDashboard() {
   const {
-    selectedDate,
-    setSelectedDate,
+    today,
+    periodPreset,
+    setPeriodPreset,
+    startDate,
+    endDate,
+    customStartDate,
+    setCustomStartDate,
+    customEndDate,
+    setCustomEndDate,
+    periodLabel,
+    isLiveToday,
     statusFilter,
     setStatusFilter,
     searchQuery,
@@ -59,6 +85,8 @@ export default function GroomingDashboard() {
     markPickedUp,
     isUpdating,
   } = useGroomingSessions()
+
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
 
   // WA Modal state
   const [waModalSession, setWaModalSession] = useState<GroomingSession | null>(null)
@@ -82,21 +110,30 @@ export default function GroomingDashboard() {
 
   const handleSendWa = () => {
     if (!waModalSession) return
-    const message = getWaMessage(waModalSession, waModalType)
     const phone = waModalSession.owner?.no_wa || ''
-    if (!phone) {
-      toast.error('Nomor WhatsApp pemilik tidak ditemukan.')
+    const cleanPhone = phone.replace(/\D/g, '')
+    if (cleanPhone.length < 8) {
+      toast.error('Nomor WhatsApp pemilik tidak valid (minimal 8 digit).')
       return
     }
+    const message = getWaMessage(waModalSession, waModalType)
     openWhatsApp(phone, message)
     setWaModalSession(null)
   }
 
-  const handleCopyWaText = () => {
+  const handleCopyWaText = async () => {
     if (!waModalSession) return
     const message = getWaMessage(waModalSession, waModalType)
-    navigator.clipboard.writeText(message)
-    toast.success('Pesan WhatsApp berhasil disalin ke clipboard!')
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(message)
+        toast.success('Pesan WhatsApp berhasil disalin ke clipboard!')
+      } else {
+        throw new Error('Clipboard API tidak didukung di peramban ini.')
+      }
+    } catch (err: any) {
+      toast.error('Gagal menyalin pesan: ' + (err?.message || 'Izin ditolak'))
+    }
   }
 
   const handleAdvanceStep = async () => {
@@ -170,9 +207,13 @@ export default function GroomingDashboard() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <Card className="bg-card border-border shadow-2xs rounded-2xl">
             <CardContent className="p-4">
-              <div className="text-[11px] font-mono uppercase text-muted-foreground">Total Sesi Hari Ini</div>
+              <div className="text-[11px] font-mono uppercase text-muted-foreground truncate">
+                {periodPreset === 'today' ? 'Total Sesi Hari Ini' : `Total Sesi (${periodLabel})`}
+              </div>
               <div className="text-2xl font-bold font-heading text-foreground mt-1">{stats.total}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">Kucing terdaftar</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">
+                {periodPreset === 'today' ? 'Kucing terdaftar' : 'Akumulasi periode'}
+              </div>
             </CardContent>
           </Card>
 
@@ -219,14 +260,125 @@ export default function GroomingDashboard() {
 
           <Card className="col-span-2 md:col-span-1 bg-card border-border shadow-2xs rounded-2xl">
             <CardContent className="p-4">
-              <div className="text-[11px] font-mono uppercase text-muted-foreground">Estimasi Omset</div>
+              <div className="text-[11px] font-mono uppercase text-muted-foreground truncate">
+                {periodPreset === 'today' ? 'Estimasi Omset' : `Omset (${periodLabel})`}
+              </div>
               <div className="text-xl font-bold font-heading text-foreground mt-1">
                 Rp {formatRupiah(stats.totalOmset)}
               </div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">Hari ini</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">
+                {periodPreset === 'today' ? 'Hari ini' : 'Periode terpilih'}
+              </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* TIME PERIOD SELECTOR BAR & VIEW MODE */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-card border border-border p-3 rounded-2xl shadow-2xs">
+          {/* Period Presets Segmented Buttons */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs font-mono font-semibold uppercase text-muted-foreground mr-1 hidden sm:inline-flex items-center gap-1">
+              <History className="w-3.5 h-3.5" />
+              Periode:
+            </span>
+            {[
+              { id: 'today' as GroomingPeriodPreset, label: 'Hari Ini', icon: Sun },
+              { id: '7days' as GroomingPeriodPreset, label: '7 Hari (1 Minggu)', icon: CalendarDays },
+              { id: '30days' as GroomingPeriodPreset, label: '30 Hari (1 Bulan)', icon: History },
+              { id: 'custom' as GroomingPeriodPreset, label: 'Kustom Tanggal', icon: Calendar },
+            ].map(item => {
+              const active = periodPreset === item.id
+              const Icon = item.icon
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setPeriodPreset(item.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                    active
+                      ? 'bg-brand-orange text-white font-semibold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-surface-soft border border-border/40'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{item.label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Right: Custom Date Range Inputs + View Mode Toggle */}
+          <div className="flex items-center gap-2 flex-wrap justify-between md:justify-end">
+            {periodPreset === 'custom' && (
+              <div className="flex items-center gap-1.5 bg-surface-soft p-1 rounded-xl border border-border text-xs">
+                <Input
+                  type="date"
+                  value={customStartDate}
+                  onChange={e => setCustomStartDate(e.target.value)}
+                  className="text-xs h-7.5 w-32 rounded-lg border-border bg-background"
+                />
+                <span className="text-[11px] font-mono text-muted-foreground">s/d</span>
+                <Input
+                  type="date"
+                  value={customEndDate}
+                  onChange={e => setCustomEndDate(e.target.value)}
+                  className="text-xs h-7.5 w-32 rounded-lg border-border bg-background"
+                />
+              </div>
+            )}
+
+            {/* View Mode Toggle: Grid Cards vs Compact Table */}
+            <div className="flex items-center gap-1 bg-surface-soft p-1 rounded-xl border border-border shrink-0">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  viewMode === 'grid'
+                    ? 'bg-card text-foreground shadow-2xs font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="Tampilan Kartu"
+                aria-label="Tampilan Kartu"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                  viewMode === 'table'
+                    ? 'bg-card text-foreground shadow-2xs font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="Tampilan Tabel Ringkas"
+                aria-label="Tampilan Tabel Ringkas"
+              >
+                <TableIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* CONTEXTUAL HISTORY BANNER IF NOT TODAY */}
+        {!isLiveToday && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-brand-orange/10 border border-brand-orange/30 rounded-2xl text-xs">
+            <div className="flex items-center gap-2 text-foreground font-medium">
+              <History className="w-4 h-4 text-brand-orange shrink-0" />
+              <span>
+                Menampilkan riwayat grooming periode{' '}
+                <strong className="text-brand-orange">{periodLabel}</strong> (
+                {formatTanggalPendek(startDate)} s/d {formatTanggalPendek(endDate)}) •{' '}
+                <span className="text-muted-foreground">{filteredSessions.length} sesi ditemukan</span>
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPeriodPreset('today')}
+              className="h-8 text-xs text-brand-orange border-brand-orange/40 hover:bg-brand-orange/15 font-semibold px-3 rounded-xl cursor-pointer shrink-0"
+            >
+              <Sun className="w-3.5 h-3.5 mr-1" />
+              Kembali ke Hari Ini
+            </Button>
+          </div>
+        )}
 
         {/* CONTROLS: FILTER TABS & SEARCH */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-card border border-border p-3 rounded-2xl shadow-2xs">
@@ -256,26 +408,15 @@ export default function GroomingDashboard() {
             })}
           </div>
 
-          {/* Search Input & Date */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 md:w-64">
-              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama kucing / owner..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-8 text-xs h-9 rounded-xl border-border bg-background"
-              />
-            </div>
-
-            <div className="relative">
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={e => setSelectedDate(e.target.value)}
-                className="text-xs h-9 w-36 rounded-xl border-border bg-background"
-              />
-            </div>
+          {/* Search Input */}
+          <div className="relative flex-1 md:w-80">
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Cari nama kucing / owner / paket / groomer..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-8 text-xs h-9 rounded-xl border-border bg-background w-full"
+            />
           </div>
         </div>
 
@@ -289,18 +430,148 @@ export default function GroomingDashboard() {
             <div className="w-12 h-12 rounded-2xl bg-surface-soft flex items-center justify-center mb-3">
               <Scissors className="w-6 h-6 text-muted-foreground" />
             </div>
-            <div className="text-sm font-semibold font-heading text-foreground">Tidak ada sesi grooming</div>
+            <div className="text-sm font-semibold font-heading text-foreground">
+              Tidak ada sesi grooming untuk periode {periodLabel}
+            </div>
             <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-              Belum ada antrian grooming untuk filter ini. Daftarkan kucing yang baru datang melalui Check-in Baru.
+              Belum ada antrian atau riwayat grooming yang sesuai filter ini.
             </p>
-            <Link to="/admin/grooming/new" className="mt-4">
-              <Button size="sm" className="gap-1.5 text-xs h-9 rounded-xl cursor-pointer">
-                <PlusCircle className="w-3.5 h-3.5" />
-                Check-in Grooming Baru
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2 mt-4">
+              {!isLiveToday && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPeriodPreset('today')}
+                  className="text-xs h-9 rounded-xl cursor-pointer"
+                >
+                  <Sun className="w-3.5 h-3.5 mr-1" />
+                  Kembali ke Hari Ini
+                </Button>
+              )}
+              <Link to="/admin/grooming/new">
+                <Button size="sm" className="gap-1.5 text-xs h-9 rounded-xl cursor-pointer">
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  Check-in Grooming Baru
+                </Button>
+              </Link>
+            </div>
+          </div>
+        ) : viewMode === 'table' ? (
+          /* TABLE VIEW */
+          <div className="bg-card border border-border rounded-2xl shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-surface-soft/60">
+                  <TableRow>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Tanggal</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Kucing</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Pemilik</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Paket Layanan</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Biaya</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Groomer</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase">Status & Step</TableHead>
+                    <TableHead className="text-[11px] font-mono font-semibold uppercase text-right">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSessions.map(session => {
+                    const statusBadge = getStatusBadgeConfig(session.status)
+                    const stepBadge = getStepBadgeConfig(session.current_step)
+                    return (
+                      <TableRow key={session.id} className="hover:bg-surface-soft/40 transition-colors">
+                        <TableCell className="text-xs font-mono text-muted-foreground whitespace-nowrap">
+                          <div className="font-semibold text-foreground">
+                            {formatTanggalPendek(session.tanggal)}
+                          </div>
+                          {session.waktu_masuk && !isNaN(new Date(session.waktu_masuk).getTime()) && (
+                            <div className="text-[10.5px] text-muted-foreground">
+                              {new Date(session.waktu_masuk).toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-surface-soft border border-border overflow-hidden shrink-0 flex items-center justify-center">
+                              {session.cat?.foto_url ? (
+                                <img
+                                  src={session.cat.foto_url}
+                                  alt={session.cat?.nama || 'Cat'}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-base">🐱</span>
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-foreground">{session.cat?.nama || 'Kucing'}</div>
+                              <div className="text-[10px] text-muted-foreground">{session.cat?.ras || 'Domestic'}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          <div className="font-medium text-foreground">{session.owner?.nama || '-'}</div>
+                          <div className="text-[10.5px] font-mono text-muted-foreground">{session.owner?.no_wa || '-'}</div>
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          <div className="font-semibold text-foreground">{session.paket}</div>
+                        </TableCell>
+                        <TableCell className="text-xs font-mono font-bold text-foreground whitespace-nowrap">
+                          Rp {formatRupiah(session.harga)}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                          {session.groomer_name || '-'}
+                        </TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${statusBadge.color}`}>
+                              {statusBadge.label}
+                            </span>
+                            <span className="text-[10.5px] text-muted-foreground flex items-center gap-1">
+                              <span>{GROOMING_STEP_EMOJI[session.current_step]}</span>
+                              <span>{stepBadge.label}</span>
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                handleOpenWaModal(
+                                  session,
+                                  session.status === 'selesai' || session.status === 'dijemput' ? 'done' : 'checkin'
+                                )
+                              }
+                              className="text-[11px] h-7.5 px-2.5 border-border hover:border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1 rounded-lg cursor-pointer"
+                              title="Kirim WhatsApp"
+                            >
+                              <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                              <span className="hidden sm:inline">WA</span>
+                            </Button>
+                            <a
+                              href={getGroomingReportUrl(session.public_token)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center h-7.5 w-7.5 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors cursor-pointer"
+                              title="Buka Live Report Customer"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         ) : (
+          /* GRID VIEW */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSessions.map(session => {
               const stepBadge = getStepBadgeConfig(session.current_step)
@@ -344,11 +615,19 @@ export default function GroomingDashboard() {
                       </div>
                     </div>
 
-                    <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border shrink-0 ${statusBadge.color}`}
-                    >
-                      {statusBadge.label}
-                    </span>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span
+                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${statusBadge.color}`}
+                      >
+                        {statusBadge.label}
+                      </span>
+                      {(!isLiveToday || session.tanggal !== today) && session.tanggal && (
+                        <span className="text-[10px] font-mono text-muted-foreground flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-muted-foreground" />
+                          {formatTanggalPendek(session.tanggal)}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* CARD BODY */}
@@ -454,19 +733,19 @@ export default function GroomingDashboard() {
                         onClick={() =>
                           handleOpenWaModal(
                             session,
-                            session.status === 'selesai' ? 'done' : 'checkin'
+                            session.status === 'selesai' || session.status === 'dijemput' ? 'done' : 'checkin'
                           )
                         }
                         className="flex-1 text-[11px] h-8 border-border hover:border-emerald-600 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 gap-1.5 rounded-xl cursor-pointer"
                       >
                         <MessageCircle className="w-3.5 h-3.5 fill-current" />
-                        {session.status === 'selesai' ? 'WA Siap Jemput' : 'WA Link Live'}
+                        {session.status === 'selesai' || session.status === 'dijemput' ? 'WA Info Selesai' : 'WA Link Live'}
                       </Button>
 
                       <a
                         href={getGroomingReportUrl(session.public_token)}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center justify-center h-8 px-2.5 rounded-xl border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-surface-soft transition-colors cursor-pointer"
                         title="Buka Live Report Customer"
                       >

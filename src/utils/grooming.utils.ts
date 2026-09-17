@@ -26,12 +26,13 @@ export const generateGroomingCheckinWa = (
   reportUrl: string,
   namaUsaha: string = 'Dr. Meow Cat Grooming'
 ): string => {
-  const estimasi = session.estimasi_selesai
-    ? new Date(session.estimasi_selesai).toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }) + ' WIB'
-    : 'Menyesuaikan antrian'
+  const estimasi =
+    session.estimasi_selesai && !isNaN(new Date(session.estimasi_selesai).getTime())
+      ? new Date(session.estimasi_selesai).toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }) + ' WIB'
+      : 'Menyesuaikan antrian'
 
   return `Halo Kak ${session.owner?.nama || 'Owner'}! 👋🐾
 

@@ -267,4 +267,121 @@ describe('Red-Team Verification Test Suite - Cat Grooming Resilience & Security'
       )
     })
   })
+
+  describe('Defect 11: Date range query builder in fetchSessions', () => {
+    it('applies gte and lte when startDate and endDate are provided to Supabase query', async () => {
+      const mockGte = vi.fn().mockReturnThis()
+      const mockLte = vi.fn().mockResolvedValue({ data: [], error: null })
+      const mockSelect = vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          gte: mockGte.mockReturnValue({
+            lte: mockLte,
+          }),
+        }),
+      })
+
+      ;(supabase.schema as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({ select: mockSelect }),
+      })
+
+      await groomingService.fetchSessions({
+        startDate: '2026-09-10',
+        endDate: '2026-09-17',
+      })
+
+      expect(mockGte).toHaveBeenCalledWith('tanggal', '2026-09-10')
+      expect(mockLte).toHaveBeenCalledWith('tanggal', '2026-09-17')
+    })
+  })
+
+  describe('Defect 12: Date range filtering in cache fallback', () => {
+    it('correctly filters cached sessions by startDate and endDate range', async () => {
+      // Mock Supabase error to force local cache fallback
+      ;(supabase.schema as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              gte: vi.fn().mockReturnValue({
+                lte: vi.fn().mockResolvedValue({ data: null, error: { message: 'Table not ready' } }),
+              }),
+            }),
+          }),
+        }),
+      })
+
+      const testSessions = [
+        { id: 's1', tanggal: '2026-09-17', status: 'antrian', harga: 50000 },
+        { id: 's2', tanggal: '2026-09-14', status: 'dijemput', harga: 60000 },
+        { id: 's3', tanggal: '2026-09-01', status: 'dijemput', harga: 70000 },
+        { id: 's4', tanggal: '2026-08-20', status: 'dijemput', harga: 80000 },
+      ]
+      localStorage.setItem('dr_meow_grooming_sessions_cache', JSON.stringify(testSessions))
+
+      // Query past 7 days (2026-09-11 to 2026-09-17)
+      const weeklySessions = await groomingService.fetchSessions({
+        startDate: '2026-09-11',
+        endDate: '2026-09-17',
+      })
+
+      // Should include s1 and s2, but exclude s3 and s4
+      expect(weeklySessions.map(s => s.id)).toEqual(['s1', 's2'])
+    })
+  })
+
+  describe('Defect 13: Cache preservation on filtered fetchSessions', () => {
+    it('does not wipe out historical cached sessions when fetching a filtered date range', async () => {
+      const historicalSessions = [
+        { id: 'sess-today', tanggal: '2026-09-17', paket: 'Mandi Sehat', harga: 50000 },
+        { id: 'sess-past', tanggal: '2026-09-01', paket: 'Full Grooming', harga: 120000 },
+      ]
+      localStorage.setItem('dr_meow_grooming_sessions_cache', JSON.stringify(historicalSessions))
+
+      // Supabase returns only today's session
+      const mockSelect = vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          gte: vi.fn().mockReturnValue({
+            lte: vi.fn().mockResolvedValue({
+              data: [{ id: 'sess-today', tanggal: '2026-09-17', harga: 50000, progress: [] }],
+              error: null,
+            }),
+          }),
+        }),
+      })
+      ;(supabase.schema as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({ select: mockSelect }),
+      })
+
+      await groomingService.fetchSessions({ startDate: '2026-09-17', endDate: '2026-09-17' })
+
+      const raw = localStorage.getItem('dr_meow_grooming_sessions_cache')
+      const cached = JSON.parse(raw || '[]')
+      // sess-past must still exist in the cache!
+      expect(cached.find((s: any) => s.id === 'sess-past')).toBeDefined()
+      expect(cached.find((s: any) => s.id === 'sess-today')).toBeDefined()
+    })
+  })
+
+  describe('Defect 14: Inverted startDate and endDate normalization', () => {
+    it('gracefully normalizes inverted startDate and endDate in fetchSessions', async () => {
+      const mockGte = vi.fn().mockReturnThis()
+      const mockLte = vi.fn().mockResolvedValue({ data: [], error: null })
+      const mockSelect = vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          gte: mockGte.mockReturnValue({ lte: mockLte }),
+        }),
+      })
+      ;(supabase.schema as any).mockReturnValue({
+        from: vi.fn().mockReturnValue({ select: mockSelect }),
+      })
+
+      await groomingService.fetchSessions({
+        startDate: '2026-09-20',
+        endDate: '2026-09-10',
+      })
+
+      // Should swap and query from 2026-09-10 to 2026-09-20
+      expect(mockGte).toHaveBeenCalledWith('tanggal', '2026-09-10')
+      expect(mockLte).toHaveBeenCalledWith('tanggal', '2026-09-20')
+    })
+  })
 })
