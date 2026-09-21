@@ -18,7 +18,8 @@ import {
   Scissors,
   Sparkles,
   ChevronRight,
-  Briefcase
+  Briefcase,
+  MapPin
 } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { supabase } from '@/lib/supabase'
@@ -270,7 +271,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <NavItem to="/admin/dashboard" icon={Home} label="Dashboard" onClick={() => setMobileOpen(false)} />
                 <NavItem to="/admin/karyawan" icon={Users} label="Karyawan" onClick={() => setMobileOpen(false)} />
-                <NavItem to="/admin/absensi" icon={CalendarClock} label="Absensi" onClick={() => setMobileOpen(false)} />
+                <NavItem 
+                  to="/admin/absensi" 
+                  icon={CalendarClock} 
+                  label="Absensi" 
+                  activeMatcher={p => cleanPath(p) === '/admin/absensi'} 
+                  onClick={() => setMobileOpen(false)} 
+                />
+                <NavItem 
+                  to="/admin/absensi/sebaran" 
+                  icon={MapPin} 
+                  label="Sebaran GPS" 
+                  onClick={() => setMobileOpen(false)} 
+                />
               </NavSection>
 
               <NavSection

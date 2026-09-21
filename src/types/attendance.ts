@@ -7,6 +7,10 @@ export interface AttendanceRecord {
   status: string;
   is_flagged: boolean;
   clock_in_photo_url: string | null;
+  clock_in_lat?: number | null;
+  clock_in_lng?: number | null;
+  clock_out_lat?: number | null;
+  clock_out_lng?: number | null;
   users: {
     name: string;
     emp_id: string;

@@ -5,7 +5,8 @@ import { AttendanceTable } from "@/components/page-sections/attendance/Attendanc
 import { AttendanceFeed } from "@/components/page-sections/attendance/AttendanceFeed";
 import { LeaveRequests } from "@/components/page-sections/attendance/LeaveRequests";
 import { HolidayManagement } from "@/components/page-sections/attendance/HolidayManagement";
-import { Clock, Plus, Users, FileText, CalendarDays } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Clock, Plus, Users, FileText, CalendarDays, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AbsenEmployee() {
@@ -88,12 +89,21 @@ export default function AbsenEmployee() {
           </div>
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
             {mainTab === "absensi" && (
-              <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-3.5 py-2 text-xs text-muted-foreground shadow-xs">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
-                <span>Live · <strong className="text-foreground font-semibold font-mono">
-                  {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-                </strong></span>
-              </div>
+              <>
+                <Link
+                  to="/admin/absensi/sebaran"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-3.5 py-2 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  Lihat Sebaran GPS
+                </Link>
+                <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-3.5 py-2 text-xs text-muted-foreground shadow-xs">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
+                  <span>Live · <strong className="text-foreground font-semibold font-mono">
+                    {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                  </strong></span>
+                </div>
+              </>
             )}
             {mainTab === "cuti" && (
               <button

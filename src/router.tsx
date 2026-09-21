@@ -10,6 +10,7 @@ import ManageEmployee from "@/pages/admin/manageEmployee";
 import Kasbon from "@/pages/admin/manageKasbon";
 import Payroll from "@/pages/admin/managePayroll";
 import AbsenEmployee from "@/pages/admin/absenEmployee";
+import SebaranGPS from "@/pages/admin/sebaranGPS";
 import LoginPage from "@/pages/login/loginPage";
 import PosDashboard from "@/pages/pos/PosDashboard";
 import CheckIn from "@/pages/pos/CheckIn";
@@ -158,6 +159,10 @@ export const router = createBrowserRouter([
               {
                 path: "/admin/absensi",
                 element: <AbsenEmployee />,
+              },
+              {
+                path: "/admin/absensi/sebaran",
+                element: <SebaranGPS />,
               },
               {
                 path: "/admin/kasbon",
