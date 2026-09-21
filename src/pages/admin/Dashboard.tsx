@@ -1,33 +1,81 @@
-import { useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useDashboard } from '@/hooks/useDashboard';
+import { AdminLayout } from '@/components/layout/AdminLayout';
+import { DashboardHeader } from '@/components/page-sections/dashboard/DashboardHeader';
+import { AlertBanner } from '@/components/page-sections/dashboard/AlertBanner';
+import { StatCards } from '@/components/page-sections/dashboard/StatCards';
+import { TodayAttendance } from '@/components/page-sections/dashboard/TodayAttendance';
+import { AttentionNeeded } from '@/components/page-sections/dashboard/AttentionNeeded';
+import { KasbonOverview } from '@/components/page-sections/dashboard/KasbonOverview';
+import { PayrollStatus } from '@/components/page-sections/dashboard/PayrollStatus';
+import { RecentActivities } from '@/components/page-sections/dashboard/RecentActivities';
+import { Loader2 } from 'lucide-react';
 
-export default function AdminDashboard() {
-  useEffect(() => {
+export default function Dashboard() {
+  const {
+    liveTime,
+    todayLabel,
+    currentMonth,
+    isInitialLoading,
+    activeEmployeesCount,
+    attendanceTodayStats,
+    kasbonStats,
+    payrollStats,
+    pastKasbonAlert,
+    monthlyMetrics,
+    attentionItems,
+    activities,
+  } = useDashboard();
 
-    const channel = supabase
-      .channel('attendance-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',          // fire when new clock-in comes in
-          schema: 'hr',
-          table: 'attendance'
-        },
-        (payload) => {
-          console.log('New clock-in!', payload.new)
-          // update your UI here — e.g. add the new row to your table
-        }
-      )
-      .subscribe()
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [])
+  if (isInitialLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px] w-full">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <p>Listening for real-time attendance changes...</p>
-    </div>
-  )
+    <AdminLayout>
+      <div className="font-sans text-foreground w-full">
+        
+        {/* HEADER */}
+        <DashboardHeader
+          todayLabel={todayLabel}
+          liveTime={liveTime}
+        />
+
+        {/* ALERT BANNER */}
+        <AlertBanner pastKasbonAlert={pastKasbonAlert} />
+
+        {/* STAT CARDS */}
+        <StatCards
+          attendanceTodayStats={attendanceTodayStats}
+          activeEmployeesCount={activeEmployeesCount}
+          kasbonStats={kasbonStats}
+          payrollStats={payrollStats}
+        />
+
+        {/* MAIN GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <TodayAttendance
+            todayLabel={todayLabel}
+            attendanceTodayStats={attendanceTodayStats}
+            activeEmployeesCount={activeEmployeesCount}
+            monthlyMetrics={monthlyMetrics}
+          />
+          <AttentionNeeded attentionItems={attentionItems} />
+        </div>
+
+        {/* BOTTOM ROW */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <KasbonOverview kasbonStats={kasbonStats} />
+          <PayrollStatus payrollStats={payrollStats} currentMonth={currentMonth} />
+          <RecentActivities activities={activities} />
+        </div>
+
+      </div>
+    </AdminLayout>
+  );
 }

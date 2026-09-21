@@ -1,0 +1,674 @@
+import {
+  Cat as CatIcon,
+  CheckCircle2,
+  Calendar,
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  DollarSign,
+  Info,
+} from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { formatRupiah, hitungMalam } from '@/utils/pos.utils'
+import { OwnerContactPicker } from '@/components/pos/OwnerContactPicker'
+import { toast } from 'sonner'
+import type { useCheckIn } from '@/hooks/pos/useCheckIn'
+
+type CheckInHookReturn = ReturnType<typeof useCheckIn>
+
+interface CheckInFormProps {
+  checkIn: CheckInHookReturn
+  onInitiateCheckIn?: () => void
+}
+
+export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
+  const {
+    step,
+    setStep,
+    // Step 1
+    searchOwnerQuery,
+    setSearchOwnerQuery,
+    searchResults,
+    isSearchingOwners,
+    selectedOwner,
+    setSelectedOwner,
+    selectOwner,
+    isNewOwner,
+    setIsNewOwner,
+    newOwnerData,
+    setNewOwnerData,
+    // Step 2
+    ownerCats,
+    selectedCat,
+    setSelectedCat,
+    selectCat,
+    isNewCat,
+    setIsNewCat,
+    chooseNewCat,
+    newCatData,
+    setNewCatData,
+    // Step 3
+    activePakets,
+    bookingData,
+    setBookingData,
+    selectPaket,
+    // Final
+    submitCheckIn,
+  } = checkIn
+
+  // Step 3 Live calculation
+  const totalNights = hitungMalam(
+    bookingData.tanggal_masuk,
+    bookingData.tanggal_keluar_estimasi
+  )
+  const totalCost = totalNights * (bookingData.harga_per_hari || 0)
+  const sisaBayar = Math.max(0, totalCost - (bookingData.dp || 0))
+
+  return (
+    <div className="space-y-6">
+      {/* Progress Step Bar */}
+      <div className="flex items-center justify-between max-w-2xl mx-auto px-4">
+        {[
+          { num: 1, title: 'Owner / Pemilik' },
+          { num: 2, title: 'Data Kucing' },
+          { num: 3, title: 'Paket & Check-In' },
+        ].map((s, idx) => {
+          const isCurrent = step === s.num
+          const isDone = step > s.num
+          return (
+            <div key={s.num} className="flex items-center gap-3">
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all ${
+                  isCurrent
+                    ? 'bg-brand-orange text-white ring-4 ring-brand-orange/20 shadow-xs'
+                    : isDone
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-surface-soft text-muted-foreground border border-border'
+                }`}
+              >
+                {isDone ? <CheckCircle2 className="w-4 h-4" /> : s.num}
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
+                  Langkah {s.num}
+                </div>
+                <div
+                  className={`text-xs font-semibold ${
+                    isCurrent ? 'text-foreground' : 'text-muted-foreground'
+                  }`}
+                >
+                  {s.title}
+                </div>
+              </div>
+              {idx < 2 && (
+                <div className="hidden md:block w-12 h-0.5 bg-border mx-2" />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* STEP 1: OWNER SELECTION (DIRECT CONTACT DIRECTORY + SEARCH) */}
+      {step === 1 && (
+        <div className="max-w-3xl mx-auto">
+          <OwnerContactPicker
+            selectedOwner={selectedOwner}
+            onSelectOwner={selectOwner}
+            onClearOwner={() => {
+              setSelectedOwner(null)
+              setSelectedCat(null)
+            }}
+            isNewOwner={isNewOwner}
+            onToggleNewOwner={setIsNewOwner}
+            newOwnerData={newOwnerData}
+            onChangeNewOwnerData={setNewOwnerData}
+            searchQuery={searchOwnerQuery}
+            onSearchChange={setSearchOwnerQuery}
+            owners={searchResults}
+            isLoading={isSearchingOwners}
+            onProceedNext={() => {
+              if (!selectedOwner && (!isNewOwner || !newOwnerData.nama || !newOwnerData.no_wa)) {
+                toast.error('Pilih owner atau isi formulir owner baru terlebih dahulu!')
+                return
+              }
+              if (isNewOwner || !selectedOwner || ownerCats.length === 0) {
+                setIsNewCat(true)
+              } else {
+                setIsNewCat(false)
+              }
+              setStep(2)
+            }}
+            accentColor="orange"
+            title="Langkah 1: Identitas Pemilik Kucing"
+            description="Pilih dari daftar kontak owner terdaftar atau daftarkan pelanggan baru untuk penitipan."
+          />
+        </div>
+      )}
+
+      {/* STEP 2: CAT SELECTION */}
+      {step === 2 && (
+        <Card className="max-w-2xl mx-auto bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs">
+          <div className="flex items-center justify-between mb-5 pb-4 border-b border-border/80">
+            <div>
+              <h2 className="text-base font-heading font-bold text-foreground">
+                Langkah 2: Pilih atau Tambah Kucing
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Owner:{' '}
+                <strong className="text-primary">
+                  {selectedOwner ? selectedOwner.nama : newOwnerData.nama}
+                </strong>
+                {selectedOwner && (
+                  <span className="font-mono text-muted-foreground ml-1">
+                    ({selectedOwner.no_wa})
+                  </span>
+                )}
+              </p>
+            </div>
+            {selectedOwner && !isNewCat && ownerCats.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={chooseNewCat}
+                className="text-xs h-8.5 gap-1.5 border-brand-orange/40 text-brand-orange hover:bg-brand-orange/10 font-medium cursor-pointer rounded-xl"
+              >
+                <CatIcon className="w-3.5 h-3.5" />
+                + Kucing Baru
+              </Button>
+            )}
+          </div>
+
+          {/* If owner has existing cats and not in new-cat mode */}
+          {selectedOwner && !isNewCat && ownerCats.length > 0 ? (
+            <div className="space-y-3">
+              <div className="text-xs font-semibold text-foreground mb-2">
+                Pilih kucing yang akan dititipkan:
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {ownerCats.map(cat => (
+                  <div
+                    key={cat.id}
+                    onClick={() => selectCat(cat)}
+                    className="p-4 bg-surface-soft hover:bg-surface-muted/90 border-2 border-border hover:border-brand-orange rounded-xl transition-all cursor-pointer flex items-center gap-3.5 group"
+                  >
+                    <div className="w-12 h-12 rounded-xl overflow-hidden bg-card border border-border shrink-0">
+                      {cat.foto_url ? (
+                        <img
+                          src={cat.foto_url}
+                          alt={cat.nama}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xl bg-amber-500/10">
+                          🐾
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-bold text-foreground group-hover:text-brand-orange transition-colors truncate">
+                        {cat.nama}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {cat.ras || 'Domestik'} • {cat.jenis_kelamin || 'Jantan'}
+                      </div>
+                      {cat.umur_estimasi && (
+                        <div className="text-[11px] text-muted-foreground/70 mt-0.5">
+                          Usia: {cat.umur_estimasi}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pt-4 border-t border-border flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali ke Owner
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={chooseNewCat}
+                  className="text-xs h-10 border-brand-orange text-brand-orange hover:bg-brand-orange/10 cursor-pointer rounded-xl"
+                >
+                  Tambah Kucing Baru Lainnya
+                </Button>
+              </div>
+            </div>
+          ) : (
+            /* New Cat Form */
+            <div className="space-y-4">
+              {selectedOwner && ownerCats.length > 0 && (
+                <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-center justify-between">
+                  <span>📝 Menambahkan kucing baru untuk {selectedOwner.nama}</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewCat(false)}
+                    className="text-[11px] underline font-medium text-amber-900 hover:text-amber-700 cursor-pointer"
+                  >
+                    Pilih dari kucing yang sudah ada
+                  </button>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="cat-name" className="block text-xs font-semibold text-foreground mb-1">
+                    Nama Kucing *
+                  </label>
+                  <Input
+                    id="cat-name"
+                    type="text"
+                    placeholder="Contoh: Mochi / Milo"
+                    value={newCatData.nama}
+                    onChange={e =>
+                      setNewCatData(prev => ({ ...prev, nama: e.target.value }))
+                    }
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="cat-breed" className="block text-xs font-semibold text-foreground mb-1">
+                    Ras Kucing
+                  </label>
+                  <Input
+                    id="cat-breed"
+                    type="text"
+                    placeholder="Contoh: British Shorthair, Persia, Domestik"
+                    value={newCatData.ras}
+                    onChange={e =>
+                      setNewCatData(prev => ({ ...prev, ras: e.target.value }))
+                    }
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <span className="block text-xs font-semibold text-foreground mb-1">
+                    Jenis Kelamin *
+                  </span>
+                  <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Jenis kelamin kucing">
+                    {(['Jantan', 'Betina'] as const).map(gender => {
+                      const isSelected = newCatData.jenis_kelamin === gender
+                      return (
+                        <button
+                          key={gender}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSelected}
+                          onClick={() =>
+                            setNewCatData(prev => ({ ...prev, jenis_kelamin: gender }))
+                          }
+                          className={`py-2 text-xs font-medium rounded-xl border transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                              : 'bg-surface-soft text-muted-foreground border-border hover:bg-card'
+                          }`}
+                        >
+                          {gender === 'Jantan' ? '♂ Jantan' : '♀ Betina'}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="cat-color" className="block text-xs font-semibold text-foreground mb-1">
+                    Warna / Corak
+                  </label>
+                  <Input
+                    id="cat-color"
+                    type="text"
+                    placeholder="Contoh: Abu-abu / Tuxedo"
+                    value={newCatData.warna}
+                    onChange={e =>
+                      setNewCatData(prev => ({ ...prev, warna: e.target.value }))
+                    }
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="cat-age" className="block text-xs font-semibold text-foreground mb-1">
+                    Estimasi Usia
+                  </label>
+                  <Input
+                    id="cat-age"
+                    type="text"
+                    placeholder="Contoh: 1.5 tahun"
+                    value={newCatData.umur_estimasi}
+                    onChange={e =>
+                      setNewCatData(prev => ({
+                        ...prev,
+                        umur_estimasi: e.target.value,
+                      }))
+                    }
+                    className="h-10 text-xs sm:text-sm bg-card border-input rounded-xl"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="cat-notes" className="block text-xs font-semibold text-foreground mb-1">
+                  Catatan Kesehatan / Alergi / Kebiasaan
+                </label>
+                <textarea
+                  id="cat-notes"
+                  placeholder="Contoh: Alergi ayam, suka treats salmon, riwayat flu sembuh"
+                  value={newCatData.catatan_kesehatan}
+                  onChange={e =>
+                    setNewCatData(prev => ({
+                      ...prev,
+                      catatan_kesehatan: e.target.value,
+                    }))
+                  }
+                  rows={2}
+                  className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
+                />
+              </div>
+
+              <div className="pt-4 border-t border-border flex items-center justify-between">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                  className="text-xs h-10 cursor-pointer rounded-xl border-border"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali ke Owner
+                </Button>
+                <Button
+                  type="button"
+                  disabled={!newCatData.nama.trim()}
+                  onClick={() => {
+                    setSelectedCat(null)
+                    setStep(3)
+                  }}
+                  className="text-xs h-10 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer rounded-xl shadow-xs"
+                >
+                  Lanjut ke Paket Penitipan <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* STEP 3: BOOKING DETAILS & PACKAGE */}
+      {step === 3 && (
+        <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left 2 Cols: Form */}
+          <Card className="md:col-span-2 bg-card border border-border rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
+            <div className="pb-3 border-b border-border/80">
+              <h2 className="text-base font-heading font-bold text-foreground">
+                Langkah 3: Rincian Paket & Tanggal Menginap
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Kucing:{' '}
+                <strong className="text-brand-orange">
+                  {selectedCat ? selectedCat.nama : newCatData.nama}
+                </strong>{' '}
+                • Owner:{' '}
+                <strong className="text-primary">
+                  {selectedOwner ? selectedOwner.nama : newOwnerData.nama}
+                </strong>
+              </p>
+            </div>
+
+            {/* Paket Selection Cards */}
+            <div>
+              <span className="block text-xs font-semibold text-foreground mb-2">
+                Pilih Paket Penitipan *
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5" role="radiogroup" aria-label="Paket penitipan kucing">
+                {activePakets.map(pkg => {
+                  const isSelected = bookingData.paket === pkg.nama
+                  return (
+                    <div
+                      key={pkg.id}
+                      role="radio"
+                      aria-checked={isSelected}
+                      tabIndex={0}
+                      onKeyDown={e => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                          e.preventDefault()
+                          selectPaket(pkg.nama)
+                        }
+                      }}
+                      onClick={() => selectPaket(pkg.nama)}
+                      className={`p-3 rounded-xl border-2 transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                        isSelected
+                          ? 'border-brand-orange bg-amber-50/50 dark:bg-amber-950/30 shadow-xs'
+                          : 'border-border bg-surface-soft hover:bg-card hover:border-border'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-heading font-bold text-xs text-foreground flex items-center gap-1">
+                          <Sparkles
+                            className={`w-3.5 h-3.5 ${
+                              isSelected ? 'text-brand-orange' : 'text-muted-foreground'
+                            }`}
+                          />
+                          {pkg.nama}
+                        </span>
+                        <span className="font-mono text-xs font-bold text-primary tabular-nums">
+                          Rp {formatRupiah(pkg.harga_per_hari)}/hr
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug">
+                        {pkg.deskripsi || '-'}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Custom Rate per day if needed */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="booking-rate" className="block text-xs font-semibold text-foreground mb-1">
+                  Harga per Hari (Rp)
+                </label>
+                <Input
+                  id="booking-rate"
+                  type="number"
+                  value={bookingData.harga_per_hari}
+                  onChange={e =>
+                    setBookingData(prev => ({
+                      ...prev,
+                      harga_per_hari: Math.max(0, Number(e.target.value) || 0),
+                    }))
+                  }
+                  min={0}
+                  className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl tabular-nums"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="booking-dp" className="block text-xs font-semibold text-foreground mb-1">
+                  Uang Muka / DP (Opsional)
+                </label>
+                <div className="relative">
+                  <DollarSign className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="booking-dp"
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={bookingData.dp || ''}
+                    onChange={e =>
+                      setBookingData(prev => ({
+                        ...prev,
+                        dp: Math.max(0, Number(e.target.value) || 0),
+                      }))
+                    }
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono text-emerald-600 dark:text-emerald-400 font-semibold bg-card border-input rounded-xl tabular-nums"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="booking-checkin" className="block text-xs font-semibold text-foreground mb-1">
+                  Tanggal Masuk (Check-In) *
+                </label>
+                <div className="relative">
+                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="booking-checkin"
+                    type="date"
+                    value={bookingData.tanggal_masuk}
+                    onChange={e =>
+                      setBookingData(prev => ({
+                        ...prev,
+                        tanggal_masuk: e.target.value,
+                      }))
+                    }
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="booking-checkout" className="block text-xs font-semibold text-foreground mb-1">
+                  Estimasi Tanggal Keluar (Check-Out) *
+                </label>
+                <div className="relative">
+                  <Calendar className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="booking-checkout"
+                    type="date"
+                    value={bookingData.tanggal_keluar_estimasi}
+                    onChange={e =>
+                      setBookingData(prev => ({
+                        ...prev,
+                        tanggal_keluar_estimasi: e.target.value,
+                      }))
+                    }
+                    className="pl-8 h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Special Instructions */}
+            <div>
+              <label htmlFor="booking-notes" className="block text-xs font-semibold text-foreground mb-1">
+                Catatan Khusus / Permintaan Khusus
+              </label>
+              <textarea
+                id="booking-notes"
+                placeholder="Contoh: Tolong disisir sore hari, jangan disatukan dengan kucing lain, bawa makanan sendiri"
+                value={bookingData.catatan}
+                onChange={e =>
+                  setBookingData(prev => ({ ...prev, catatan: e.target.value }))
+                }
+                rows={2}
+                className="w-full text-xs sm:text-sm bg-card border border-input rounded-xl p-3 focus:outline-none focus:ring-1 focus:ring-primary text-foreground"
+              />
+            </div>
+
+            <div className="pt-4 border-t border-border flex items-center justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep(2)}
+                className="text-xs h-10 cursor-pointer rounded-xl border-border"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Kembali
+              </Button>
+              <Button
+                type="button"
+                disabled={checkIn.isSubmitting}
+                onClick={() => {
+                  if (checkIn.isSubmitting) return
+                  if (onInitiateCheckIn) {
+                    onInitiateCheckIn()
+                  } else {
+                    submitCheckIn()
+                  }
+                }}
+                className="text-xs h-11 px-5 bg-brand-orange hover:bg-brand-accent-hover text-white font-semibold shadow-sm cursor-pointer rounded-xl disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                {checkIn.isSubmitting ? 'Menyimpan...' : 'Konfirmasi & Simpan Check-In'}
+              </Button>
+            </div>
+          </Card>
+
+          {/* Right 1 Col: Summary Card */}
+          <div className="space-y-4">
+            <Card className="bg-surface-soft border border-border rounded-2xl p-5 shadow-xs">
+              <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border font-heading font-bold text-xs text-foreground">
+                <Info className="w-4 h-4 text-brand-orange" />
+                Ringkasan Estimasi Check-In
+              </div>
+
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Durasi Menginap</span>
+                  <span className="font-mono font-bold text-foreground">
+                    {totalNights} Malam
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Paket Dipilih</span>
+                  <span className="font-medium text-foreground">{bookingData.paket}</span>
+                </div>
+
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Tarif / Malam</span>
+                  <span className="font-mono text-foreground tabular-nums">
+                    Rp {formatRupiah(bookingData.harga_per_hari)}
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-border flex justify-between font-bold text-foreground text-sm">
+                  <span>Total Estimasi</span>
+                  <span className="font-mono text-primary tabular-nums">
+                    Rp {formatRupiah(totalCost)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1.5 rounded-lg text-[11px] font-medium">
+                  <span>DP Dibayar Sekarang</span>
+                  <span className="font-mono font-bold tabular-nums">
+                    - Rp {formatRupiah(bookingData.dp || 0)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between bg-card p-2.5 rounded-xl border border-border text-xs font-semibold text-foreground">
+                  <span>Sisa Pelunasan Nanti</span>
+                  <span className="font-mono text-brand-orange font-bold tabular-nums">
+                    Rp {formatRupiah(sisaBayar)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-border text-[11px] text-muted-foreground leading-relaxed">
+                ✨ Setelah klik <strong>Konfirmasi Check-In</strong>, modal template WhatsApp akan otomatis terbuka untuk dikirimkan ke owner.
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

@@ -16,6 +16,8 @@ export const supabaseAdmin = createClient(
     auth: {
       autoRefreshToken: false,
       persistSession: false,
+      detectSessionInUrl: false,
+      storageKey: 'supabase.admin.auth.token',
     },
     db: {
       schema: import.meta.env.VITE_SUPABASE_SCHEMA || 'public',
