@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { groomingService } from '@/services/groomingService'
 import type { GroomingSession, GroomingProgress } from '@/types/pos'
@@ -9,6 +9,7 @@ export function useGroomingRealtime(token?: string) {
   const [progressList, setProgressList] = useState<GroomingProgress[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const lastReqIdRef = useRef(0)
 
   // Load report data
   const loadData = useCallback(async (showLoading = false) => {
@@ -16,10 +17,12 @@ export function useGroomingRealtime(token?: string) {
       setIsLoading(false)
       return
     }
+    const reqId = ++lastReqIdRef.current
     if (showLoading) setIsLoading(true)
 
     try {
       const data = await groomingService.fetchReportByToken(token)
+      if (reqId !== lastReqIdRef.current) return // Stale request, ignore
       if (data) {
         setSession(data.session)
         setCat(data.cat || data.session?.cat)
@@ -29,7 +32,7 @@ export function useGroomingRealtime(token?: string) {
     } catch (err) {
       console.error('Failed to load live grooming report:', err)
     } finally {
-      if (showLoading) setIsLoading(false)
+      if (showLoading && reqId === lastReqIdRef.current) setIsLoading(false)
     }
   }, [token])
 

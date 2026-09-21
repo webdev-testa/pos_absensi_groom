@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase'
-import { DEFAULT_OWNERS } from '@/constants/pos.constants'
 import type {
   Owner,
   Cat,
@@ -16,17 +15,16 @@ const posDb = () => supabase.schema('pos')
 const STORAGE_KEY_OWNERS = 'dr_meow_pos_owners_cache'
 
 export const getCachedOwners = (): Owner[] => {
-  if (typeof window === 'undefined') return DEFAULT_OWNERS
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY_OWNERS)
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY_OWNERS, JSON.stringify(DEFAULT_OWNERS))
-      return DEFAULT_OWNERS
+      return []
     }
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_OWNERS
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : []
   } catch {
-    return DEFAULT_OWNERS
+    return []
   }
 }
 

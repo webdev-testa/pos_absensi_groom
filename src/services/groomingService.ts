@@ -6,11 +6,6 @@ import type {
   GroomingStatus,
   PaketGrooming,
 } from '@/types/pos'
-import {
-  DEFAULT_PAKET_GROOMING,
-  DEMO_GROOMING_SESSIONS,
-} from '@/constants/grooming.constants'
-
 const posDb = () => supabase.schema('pos')
 
 const STORAGE_KEY_SESSIONS = 'dr_meow_grooming_sessions_cache'
@@ -18,41 +13,47 @@ const STORAGE_KEY_PACKAGES = 'dr_meow_grooming_packages_cache'
 
 // Local storage fallback helpers for testing before SQL is executed in Supabase
 const getCachedSessions = (): GroomingSession[] => {
-  if (typeof window === 'undefined') return DEMO_GROOMING_SESSIONS
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SESSIONS)
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(DEMO_GROOMING_SESSIONS))
-      return DEMO_GROOMING_SESSIONS
+      localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify([]))
+      return []
     }
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : DEMO_GROOMING_SESSIONS
+    return Array.isArray(parsed) ? parsed : []
   } catch {
-    return DEMO_GROOMING_SESSIONS
+    return []
   }
 }
 
 const saveCachedSessions = (sessions: GroomingSession[]) => {
   if (typeof window === 'undefined') return
   try {
-    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sessions))
+    const sanitized = sessions.map(s => ({
+      ...s,
+      progress: s.progress?.map(p => ({
+        ...p,
+        foto_url: p.foto_url?.startsWith('data:') ? undefined : p.foto_url,
+      })),
+    }))
+    localStorage.setItem(STORAGE_KEY_SESSIONS, JSON.stringify(sanitized))
   } catch (e) {
     console.error('Failed to cache grooming sessions:', e)
   }
 }
 
 const getCachedPackages = (): PaketGrooming[] => {
-  if (typeof window === 'undefined') return DEFAULT_PAKET_GROOMING
+  if (typeof window === 'undefined') return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PACKAGES)
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY_PACKAGES, JSON.stringify(DEFAULT_PAKET_GROOMING))
-      return DEFAULT_PAKET_GROOMING
+      return []
     }
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : DEFAULT_PAKET_GROOMING
+    return Array.isArray(parsed) ? parsed : []
   } catch {
-    return DEFAULT_PAKET_GROOMING
+    return []
   }
 }
 
@@ -267,16 +268,6 @@ export const groomingService = {
       }
     }
 
-    // Only allow demo fallback if token strictly matches a predefined demo session token
-    const demoMatch = DEMO_GROOMING_SESSIONS.find(d => d.public_token === token)
-    if (demoMatch) {
-      return {
-        session: demoMatch,
-        cat: demoMatch.cat,
-        progress: demoMatch.progress || [],
-      }
-    }
-
     return null
   },
 
@@ -439,6 +430,14 @@ export const groomingService = {
           catatan: extra?.catatan || null,
           foto_url: extra?.foto_url || null,
         })
+      } else if (extra?.foto_url || extra?.catatan) {
+        await posDb()
+          .from('grooming_progress')
+          .update({
+            catatan: extra.catatan || undefined,
+            foto_url: extra.foto_url || undefined,
+          })
+          .eq('id', existingProgress.id)
       }
     } catch (e) {
       console.warn('Update step db error, updating local cache:', e)
@@ -474,6 +473,13 @@ export const groomingService = {
    * Mark pet as picked up by owner
    */
   async markPickedUp(sessionId: string): Promise<void> {
+    const currentSession = await this.fetchSessionById(sessionId)
+    if (currentSession && currentSession.status !== 'selesai') {
+      throw new Error(
+        `Kucing hanya dapat dijemput jika status sudah 'selesai'. Status saat ini: '${currentSession.status}'.`
+      )
+    }
+
     try {
       await posDb()
         .from('grooming_sessions')
@@ -511,7 +517,9 @@ export const groomingService = {
       throw new Error('Format file tidak didukung. Harap unggah foto format JPEG, PNG, atau WebP.')
     }
 
-    const filePath = `grooming/${sessionId}/${step}-${Date.now()}.${safeExt}`
+    const cleanSessionId = sessionId.replace(/[^a-zA-Z0-9_-]/g, '')
+    const cleanStep = step.replace(/[^a-zA-Z0-9_-]/g, '')
+    const filePath = `grooming/${cleanSessionId}/${cleanStep}-${Date.now()}.${safeExt}`
 
     try {
       const { error: uploadError } = await supabase.storage

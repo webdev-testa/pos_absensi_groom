@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { posService, type CreateCheckInPayload } from '@/services/posService'
 import type { Owner, Cat, Booking, PaketHarga, Pengaturan } from '@/types/pos'
@@ -273,6 +273,8 @@ export function useCheckIn() {
     },
   })
 
+  const isSubmittingRef = useRef(false)
+
   // Submit Check-In
   const submitCheckIn = async (paymentDetails?: {
     method: 'QRIS' | 'Tunai' | 'Transfer'
@@ -280,7 +282,15 @@ export function useCheckIn() {
     change?: number
     referenceNote?: string
   }) => {
-    return checkInMutation.mutateAsync(paymentDetails)
+    if (isSubmittingRef.current) {
+      throw new Error('Check-in sedang diproses, mohon tunggu.')
+    }
+    isSubmittingRef.current = true
+    try {
+      return await checkInMutation.mutateAsync(paymentDetails)
+    } finally {
+      isSubmittingRef.current = false
+    }
   }
 
   return {

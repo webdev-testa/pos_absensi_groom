@@ -488,9 +488,10 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   onChange={e =>
                     setBookingData(prev => ({
                       ...prev,
-                      harga_per_hari: Number(e.target.value),
+                      harga_per_hari: Math.max(0, Number(e.target.value) || 0),
                     }))
                   }
+                  min={0}
                   className="h-10 text-xs sm:text-sm font-mono bg-card border-input rounded-xl tabular-nums"
                 />
               </div>
@@ -504,12 +505,13 @@ export function CheckInForm({ checkIn, onInitiateCheckIn }: CheckInFormProps) {
                   <Input
                     id="booking-dp"
                     type="number"
+                    min={0}
                     placeholder="0"
                     value={bookingData.dp || ''}
                     onChange={e =>
                       setBookingData(prev => ({
                         ...prev,
-                        dp: Number(e.target.value),
+                        dp: Math.max(0, Number(e.target.value) || 0),
                       }))
                     }
                     className="pl-8 h-10 text-xs sm:text-sm font-mono text-emerald-600 dark:text-emerald-400 font-semibold bg-card border-input rounded-xl tabular-nums"

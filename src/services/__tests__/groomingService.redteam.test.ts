@@ -384,4 +384,41 @@ describe('Red-Team Verification Test Suite - Cat Grooming Resilience & Security'
       expect(mockLte).toHaveBeenCalledWith('tanggal', '2026-09-20')
     })
   })
+
+  describe('Defect 15: Storage path traversal prevention in uploadGroomingPhoto', () => {
+    it('sanitizes sessionId and step against path traversal attacks', async () => {
+      const mockUpload = vi.fn().mockResolvedValue({ error: null })
+      const mockGetPublicUrl = vi.fn().mockReturnValue({ data: { publicUrl: 'https://storage/safe.jpg' } })
+      ;(supabase.storage.from as any).mockReturnValue({
+        upload: mockUpload,
+        getPublicUrl: mockGetPublicUrl,
+      })
+
+      const safeFile = new File(['safe image data'], 'safe.png', { type: 'image/png' })
+      const maliciousSessionId = '../../etc/passwd'
+      const maliciousStep = '../malicious'
+
+      const url = await groomingService.uploadGroomingPhoto(safeFile, maliciousSessionId, maliciousStep as any)
+      expect(url).toBe('https://storage/safe.jpg')
+      expect(mockUpload).toHaveBeenCalled()
+
+      const uploadedPath = mockUpload.mock.calls[0][0] as string
+      expect(uploadedPath).not.toContain('../')
+      expect(uploadedPath).toMatch(/^grooming\/etcpasswd\/malicious-\d+\.png$/)
+    })
+  })
+
+  describe('Defect 16: markPickedUp transition guard', () => {
+    it('rejects markPickedUp if session is not in selesai status', async () => {
+      vi.spyOn(groomingService, 'fetchSessionById').mockResolvedValueOnce({
+        id: 'sess-active',
+        status: 'antrian',
+        current_step: 'check_in',
+      } as any)
+
+      await expect(groomingService.markPickedUp('sess-active')).rejects.toThrow(
+        /Kucing hanya dapat dijemput jika status sudah 'selesai'/
+      )
+    })
+  })
 })
